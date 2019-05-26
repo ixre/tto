@@ -132,7 +132,9 @@ public class {{.table.Title}}Entity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY){{else}}
     @Basic{{end}}
-    @Column(name = "{{$c.Name}}"{{if not $c.NotNull}}, nullable = true{{end}} {{if ne $c.Length 0}},length = {{$c.Length}}{{end}})
+    @Column(name = "{{$c.Name}}"
+     {{if not $c.NotNull}}, nullable = true{{end}}
+     {{if ne $c.Length 0}},length = {{$c.Length}}{{end}})
     public {{$type}} get{{$c.Title}}() {
         return this.{{$c.Name}};
     }
@@ -141,9 +143,9 @@ public class {{.table.Title}}Entity {
 
 ```
 
-** 如果您觉得这个项目不错, 请给个star吧.**
+**如果您觉得这个项目不错, 请给个star吧.**
 
 
 
-<img src="images/cq-alipay.jpg" width="200" class="pull-left"/>
-<img src="images/cq-wx.png" width="200" class="pull-right"/>
+<img src="images/cq-alipay.jpg" width="200" style="display:inline-block"/>
+<img src="images/cq-wx.png" width="200" style="display:inline-block"/>

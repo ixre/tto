@@ -147,4 +147,4 @@ public class {{.table.Title}}Entity {
 
 
 
-<img src="images/cq-alipay.jpg" width="200" style="display:inline-block"/><img src="images/cq-wx.png" width="200" style="display:inline-block"/>
+<img src="images/cq-alipay.jpg" width="200" style="display:inline-block"/><img src="images/cq-wxpay.png" width="200" style="display:inline-block"/>

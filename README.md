@@ -144,5 +144,9 @@ public class {{.table.Title}}Entity {
 ** 如果您觉得这个项目不错, 请给个star吧.**
 
 
-.pull-left[<img src="images/cq-alipay.jpg" width="200"/>]
-.pull-right[<img src="images/cq-wx.png" width="200"/>]
+.pull-left[
+    <img src="images/cq-alipay.jpg" width="200"/>
+]
+.pull-right[
+    <img src="images/cq-wx.png" width="200"/>
+]

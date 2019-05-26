@@ -26,3 +26,4 @@ output
 go.sum
 *.tar.gz
 generated_code
+*-bin

@@ -54,7 +54,6 @@ func (t *internalFunc) title(s string) string {
 	return strings.Title(s)
 }
 
-
 func (t *internalFunc) langType(lang string, typeId int) string {
 	switch lang {
 	case "go":
@@ -68,19 +67,18 @@ func (t *internalFunc) langType(lang string, typeId int) string {
 }
 
 // 将包名替换为.分割, 通常C#,JAVA语言使用"."分割包名
-func (t *internalFunc) langPkg(lang string,pkg string) string {
+func (t *internalFunc) langPkg(lang string, pkg string) string {
 	switch lang {
-	case "java","kotlin","csharp":
+	case "java", "kotlin", "csharp":
 		return strings.Replace(pkg, "/", ".", -1)
-	case "go","rust","php","python":
-		i := strings.LastIndexAny(pkg,"/.")
-		if i != -1{
+	case "go", "rust", "php", "python":
+		i := strings.LastIndexAny(pkg, "/.")
+		if i != -1 {
 			return pkg[i+1:]
 		}
 	}
 	return pkg
 }
-
 
 // 判断是否为true
 func (t *internalFunc) boolInt(i int32) bool {

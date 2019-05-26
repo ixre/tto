@@ -72,6 +72,7 @@ namespace {{pkg "csharp" .global.Pkg}}
 - Name: 表名
 - Prefix: 表前缀
 - Pk: 主键,默认为:id
+- PkTypeId: 主键类型编号
 - Title: 表名单词首字大写,通常用来表示类型,
   如:user_info对应的Title为UserInfo
 - Comment: 表注释

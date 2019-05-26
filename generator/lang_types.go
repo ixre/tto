@@ -5,8 +5,7 @@ import (
 	"github.com/ixre/gof/db/orm"
 )
 
-
-func  GoTypes(typeId int) string {
+func GoTypes(typeId int) string {
 	switch typeId {
 	case orm.TypeString:
 		return "string"
@@ -26,7 +25,6 @@ func  GoTypes(typeId int) string {
 	return "interface{}"
 }
 
-
 func JavaTypes(typeId int) string {
 	switch typeId {
 	case orm.TypeBoolean:
@@ -37,14 +35,13 @@ func JavaTypes(typeId int) string {
 		return "Float"
 	case orm.TypeFloat64:
 		return "Double"
-	case orm.TypeInt16,orm.TypeInt32:
+	case orm.TypeInt16, orm.TypeInt32:
 		return "int"
 	case orm.TypeString:
 		return "String"
 	}
 	return fmt.Sprintf("Unknown type id:%d", typeId)
 }
-
 
 func KotlinTypes(typeId int) string {
 	switch typeId {
@@ -56,7 +53,7 @@ func KotlinTypes(typeId int) string {
 		return "Float"
 	case orm.TypeFloat64:
 		return "Double"
-	case orm.TypeInt16,orm.TypeInt32:
+	case orm.TypeInt16, orm.TypeInt32:
 		return "Int"
 	case orm.TypeString:
 		return "String"

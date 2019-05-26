@@ -2,8 +2,7 @@ package internal
 
 var (
 	// 实体仓储接口模板
-	TPL_ENTITY_REP_INTERFACE =
-		`// auto generate by gof (http://github.com/ixre/gof)
+	TPL_ENTITY_REP_INTERFACE = `// auto generate by gof (http://github.com/ixre/gof)
         package {{.VAR.IRepoPkgName}}
 
         import(

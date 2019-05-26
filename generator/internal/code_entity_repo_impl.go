@@ -6,8 +6,7 @@ var (
 	// <E> : 实体
 	// <E2> : 包含包名的实体
 	// <Ptr> : 仓库类对象引用
-	TPL_ENTITY_REP =
-		`// auto generate by gof (http://github.com/ixre/gof)
+	TPL_ENTITY_REP = `// auto generate by gof (http://github.com/ixre/gof)
             package {{.VAR.RepoPkgName}}
             import(
                 "log"

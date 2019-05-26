@@ -67,6 +67,8 @@ type (
 		Raw *orm.Table
 		// 主键
 		Pk string
+		// 主键类型编号
+		PkTypeId int
 		// 列
 		Columns []*Column
 	}
@@ -107,6 +109,7 @@ func DBCodeGenerator() *Session {
 	return (&Session{
 		codeVars: make(map[string]interface{}),
 		funcMap:  (&internalFunc{}).funcMap(),
+		IdUpper:  false,
 	}).init()
 }
 
@@ -178,19 +181,22 @@ func (s *Session) ParseTables(tbs []*orm.Table, err error) ([]*Table, error) {
 // 获取表结构
 func (s *Session) parseTable(ordinal int, tb *orm.Table) *Table {
 	n := &Table{
-		Name:    tb.Name,
-		Prefix:  s.prefix(tb.Name),
-		Title:   s.title(tb.Name),
-		Comment: tb.Comment,
-		Engine:  tb.Engine,
-		Schema:  tb.Schema,
-		Charset: tb.Charset,
-		Raw:     tb,
-		Columns: make([]*Column, len(tb.Columns)),
+		Name:     tb.Name,
+		Prefix:   s.prefix(tb.Name),
+		Title:    s.title(tb.Name),
+		Comment:  tb.Comment,
+		Engine:   tb.Engine,
+		Schema:   tb.Schema,
+		Charset:  tb.Charset,
+		Raw:      tb,
+		Pk:       "id",
+		PkTypeId: orm.TypeInt32,
+		Columns:  make([]*Column, len(tb.Columns)),
 	}
 	for i, v := range tb.Columns {
-		if v.IsPk && n.Pk==""{
+		if v.IsPk && n.Pk == "" {
 			n.Pk = v.Name
+			n.PkTypeId = v.TypeId
 		}
 		n.Columns[i] = &Column{
 			Ordinal: i,
@@ -284,7 +290,7 @@ func (s *Session) Var(key string, v interface{}) {
 }
 
 // 返回所有的变量
-func (s *Session) AllVars()map[string]interface{}{
+func (s *Session) AllVars() map[string]interface{} {
 	return s.codeVars
 }
 
@@ -324,12 +330,12 @@ func (s *Session) GenerateCode(tb *Table, tpl *CodeTemplate,
 		r2 = n
 	}
 	mp := map[string]interface{}{
-		"global":  s.codeVars,          // 全局变量
+		"global": s.codeVars, // 全局变量
 		//"version": s.codeVars[VERSION], // 版本
 		//"pkg":     s.codeVars[PKG],     //包名
-		"table":   tb,                  // 数据表
-		"columns": columns,             // 列
-		"pk":      tb.Pk,                  // 主键列名
+		"table":   tb,      // 数据表
+		"columns": columns, // 列
+		//"pk":      tb.Pk,                  // 主键列名
 
 		//---------- 旧的字段 ------------------//
 		"VAR":  s.codeVars, // 全局变量
@@ -369,8 +375,8 @@ func (s *Session) GenerateTablesCode(tables []*Table, tpl *CodeTemplate) string 
 	mp := map[string]interface{}{
 		"VAR":    s.codeVars,
 		"Tables": tables,
-		"tables":tables,
-		"global":s.codeVars,
+		"tables": tables,
+		"global": s.codeVars,
 	}
 	buf := bytes.NewBuffer(nil)
 	err = t.Execute(buf, mp)

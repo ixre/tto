@@ -56,7 +56,7 @@ func main() {
 
 	flag.StringVar(&genDir, "out", "./output", "path of output directory")
 	flag.StringVar(&tplDir, "tpl", "./templates", "path of code templates directory")
-	flag.StringVar(&confPath, "conf", "./tto.conf", "config path")
+	flag.StringVar(&confPath, "conf", "./gen.conf", "config path")
 	flag.StringVar(&table, "table", "", "table name or table prefix")
 	flag.StringVar(&arch, "arch", "", "program language")
 	flag.BoolVar(&debug, "debug", false, "debug mode")

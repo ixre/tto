@@ -143,8 +143,9 @@ public class {{.table.Title}}Entity {
 
 ```
 
+
+
 **如果您觉得这个项目不错, 请给个star吧.**
 
 
-
-<img src="images/cq-alipay.png" width="200" style="display:inline-block"/><img src="images/cq-wxpay.png" width="200" style="display:inline-block"/>
+<img src="images/cq-alipay.png" width="320" style="display:inline-block"/><img src="images/cq-wxpay.png" width="360" style="display:inline-block"/>

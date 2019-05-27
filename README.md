@@ -36,6 +36,35 @@ tto -conf tto.conf
 
 - !target : 用来定义代码文件存放的目标路径
 
+
+## 函数
+
+大/小写函数: lower和upper
+```
+{{lower .table.Name}}
+{{upper .table.Name}}
+```
+单词首字大写函数:title
+```
+{{title .table.Name}}
+```
+首字母小写函数: lower_title
+```
+{{lower_title .table.Name}}
+```
+语言类型函数: type
+```
+{{type "go" .columns[0].TypeId}}
+```
+包名函数: pkg
+```
+{{pkg "go" .global.Pkg}}
+```
+默认值函数: default
+```
+{{default "go" .columns[0].TypeId}}
+```
+
 ## 模板
 
 模板主要包含三大对象: 

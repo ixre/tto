@@ -21,13 +21,20 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	fm["plus"] = t.plus
 	fm["multi"] = t.multi
 	fm["mathRemain"] = t.mathRemain
+	// 单词首字大写
 	fm["title"] = t.title
+	// 小写
 	fm["lower"] = t.lower
+	// 大写
 	fm["upper"] = t.upper
-	fm["lowerTitle"] = t.lowerTitle
+	// 首字母小写: 如:{{lower_title .table.Name}}
 	fm["lower_title"] = t.lowerTitle
+	// 类型: 如:{{type "go" .columns[0].TypeId}}
 	fm["type"] = t.langType
+	// 包名: {{pkg "go" "com/tto/pkg"}}
 	fm["pkg"] = t.langPkg
+	// 默认值: : 如:{{default "go" .columns[0].TypeId}}
+	fm["default"] = t.langDefaultValue
 	return fm
 }
 
@@ -78,6 +85,18 @@ func (t *internalFunc) langPkg(lang string, pkg string) string {
 		}
 	}
 	return pkg
+}
+
+// 返回类型默认值
+func (t *internalFunc) langDefaultValue(lang string, typeId int) string {
+	switch lang {
+	case "go":
+		return GoValues(typeId)
+	case "java":
+	case "kotlin":
+		return JavaValues(typeId)
+	}
+	return CommonValues(typeId)
 }
 
 // 判断是否为true

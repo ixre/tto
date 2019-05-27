@@ -43,6 +43,12 @@ func (r Registry) GetString(key string) string {
 func (r Registry) Get(key string) interface{} {
 	return r.tree.Get(key)
 }
+func (r Registry) GetBoolean(key string) bool {
+	if r.Contains(key) {
+		return r.Get(key).(bool)
+	}
+	return false
+}
 
 func main() {
 	var version = "1.2"
@@ -103,7 +109,9 @@ func main() {
 	dg := generator.DBCodeGenerator()
 	dg.Var(generator.VERSION, version)
 	dg.Var(generator.PKG, pkgName)
-	dg.IdUpper = true
+	if re.GetBoolean("code.id_upper") {
+		dg.IdUpper = true
+	}
 	// 获取表格并转换
 	tables, err := dg.ParseTables(ds.TablesByPrefix(dbName, schema, table))
 	if err != nil {

@@ -27,3 +27,4 @@ go.sum
 *.tar.gz
 generated_code
 *-bin
+tto_*.conf

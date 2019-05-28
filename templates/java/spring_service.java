@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 import java.util.*
 import javax.annotation.Resource
 {{$tableTitle := .table.Title}}
-{{$pkType := type "kotlin" .table.PkTypeId}}
+{{$pkType := type "java" .table.PkTypeId}}
 /** {{.table.Comment}}服务  */
 @Service
 public class {{.table.Title}}Service {

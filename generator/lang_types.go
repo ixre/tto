@@ -14,7 +14,7 @@ func GoTypes(typeId int) string {
 	case orm.TypeInt16:
 		return "int16"
 	case orm.TypeInt32:
-		return "int32"
+		return "int"
 	case orm.TypeInt64:
 		return "int64"
 	case orm.TypeFloat32:

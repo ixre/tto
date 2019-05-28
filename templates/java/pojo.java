@@ -36,4 +36,12 @@ public class {{.table.Title}}Entity {
         return this.{{$c.Name}};
     }
     {{end}}
+
+    /** 拷贝数据  */
+    public {{.table.Title}}Entity copy({{.table.Title}}Entity src){
+        {{.table.Title}}Entity dst = this;
+        {{range $i,$c := .columns}}
+        dst.set{{$c.Title}}(src.get{{$c.Title}}());{{end}}
+        return dst;
+    }
 }

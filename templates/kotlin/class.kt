@@ -13,5 +13,13 @@ package {{pkg "kotlin" .global.Pkg}}.model;
 class {{.table.Title}}{
     {{range $i,$c:=.columns}}
     /** {{$c.Comment}} */
-    var {{lowerTitle $c.Title}}:{{type "kotlin" $c.TypeId}} = {{end}}
+    var {{lower_title $c.Title}}:{{type "kotlin" $c.TypeId}} = {{default "kotlin" $c.TypeId}} {{end}}
+
+    /** 拷贝数据  */
+    fun  copy(src :{{.table.Title}}Entity):{{.table.Title}}Entity{
+        val dst = this;
+        {{range $i,$c := .columns}}
+        dst.{{lower_title $c.Title}} = src.{{lower_title $c.Title}}{{end}}
+        return dst;
+    }
 }

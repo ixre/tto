@@ -11,8 +11,8 @@ package {{pkg "java" .global.Pkg}}.repo;
 
 import {{pkg "java" .global.Pkg}}.pojo.{{.table.Title}}Entity
 import org.springframework.data.jpa.repository.JpaRepository
-
+{{$pkType := type "java" .table.PkTypeId}}
 /** {{.table.Comment}}仓储接口 */
-public interface {{.table.Title}}Repository : JpaRepository<{{.table.Title}}Entity, int>{
+public interface {{.table.Title}}Repository : JpaRepository<{{.table.Title}}Entity, {{$pkType}}>{
 
 }

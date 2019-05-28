@@ -11,8 +11,8 @@ package {{pkg "java" .global.Pkg}}.repo;
 
 import {{pkg "java" .global.Pkg}}.pojo.{{.table.Title}}Entity
 import org.springframework.data.jpa.repository.JpaRepository
-
+{{$pkType := type "kotlin" .table.PkTypeId}}
 /** {{.table.Comment}}仓储接口  */
-interface {{.table.Title}}Repository : JpaRepository<{{.table.Title}}Entity, Int> {
+interface {{.table.Title}}Repository : JpaRepository<{{.table.Title}}Entity, {{$pkType}}> {
 
 }

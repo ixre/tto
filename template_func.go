@@ -1,4 +1,4 @@
-package generator
+package tto
 
 import (
 	"github.com/ixre/gof/util"

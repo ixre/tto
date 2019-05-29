@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package generator
+package tto
 
 import (
 	"testing"
@@ -46,7 +46,7 @@ func TestStructAssignCode(t *testing.T) {
 func TestGenByTemplate(t *testing.T) {
 	dg := DBCodeGenerator()
 	str := "s$${x}"
-	result := dg.GenerateCode(&Table{Name: "Person"},
+	result := GenerateCode(&Table{Name: "Person"},
 		CodeTemplate(str), "", true, "")
 	t.Log("--", result)
 }

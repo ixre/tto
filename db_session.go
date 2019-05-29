@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package generator
+package tto
 
 import (
 	"bytes"

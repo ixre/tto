@@ -9,7 +9,7 @@ import (
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/shell"
 	"github.com/ixre/gof/web/form"
-	"github.com/ixre/tto/generator"
+	"github.com/ixre/tto"
 	"github.com/pelletier/go-toml"
 	"log"
 	"os"
@@ -18,6 +18,8 @@ import (
 	"strings"
 	"time"
 )
+
+const VERSION = "1.2"
 
 type Registry struct {
 	tree *toml.Tree
@@ -51,7 +53,6 @@ func (r Registry) GetBoolean(key string) bool {
 }
 
 func main() {
-	var version = "1.2"
 	var genDir string   //输出目录
 	var confPath string //设置目录
 	var tplDir string   //模板目录
@@ -69,7 +70,7 @@ func main() {
 	flag.BoolVar(&printVer, "v", false, "print version")
 	flag.Parse()
 	if printVer {
-		println("GofGenerator v" + version)
+		println("TTo Generator v" + VERSION)
 		return
 	}
 	re, err := LoadRegistry(confPath)
@@ -106,9 +107,9 @@ func main() {
 	dbName := re.GetString("database.name")
 	schema := re.GetString("database.schema")
 	ds := orm.DialectSession(getDb(driver, re), getDialect(driver))
-	dg := generator.DBCodeGenerator()
-	dg.Var(generator.VERSION, version)
-	dg.Var(generator.PKG, pkgName)
+	dg := tto.DBCodeGenerator()
+	dg.Var(tto.VERSION, VERSION)
+	dg.Var(tto.PKG, pkgName)
 	if re.GetBoolean("code.id_upper") {
 		dg.IdUpper = true
 	}
@@ -156,7 +157,7 @@ func execCommand(command string, bashExec string) error {
 }
 
 // 根据规则生成代码
-func genByArch(arch string, dg *generator.Session, tables []*generator.Table,
+func genByArch(arch string, dg *tto.Session, tables []*tto.Table,
 	genDir string, tplDir string) error {
 	// 生成代码
 	switch arch {
@@ -226,8 +227,8 @@ func crashRecover(debug bool) {
 }
 
 // 生成代码
-func genCode(s *generator.Session, tables []*generator.Table, genDir string, tplDir string) error {
-	tplMap := map[string]*generator.CodeTemplate{}
+func genCode(s *tto.Session, tables []*tto.Table, genDir string, tplDir string) error {
+	tplMap := map[string]*tto.CodeTemplate{}
 	sliceSize := len(tplDir) - 1
 	if tplDir[sliceSize] == '/' {
 		tplDir = tplDir + "/"
@@ -257,10 +258,10 @@ func genCode(s *generator.Session, tables []*generator.Table, genDir string, tpl
 			dstPath := genDir + "/" + joinFilePath(path, tb.Name)
 			// 如果设置文件名
 			if n, ok := tpl.Predefine("target"); ok {
-				rp := generator.ResolvePathString(n, s.AllVars(), tb)
+				rp := tto.ResolvePathString(n, s.AllVars(), tb)
 				dstPath = genDir + "/" + rp
 			}
-			generator.SaveFile(str, dstPath)
+			tto.SaveFile(str, dstPath)
 		}
 	}
 	return err
@@ -276,15 +277,15 @@ func joinFilePath(path string, tableName string) string {
 }
 
 // 生成Go代码
-func genGoCode(dg *generator.Session, tables []*generator.Table,
+func genGoCode(dg *tto.Session, tables []*tto.Table,
 	genDir string, tplDir string) error {
 	// 设置变量
-	dg.Var(generator.VModelPkg, "pkg/src/model")
-	dg.Var(generator.VModelPkgName, "model")
-	dg.Var(generator.VIRepoPkg, "pkg/src/repo")
-	dg.Var(generator.VIRepoPkgName, "repo")
-	dg.Var(generator.VRepoPkg, "pkg/src/repo")
-	dg.Var(generator.VRepoPkgName, "repo")
+	dg.Var(tto.VModelPkg, "pkg/src/model")
+	dg.Var(tto.VModelPkgName, "model")
+	dg.Var(tto.VIRepoPkg, "pkg/src/repo")
+	dg.Var(tto.VIRepoPkgName, "repo")
+	dg.Var(tto.VRepoPkg, "pkg/src/repo")
+	dg.Var(tto.VRepoPkgName, "repo")
 	// 读取自定义模板
 	listTP, _ := dg.ParseTemplate(tplDir + "/grid_list.html")
 	editTP, _ := dg.ParseTemplate(tplDir + "/entity_edit.html")
@@ -300,13 +301,13 @@ func genGoCode(dg *generator.Session, tables []*generator.Table,
 		htmPath := genDir + "html/" + tb.Name + ".html"
 		//生成实体
 		str := dg.TableToGoStruct(tb)
-		generator.SaveFile(str, entityPath)
+		tto.SaveFile(str, entityPath)
 		//生成仓储结构
 		str = dg.TableToGoRepo(tb, true, "model.")
-		generator.SaveFile(str, repPath)
+		tto.SaveFile(str, repPath)
 		//生成仓储接口
 		str = dg.TableToGoIRepo(tb, true, "")
-		generator.SaveFile(str, iRepPath)
+		tto.SaveFile(str, iRepPath)
 		//生成表单DSL
 		f := fe.TableToForm(tb.Raw)
 		err = fe.SaveDSL(f, dslPath)
@@ -319,17 +320,17 @@ func genGoCode(dg *generator.Session, tables []*generator.Table,
 		}
 		// 生成列表文件
 		str = dg.GenerateCode(tb, listTP, "", true, "")
-		generator.SaveFile(str, genDir+"html_list/"+tb.Name+"_list.html")
+		tto.SaveFile(str, genDir+"html_list/"+tb.Name+"_list.html")
 		// 生成表单文件
 		str = dg.GenerateCode(tb, editTP, "", true, "")
-		generator.SaveFile(str, genDir+"html_edit/"+tb.Name+"_edit.html")
+		tto.SaveFile(str, genDir+"html_edit/"+tb.Name+"_edit.html")
 		// 生成控制器
 		str = dg.GenerateCode(tb, ctrTpl, "", true, "")
-		generator.SaveFile(str, genDir+"mvc/"+tb.Name+"_c.go")
+		tto.SaveFile(str, genDir+"mvc/"+tb.Name+"_c.go")
 	}
 	// 生成仓储工厂
-	code := dg.GenerateTablesCode(tables, generator.TPL_REPO_FACTORY)
-	generator.SaveFile(code, genDir+"repo/auto_repo_factory.go")
+	code := dg.GenerateTablesCode(tables, tto.TPL_REPO_FACTORY)
+	tto.SaveFile(code, genDir+"repo/auto_repo_factory.go")
 	//格式化代码
 	shell.Run("gofmt -w " + genDir)
 	return err

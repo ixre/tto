@@ -1,6 +1,6 @@
-package generator
+package tto
 
-import "github.com/ixre/tto/generator/internal"
+import "github.com/ixre/tto/internal"
 
 var (
 	TPL_ENTITY_REP           *CodeTemplate
@@ -10,12 +10,7 @@ var (
 
 func resolveRepTag(s string) *CodeTemplate {
 	t := NewTemplate(s)
-	return t.Replace("<Ptr>", "{{.Ptr}}", -1).
-		Replace("<E>", "{{.E}}", -1).
-		Replace("<E2>", "{{.E2}}", -1).
-		Replace("<R>", "{{.R}}", -1).
-		Replace("<R2>", "{{.R2}}", -1).
-		Replace("<IsPK>", "{{.IsPK}}", -1)
+	return t.Replace("<IsPK>", "{{.IsPK}}", -1)
 }
 
 func init() {

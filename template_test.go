@@ -1,4 +1,4 @@
-package generator
+package tto
 
 import "testing"
 
@@ -25,5 +25,5 @@ import javax.persistence.GeneratedValue;
 
 `)
 
-	t.Log(tp.String())
+	t.Log(String())
 }

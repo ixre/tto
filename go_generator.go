@@ -5,31 +5,6 @@ import (
 	"fmt"
 )
 
-// 生成Go仓储代码
-func (s *Session) GenerateGoRepoCodes(tables []*Table, targetDir string) (err error) {
-	for _, table := range tables {
-		//生成实体
-		str, path := s.tableToGoStruct(table)
-		if err = SaveFile(str, targetDir+"/"+path); err != nil {
-			return err
-		}
-		//生成仓储结构
-		str, path = s.tableToGoRepo(table, true, "")
-		if err = SaveFile(str, targetDir+"/"+path); err != nil {
-			return err
-		}
-		//生成仓储接口
-		str, path = s.tableToGoIRepo(table, true, "")
-		if err = SaveFile(str, targetDir+"/"+path); err != nil {
-			return err
-		}
-	}
-	// 生成仓储工厂
-	code := s.GenerateCodeByTables(tables, GoRepoFactoryTemplate)
-	path, _ := s.PredefineTargetPath(GoRepoFactoryTemplate, nil)
-	return SaveFile(code, targetDir+"/"+path)
-}
-
 // 表生成仓储结构,sign:函数后是否带签名，ePrefix:实体是否带前缀
 func (s *Session) tableToGoRepo(table *Table,
 	sign bool, ePrefix string) (string, string) {

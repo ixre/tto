@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"errors"
 	"flag"
 	"fmt"
 	"github.com/ixre/gof/db"
@@ -12,7 +11,6 @@ import (
 	"github.com/pelletier/go-toml"
 	"log"
 	"os"
-	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
@@ -164,7 +162,7 @@ func genByArch(arch string, dg *tto.Session, tables []*tto.Table,
 		println(fmt.Sprintf("[ Gen][ Error]: generate go code fail! %s", err.Error()))
 	}
 	// 生成自定义代码
-	return genCode(dg, tables, genDir, tplDir)
+	return dg.WalGenerateCode(tables, tplDir, genDir)
 }
 
 // 获取数据库连接
@@ -222,45 +220,6 @@ func crashRecover(debug bool) {
 			log.Println(fmt.Sprintf("[ Gen][ Crash]: %v", r))
 		}
 	}
-}
-
-// 生成代码
-func genCode(s *tto.Session, tables []*tto.Table, genDir string, tplDir string) error {
-	tplMap := map[string]*tto.CodeTemplate{}
-	sliceSize := len(tplDir) - 1
-	if tplDir[sliceSize] == '/' {
-		tplDir = tplDir + "/"
-		sliceSize += 1
-	}
-	err := filepath.Walk(tplDir, func(path string, info os.FileInfo, err error) error {
-		// 如果模板名称以"_"开头，则忽略
-		if !info.IsDir() && info.Name()[0] != '_' {
-			tp, err := s.ParseTemplate(path)
-			if err != nil {
-				return errors.New("template:" + info.Name() + "-" + err.Error())
-			}
-			s.Resolve(tp)
-			tplMap[path[sliceSize:]] = tp
-		}
-		return nil
-	})
-	if err != nil {
-		return err
-	}
-	if len(tplMap) == 0 {
-		return errors.New("no any code template")
-	}
-	for _, tb := range tables {
-		for path, tpl := range tplMap {
-			str := s.GenerateCode(tb, tpl, "", true, "")
-			dstPath, _ := s.PredefineTargetPath(tpl, tb)
-			if dstPath == "" {
-				dstPath = s.DefaultTargetPath(path, tb)
-			}
-			tto.SaveFile(str, genDir+"/"+dstPath)
-		}
-	}
-	return err
 }
 
 // 生成Go代码

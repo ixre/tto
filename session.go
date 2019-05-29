@@ -10,6 +10,7 @@ package tto
 
 import (
 	"bytes"
+	"errors"
 	"github.com/ixre/gof/db/orm"
 	"io/ioutil"
 	"log"
@@ -31,17 +32,11 @@ const (
 	// 版本
 	VERSION = "Version"
 	//模型包名
-	VModelPkgName = "ModelPkgName"
+	ModelPkgName = "ModelPkgName"
 	//仓储结构包名
-	VRepoPkgName = "RepoPkgName"
+	RepoPkgName = "RepoPkgName"
 	//仓储接口包名
-	VIRepoPkgName = "IRepoPkgName"
-	//仓储结构引用模型包路径
-	VModelPkg = "ModelPkg"
-	//仓储接口引用模型包路径
-	VIRepoPkg = "IRepoPkg"
-	// 仓储包路径
-	VRepoPkg = "RepoPkg"
+	IfcePkgName = "IfacePkgName"
 )
 
 type (
@@ -102,26 +97,26 @@ type Session struct {
 	// 模板函数
 	funcMap map[string]interface{}
 	IdUpper bool
+	fn      *internalFunc
 }
 
 // 数据库代码生成器
 func DBCodeGenerator() *Session {
+	fn := &internalFunc{}
 	return (&Session{
 		codeVars: make(map[string]interface{}),
-		funcMap:  (&internalFunc{}).funcMap(),
+		fn:       fn,
+		funcMap:  fn.funcMap(),
 		IdUpper:  false,
 	}).init()
 }
 
 func (s *Session) init() *Session {
-	s.Var(PKG, "com/pkg")
-	s.Var(VERSION, "1.0")
-	s.Var(VModelPkgName, "model")
-	s.Var(VRepoPkgName, "repo")
-	s.Var(VIRepoPkgName, "repo")
-	s.Var(VModelPkg, "")
-	s.Var(VIRepoPkg, "")
-	s.Var(VRepoPkg, "")
+	s.Var(PKG, "com/tto/pkg")
+	s.Var(VERSION, BuildVersion)
+	s.Var(ModelPkgName, "model")
+	s.Var(RepoPkgName, "repo")
+	s.Var(IfcePkgName, "ifce")
 	return s
 }
 
@@ -147,26 +142,6 @@ func (s *Session) prefix(str string) string {
 		}
 	}
 	return ""
-}
-
-func (s *Session) goType(goType int) string {
-	switch goType {
-	case orm.TypeString:
-		return "string"
-	case orm.TypeBoolean:
-		return "bool"
-	case orm.TypeInt16:
-		return "int16"
-	case orm.TypeInt32:
-		return "int"
-	case orm.TypeInt64:
-		return "int64"
-	case orm.TypeFloat32:
-		return "float32"
-	case orm.TypeFloat64:
-		return "float64"
-	}
-	return "interface{}"
 }
 
 // 获取所有的表
@@ -214,57 +189,6 @@ func (s *Session) parseTable(ordinal int, tb *orm.Table) *Table {
 	return n
 }
 
-// 表生成结构
-func (s *Session) TableToGoStruct(tb *Table) string {
-	if tb == nil {
-		return ""
-	}
-	pkgName := ""
-	if p, ok := s.codeVars[VModelPkgName]; ok {
-		pkgName = p.(string)
-	} else {
-		pkgName = "model"
-	}
-
-	//log.Println(fmt.Sprintf("%#v", tb))
-	buf := bytes.NewBufferString("")
-	buf.WriteString("package ")
-	buf.WriteString(pkgName)
-
-	buf.WriteString("\n// ")
-	buf.WriteString(tb.Comment)
-	buf.WriteString("\ntype ")
-	buf.WriteString(s.title(tb.Name))
-	buf.WriteString(" struct{\n")
-
-	for _, col := range tb.Columns {
-		if col.Comment != "" {
-			buf.WriteString("    // ")
-			buf.WriteString(col.Comment)
-			buf.WriteString("\n")
-		}
-		buf.WriteString("    ")
-		buf.WriteString(s.title(col.Name))
-		buf.WriteString(" ")
-		buf.WriteString(s.goType(col.TypeId))
-		buf.WriteString(" `")
-		buf.WriteString("db:\"")
-		buf.WriteString(col.Name)
-		buf.WriteString("\"")
-		if col.IsPk {
-			buf.WriteString(" pk:\"yes\"")
-		}
-		if col.Auto {
-			buf.WriteString(" auto:\"yes\"")
-		}
-		buf.WriteString("`")
-		buf.WriteString("\n")
-	}
-
-	buf.WriteString("}")
-	return buf.String()
-}
-
 // 解析模板
 func (s *Session) Resolve(t *CodeTemplate) *CodeTemplate {
 	return t
@@ -279,14 +203,9 @@ func (s *Session) Func(funcName string, f interface{}) {
 func (s *Session) Var(key string, v interface{}) {
 	if v == nil {
 		delete(s.codeVars, key)
-		return
+	} else {
+		s.codeVars[key] = v
 	}
-	//if strings.HasSuffix(key, "PkgName") {
-	//	if s := v.(string); s != "" && s[len(s)-1] != '.' {
-	//		v = s + "."
-	//	}
-	//}
-	s.codeVars[key] = v
 }
 
 // 返回所有的变量
@@ -310,9 +229,9 @@ func (s *Session) ParseTemplate(file string) (*CodeTemplate, error) {
 }
 
 // 生成代码
-func (s *Session) GenerateCode(tb *Table, tpl *CodeTemplate,
+func (s *Session) GenerateCode(table *Table, tpl *CodeTemplate,
 	structSuffix string, sign bool, ePrefix string) string {
-	if tb == nil {
+	if table == nil {
 		return ""
 	}
 	var err error
@@ -322,9 +241,9 @@ func (s *Session) GenerateCode(tb *Table, tpl *CodeTemplate,
 	if err != nil {
 		panic(err)
 	}
-	columns := tb.Columns
-	//n := s.title(tb.Name)
-	n := tb.Title
+	columns := table.Columns
+	//n := s.title(table.Name)
+	n := table.Title
 	r2 := ""
 	if sign {
 		r2 = n
@@ -333,19 +252,19 @@ func (s *Session) GenerateCode(tb *Table, tpl *CodeTemplate,
 		"global": s.codeVars, // 全局变量
 		//"version": s.codeVars[VERSION], // 版本
 		//"pkg":     s.codeVars[PKG],     //包名
-		"table":   tb,      // 数据表
+		"table":   table,   // 数据表
 		"columns": columns, // 列
-		//"pk":      tb.Pk,                  // 主键列名
+		//"pk":      table.Pk,                  // 主键列名
 
 		//---------- 旧的字段 ------------------//
 		"VAR":  s.codeVars, // 全局变量
-		"T":    tb,         // 数据表
+		"T":    table,      // 数据表
 		"R":    n + structSuffix,
 		"R2":   r2,
 		"E":    n,
 		"E2":   ePrefix + n,
-		"Ptr":  strings.ToLower(tb.Name[:1]),
-		"IsPK": s.title(tb.Pk),
+		"Ptr":  strings.ToLower(table.Name[:1]),
+		"IsPK": s.title(table.Pk),
 	}
 	buf := bytes.NewBuffer(nil)
 	err = t.Execute(buf, mp)
@@ -361,7 +280,8 @@ func (s *Session) GenerateCode(tb *Table, tpl *CodeTemplate,
 	return ""
 }
 
-func (s *Session) GenerateTablesCode(tables []*Table, tpl *CodeTemplate) string {
+// 生成所有表的代码, 可引用的对象为global 和 tables
+func (s *Session) GenerateCodeByTables(tables []*Table, tpl *CodeTemplate) string {
 	if tables == nil || len(tables) == 0 {
 		return ""
 	}
@@ -373,10 +293,11 @@ func (s *Session) GenerateTablesCode(tables []*Table, tpl *CodeTemplate) string 
 		panic(err)
 	}
 	mp := map[string]interface{}{
-		"VAR":    s.codeVars,
-		"Tables": tables,
 		"tables": tables,
 		"global": s.codeVars,
+		//todo: will remove
+		"VAR":    s.codeVars,
+		"Tables": tables,
 	}
 	buf := bytes.NewBuffer(nil)
 	err = t.Execute(buf, mp)
@@ -392,16 +313,20 @@ func (s *Session) GenerateTablesCode(tables []*Table, tpl *CodeTemplate) string 
 	return ""
 }
 
-// 表生成仓储结构,sign:函数后是否带签名，ePrefix:实体是否带前缀
-func (s *Session) TableToGoRepo(tb *Table,
-	sign bool, ePrefix string) string {
-	return s.GenerateCode(tb, TPL_ENTITY_REP,
-		"Repo", sign, ePrefix)
+// 获取生成目标代码文件路径
+func (s *Session) PredefineTargetPath(tpl *CodeTemplate, table *Table) (string, error) {
+	if n, ok := tpl.Predefine("target"); ok {
+		return ResolvePathString(n, s.AllVars(), table), nil
+	}
+	return "", errors.New("template not contain predefine command !target")
 }
 
-// 表生成仓库仓储接口
-func (s *Session) TableToGoIRepo(tb *Table,
-	sign bool, ePrefix string) string {
-	return s.GenerateCode(tb, TPL_ENTITY_REP_INTERFACE,
-		"Repo", sign, ePrefix)
+// 连接文件路径
+func (s *Session) DefaultTargetPath(tplFilePath string, table *Table) string {
+	i := strings.Index(tplFilePath, ".")
+	if i != -1 {
+		return strings.Join([]string{tplFilePath[:i], "_",
+			table.Name, ".", tplFilePath[i+1:]}, "")
+	}
+	return tplFilePath + table.Name
 }

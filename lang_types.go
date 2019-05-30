@@ -3,6 +3,7 @@ package tto
 import (
 	"fmt"
 	"github.com/ixre/gof/db/orm"
+	"strconv"
 )
 
 func GoTypes(typeId int) string {
@@ -23,6 +24,26 @@ func GoTypes(typeId int) string {
 		return "float64"
 	}
 	return "interface{}"
+}
+
+func ThriftTypes(typeId int) string {
+	switch typeId {
+	case orm.TypeString:
+		return "string"
+	case orm.TypeBoolean:
+		return "bool"
+	case orm.TypeInt16:
+		return "i16"
+	case orm.TypeInt32:
+		return "i32"
+	case orm.TypeInt64:
+		return "i64"
+	case orm.TypeFloat32:
+		return "f32"
+	case orm.TypeFloat64:
+		return "f64"
+	}
+	return strconv.Itoa(typeId)
 }
 
 func JavaTypes(typeId int) string {

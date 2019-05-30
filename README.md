@@ -4,7 +4,7 @@
 
 特点:
 - 支持mysql和postgresql数据库
-- 支持Go,JAVA,Kotlin,Html,C#语言
+- 支持Go,JAVA,Kotlin,Thrift,Javascript,Html,C#
 - 支持代码模板, 支持模板函数
 
 资源:
@@ -35,7 +35,7 @@ tto -conf tto.conf
 目前,支持的预定义语法如下:
 
 - !target : 用来定义代码文件存放的目标路径
-
+- !append : 是否追加到文件,可选值为:true和false , 默认为false
 
 ## 函数
 

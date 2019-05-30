@@ -41,7 +41,7 @@ func (s *Session) WalGenerateCode(tables []*Table, tplDir string, outputDir stri
 	}
 	err := filepath.Walk(tplDir, func(path string, info os.FileInfo, err error) error {
 		// 如果模板名称以"_"开头，则忽略
-		if !info.IsDir() && info.Name()[0] != '_' {
+		if info != nil && !info.IsDir() && info.Name()[0] != '_' {
 			tp, err := s.ParseTemplate(path)
 			if err != nil {
 				return errors.New("template:" + info.Name() + "-" + err.Error())

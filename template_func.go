@@ -69,6 +69,8 @@ func (t *internalFunc) langType(lang string, typeId int) string {
 		return JavaTypes(typeId)
 	case "kotlin":
 		return KotlinTypes(typeId)
+	case "thrift":
+		return ThriftTypes(typeId)
 	}
 	return strconv.Itoa(typeId)
 }
@@ -76,7 +78,7 @@ func (t *internalFunc) langType(lang string, typeId int) string {
 // 将包名替换为.分割, 通常C#,JAVA语言使用"."分割包名
 func (t *internalFunc) langPkg(lang string, pkg string) string {
 	switch lang {
-	case "java", "kotlin", "csharp":
+	case "java", "kotlin", "csharp","thrift":
 		return strings.Replace(pkg, "/", ".", -1)
 	case "go", "rust", "php", "python":
 		i := strings.LastIndexAny(pkg, "/.")
@@ -90,7 +92,7 @@ func (t *internalFunc) langPkg(lang string, pkg string) string {
 // 返回类型默认值
 func (t *internalFunc) langDefaultValue(lang string, typeId int) string {
 	switch lang {
-	case "go":
+	case "go","thrift":
 		return GoValues(typeId)
 	case "java":
 	case "kotlin":

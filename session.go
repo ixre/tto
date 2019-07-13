@@ -11,6 +11,7 @@ package tto
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"github.com/ixre/gof/db/orm"
 	"io/ioutil"
 	"log"
@@ -223,9 +224,9 @@ func (s *Session) revertTemplateVariable(str string) string {
 func (s *Session) ParseTemplate(file string) (*CodeTemplate, error) {
 	data, err := ioutil.ReadFile(file)
 	if err == nil {
-		return NewTemplate(string(data)), nil
+		return NewTemplate(string(data), file), nil
 	}
-	return NewTemplate(""), err
+	return NewTemplate("", file), err
 }
 
 // 生成代码
@@ -239,7 +240,7 @@ func (s *Session) GenerateCode(table *Table, tpl *CodeTemplate,
 	t.Funcs(s.funcMap)
 	t, err = t.Parse(tpl.template)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("file:%s - error:%s", tpl.FilePath(), err.Error()))
 	}
 	columns := table.Columns
 	//n := s.title(table.Name)

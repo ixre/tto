@@ -217,7 +217,11 @@ func crashRecover(debug bool) {
 	if !debug {
 		r := recover()
 		if r != nil {
-			log.Println(fmt.Sprintf("[ Gen][ Crash]: %v", r))
+			if _, f, l, ok := runtime.Caller(3); ok {
+				log.Println(fmt.Sprintf("[ Gen][ Crash]:file:%s line:%d %v ", f, l, r))
+			} else {
+				log.Println(fmt.Sprintf("[ Gen][ Crash]: %v", r))
+			}
 		}
 	}
 }

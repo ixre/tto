@@ -10,12 +10,13 @@ var (
 )
 
 type CodeTemplate struct {
+	path      string
 	template  string
 	predefine map[string]string
 }
 
-func NewTemplate(s string) *CodeTemplate {
-	return (&CodeTemplate{}).configure(s)
+func NewTemplate(s string, path string) *CodeTemplate {
+	return (&CodeTemplate{path: path}).configure(s)
 }
 
 func (g *CodeTemplate) configure(s string) *CodeTemplate {
@@ -27,7 +28,12 @@ func (g *CodeTemplate) configure(s string) *CodeTemplate {
 	return g
 }
 
-//  获取模板内容
+// 文件路径
+func (g *CodeTemplate) FilePath() string {
+	return g.path
+}
+
+// 获取模板内容
 func (g *CodeTemplate) String() string {
 	return g.template
 }

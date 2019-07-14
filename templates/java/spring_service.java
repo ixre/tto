@@ -6,7 +6,7 @@
  * guide please see https://github.com/ixre/tto
  *
  */
-!target:java/{{.global.Pkg}}/service/{{.table.Title}}Service.java
+#!target:java/{{.global.Pkg}}/service/{{.table.Title}}Service.java
 package {{pkg "java" .global.Pkg}}.service
 
 import {{pkg "java" .global.Pkg}}.pojo.{{.table.Title}}Entity

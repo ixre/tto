@@ -6,7 +6,7 @@
  * guide please see https://github.com/ixre/tto
  *
  */
-!target:java/{{.global.Pkg}}/pojo/{{.table.Title}}Entity.java
+#!target:java/{{.global.Pkg}}/pojo/{{.table.Title}}Entity.java
 package {{pkg "java" .global.Pkg}}.pojo;
 
 import javax.persistence.Basic;

@@ -11,7 +11,7 @@ var TPL_REPO_FACTORY = `
  * guide please see https://github.com/ixre/tto
  *
  */
-!target:{{.global.Pkg}}/repo_factory.go
+#!target:{{.global.Pkg}}/repo_factory.go
 
 		import(
 		    "github.com/ixre/gof/db/orm"

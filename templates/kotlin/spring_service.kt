@@ -6,7 +6,7 @@
  * guide please see https://github.com/ixre/tto
  *
  */
-!target:kotlin/{{.global.Pkg}}/service/{{.table.Title}}Service.kt
+#!target:kotlin/{{.global.Pkg}}/service/{{.table.Title}}Service.kt
 package {{pkg "java" .global.Pkg}}.service
 
 import {{pkg "java" .global.Pkg}}.pojo.{{.table.Title}}Entity

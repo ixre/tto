@@ -6,7 +6,7 @@
  * guide please see https://github.com/ixre/tto
  *
  */
-!target:kotlin/{{.global.Pkg}}/repo/{{.table.Title}}Repository.kt
+#!target:kotlin/{{.global.Pkg}}/repo/{{.table.Title}}Repository.kt
 package {{pkg "java" .global.Pkg}}.repo;
 
 import {{pkg "java" .global.Pkg}}.pojo.{{.table.Title}}Entity

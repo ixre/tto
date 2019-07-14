@@ -319,7 +319,7 @@ func (s *Session) PredefineTargetPath(tpl *CodeTemplate, table *Table) (string, 
 	if n, ok := tpl.Predefine("target"); ok {
 		return ResolvePathString(n, s.AllVars(), table), nil
 	}
-	return "", errors.New("template not contain predefine command !target")
+	return "", errors.New("template not contain predefine command #!target")
 }
 
 // 连接文件路径

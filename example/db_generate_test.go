@@ -2,7 +2,6 @@ package example
 
 import (
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/ixre/goex/generator"
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/shell"
@@ -35,7 +34,7 @@ func TestGenAll(t *testing.T) {
 		return
 	}
 	// 设置变量
-	modelPkg := "github.com/ixre/goex/generator/example/" + genDir + "model"
+	modelPkg := "github.com/ixre/tto/generator/example/" + genDir + "model"
 	modelPkgName := "model"
 	dg.Var(generator.VModelPkgName, modelPkgName)
 	dg.Var(generator.VModelPkg, modelPkg)

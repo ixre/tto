@@ -46,7 +46,7 @@ func TestStructAssignCode(t *testing.T) {
 func TestGenByTemplate(t *testing.T) {
 	dg := DBCodeGenerator()
 	str := "s$${x}"
-	result := GenerateCode(&Table{Name: "Person"},
-		CodeTemplate(str), "", true, "")
+	result := dg.GenerateCode(&Table{Name: "Person"},
+		NewTemplate(str, ""), "", true, "")
 	t.Log("--", result)
 }

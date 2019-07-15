@@ -23,7 +23,7 @@ import javax.persistence.Table;
 import javax.persistence.GenerationType;
 import javax.persistence.GeneratedValue;
 
-`)
+`, "")
 
-	t.Log(String())
+	t.Log(tp.String())
 }

@@ -1,5 +1,5 @@
 package github.com.jsix.goex.generator.bin.code_templates.java;
-// auto generate by gof (http://github.com/ixre/goex)
+// auto generate by gof (http://github.com/ixre/tto
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;

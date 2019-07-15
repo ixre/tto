@@ -6,7 +6,7 @@
  * guide please see https://github.com/ixre/tto
  *
  */
-!target:kotlin/{{.global.Pkg}}/model/{{.table.Title}}Entity.kt
+#!target:kotlin/{{.global.Pkg}}/model/{{.table.Title}}Entity.kt
 package {{pkg "kotlin" .global.Pkg}}.model;
 
 /** {{.table.Comment}} */

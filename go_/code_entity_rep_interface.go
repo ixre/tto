@@ -14,7 +14,7 @@ var (
  * guide please see https://github.com/ixre/tto
  *
  */
-!target:{{.global.Pkg}}/ifce/{{.table.Name}}_repo_ifce.go
+#!target:{{.global.Pkg}}/ifce/{{.table.Name}}_repo_ifce.go
 
         import(
             "{{.global.Pkg}}/model"

@@ -8,7 +8,7 @@
 - 支持代码模板, 支持模板函数
 
 资源:
-- [下载地址](https://github.com/ixre/goex/releases/)
+- [下载地址](https://github.com/ixre/tto/releases/)
 - [Go模板语法-中](http://www.g-var.com/posts/translation/hugo/hugo-21-go-template-primer/)
 - [Go模板语法-English](https://golang.org/pkg/text/template/)
 
@@ -34,8 +34,8 @@ tto -conf tto.conf
 
 目前,支持的预定义语法如下:
 
-- !target : 用来定义代码文件存放的目标路径
-- !append : 是否追加到文件,可选值为:true和false , 默认为false
+- \#!target : 用来定义代码文件存放的目标路径
+- \#!append : 是否追加到文件,可选值为:true和false , 默认为false
 
 ## 函数
 
@@ -137,7 +137,7 @@ namespace {{pkg "csharp" .global.Pkg}}
 以下代码用于生成Java的Pojo对象, 更多示例点击[这里](templates)
 
 ```
-!target:{{.global.Pkg}}/pojo/{{.table.Title}}Entity.java
+#!target:{{.global.Pkg}}/pojo/{{.table.Title}}Entity.java
 package {{pkg "java" .global.Pkg}}.pojo;
 
 import javax.persistence.Basic;

@@ -117,7 +117,7 @@ func DBCodeGenerator() *Session {
 
 func (s *Session) init() *Session {
 	s.Var(PKG, "com/tto/pkg")
-	s.Var(TIME,time.Now().Format("2016/01/02 15:04:05"))
+	s.Var(TIME,time.Now().Format("2006/01/02 15:04:05"))
 	s.Var(VERSION, BuildVersion)
 	s.Var(ModelPkgName, "model")
 	s.Var(RepoPkgName, "repo")

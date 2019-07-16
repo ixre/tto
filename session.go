@@ -18,6 +18,7 @@ import (
 	"regexp"
 	"strings"
 	"text/template"
+	"time"
 	"unicode"
 )
 
@@ -30,6 +31,8 @@ var (
 const (
 	// 包名
 	PKG = "Pkg"
+	// 当前时间
+	TIME = "Time"
 	// 版本
 	VERSION = "Version"
 	//模型包名
@@ -114,6 +117,7 @@ func DBCodeGenerator() *Session {
 
 func (s *Session) init() *Session {
 	s.Var(PKG, "com/tto/pkg")
+	s.Var(TIME,time.Now().Format("2016/01/02 15:04:05"))
 	s.Var(VERSION, BuildVersion)
 	s.Var(ModelPkgName, "model")
 	s.Var(RepoPkgName, "repo")

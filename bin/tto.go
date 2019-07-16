@@ -104,6 +104,7 @@ func main() {
 	ds := orm.DialectSession(getDb(driver, re), getDialect(driver))
 	dg := tto.DBCodeGenerator()
 	dg.Var(tto.PKG, pkgName)
+	dg.Var(tto.TIME,time.Now().Format("2016/01/02 15:04:05"))
 	if re.GetBoolean("code.id_upper") {
 		dg.IdUpper = true
 	}

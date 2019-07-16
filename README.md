@@ -8,9 +8,13 @@
 - 支持代码模板, 支持模板函数
 
 资源:
+
 - [下载地址](https://github.com/ixre/tto/releases/)
 - [Go模板语法-中](http://www.g-var.com/posts/translation/hugo/hugo-21-go-template-primer/)
 - [Go模板语法-English](https://golang.org/pkg/text/template/)
+
+
+_注：您看到的文档有可能已经更新，请参见最新[使用文档](https://github.com/ixre/tto)_
 
 ## 快速开始
 
@@ -78,11 +82,11 @@ tto -conf tto.conf
 
 **用于读取全局变量, global的属性均以大写开头; global为小写.**
 
-输出生成器的版本号
+1. 输出生成器的版本号
 ```
 // this file created by generate {{.global.Version}}
 ```
-输出包名,包名通过配置文件配置.格式为: com/pkg
+2. 输出包名,包名通过配置文件配置.格式为: com/pkg
 ```
 package {{.global.Pkg}}
 ```
@@ -92,6 +96,10 @@ package {{.global.Pkg}}
 package {{pkg "java" .global.Pkg}}
 // c# namespace
 namespace {{pkg "csharp" .global.Pkg}}
+```
+3. 输出当前时间
+```
+generate time {{.global.Time}}
 ```
 
 ### table 数据表对象
@@ -172,7 +180,6 @@ public class {{.table.Title}}Entity {
 }
 
 ```
-
 
 
 **如果您觉得这个项目不错, 请给个star吧.**

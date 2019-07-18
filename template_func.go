@@ -33,8 +33,16 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	fm["type"] = t.langType
 	// 包名: {{pkg "go" "com/tto/pkg"}}
 	fm["pkg"] = t.langPkg
-	// 默认值: : 如:{{default "go" .columns[0].TypeId}}
+	// 默认值, 如:{{default "go" .columns[0].TypeId}}
 	fm["default"] = t.langDefaultValue
+	// 是否相等，如：{{equal "go" "rust"}
+	fm["equal"] = t.equal
+	// 包含函数, 如:{{contain .table.Pk "id"}}
+	fm["contain"] = t.contain
+	// 是否以指定字符开始, 如:{{start_with .table.Pk "id"}}
+	fm["start_with"] = t.startWith
+	// 是否以指定字符结束, 如:{{end_with .table.Pk "id"}}
+	fm["end_with"] = t.endWith
 	return fm
 }
 
@@ -99,6 +107,29 @@ func (t *internalFunc) langDefaultValue(lang string, typeId int) string {
 		return JavaValues(typeId)
 	}
 	return CommonValues(typeId)
+}
+
+// 是否相等，如：{{equal "go" "rust"}
+func (t *internalFunc) equal(v1,v2 interface{})bool {
+	return v1 == v2
+}
+
+// 是否包含
+func (t *internalFunc) contain(v interface{},s string)bool{
+	if v == nil{return false}
+	return strings.Contains(t.str(v),s)
+}
+
+// 是否以指定字符开始
+func (t *internalFunc) startWith(v interface{},s string)bool{
+	if v == nil{return false}
+	return strings.HasPrefix(t.str(v),s)
+}
+
+// 是否以指定字符结束
+func (t *internalFunc) endWith(v interface{},s string)bool{
+	if v == nil{return false}
+	return strings.HasSuffix(t.str(v),s)
 }
 
 // 判断是否为true

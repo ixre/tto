@@ -68,7 +68,22 @@ tto -conf tto.conf
 ```
 {{default "go" .columns[0].TypeId}}
 ```
-
+是否相等
+```
+{{equal (3%2) 1}
+```
+包含函数
+```
+{{contain .table.Pk "id"}}
+```
+是否以指定字符开始
+```
+{{start_with .table.Pk "user_"}}
+```
+是否以指定字符结束
+```
+{{end_with .table.Pk "_time"}}
+```
 ## 模板
 
 模板主要包含三大对象: 

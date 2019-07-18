@@ -110,26 +110,32 @@ func (t *internalFunc) langDefaultValue(lang string, typeId int) string {
 }
 
 // 是否相等，如：{{equal "go" "rust"}
-func (t *internalFunc) equal(v1,v2 interface{})bool {
+func (t *internalFunc) equal(v1, v2 interface{}) bool {
 	return v1 == v2
 }
 
 // 是否包含
-func (t *internalFunc) contain(v interface{},s string)bool{
-	if v == nil{return false}
-	return strings.Contains(t.str(v),s)
+func (t *internalFunc) contain(v interface{}, s string) bool {
+	if v == nil {
+		return false
+	}
+	return strings.Contains(t.str(v), s)
 }
 
 // 是否以指定字符开始
-func (t *internalFunc) startWith(v interface{},s string)bool{
-	if v == nil{return false}
-	return strings.HasPrefix(t.str(v),s)
+func (t *internalFunc) startWith(v interface{}, s string) bool {
+	if v == nil {
+		return false
+	}
+	return strings.HasPrefix(t.str(v), s)
 }
 
 // 是否以指定字符结束
-func (t *internalFunc) endWith(v interface{},s string)bool{
-	if v == nil{return false}
-	return strings.HasSuffix(t.str(v),s)
+func (t *internalFunc) endWith(v interface{}, s string) bool {
+	if v == nil {
+		return false
+	}
+	return strings.HasSuffix(t.str(v), s)
 }
 
 // 判断是否为true

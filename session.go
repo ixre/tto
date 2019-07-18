@@ -117,7 +117,7 @@ func DBCodeGenerator() *Session {
 
 func (s *Session) init() *Session {
 	s.Var(PKG, "com/tto/pkg")
-	s.Var(TIME,time.Now().Format("2006/01/02 15:04:05"))
+	s.Var(TIME, time.Now().Format("2006/01/02 15:04:05"))
 	s.Var(VERSION, BuildVersion)
 	s.Var(ModelPkgName, "model")
 	s.Var(RepoPkgName, "repo")
@@ -279,7 +279,8 @@ func (s *Session) GenerateCode(table *Table, tpl *CodeTemplate,
 		code = emptyImportReg.ReplaceAllString(code, "")
 		//如果不包含模型，则可能为引用空的包
 		code = emptyReg.ReplaceAllString(code, "")
-		return s.revertTemplateVariable(code)
+		code = s.revertTemplateVariable(code)
+		return s.formatCode(tpl, code)
 	}
 	log.Println("execute template error:", err.Error())
 	return ""
@@ -312,7 +313,8 @@ func (s *Session) GenerateCodeByTables(tables []*Table, tpl *CodeTemplate) strin
 		code = emptyImportReg.ReplaceAllString(code, "")
 		//如果不包含模型，则可能为引用空的包
 		code = emptyReg.ReplaceAllString(code, "")
-		return s.revertTemplateVariable(code)
+		code = s.revertTemplateVariable(code)
+		return s.formatCode(tpl, code)
 	}
 	log.Println("execute template error:", err.Error())
 	return ""
@@ -334,4 +336,15 @@ func (s *Session) DefaultTargetPath(tplFilePath string, table *Table) string {
 			table.Name, ".", tplFilePath[i+1:]}, "")
 	}
 	return tplFilePath + table.Name
+}
+
+// 格式化代码
+func (s *Session) formatCode(tpl *CodeTemplate, code string) string {
+	// 不格式化代码
+	if k, _ := tpl.Predefine("format"); k == "false" {
+		return code
+	}
+	// 去除多行换行
+	code = regexp.MustCompile("(\r?\n(\\s*\r?\n)+)").ReplaceAllString(code, "\n\n")
+	return code
 }

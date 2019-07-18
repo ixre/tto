@@ -45,7 +45,58 @@ func TestStructAssignCode(t *testing.T) {
 
 func TestGenByTemplate(t *testing.T) {
 	dg := DBCodeGenerator()
-	str := "s$${x}"
+	str := `<div class="gra-form-field col-md-6">
+        <div class="gra-form-label">&nbsp;</div>
+        <div class="gra-form-col">
+            <div class="gra-btn gra-btn-inline btn-submit">确认订单</div>
+        </div>
+    </div>
+</div>
+
+
+s$
+
+		${x}
+
+        
+        
+        
+        
+        
+        
+        
+        entity["create_time"] = utils.unix2str(entity["create_time"]);
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+        
+        entity["create_time"] = utils.unix2str(entity["create_time"]);
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+        
+        entity["create_time"] = utils.unix2str(entity["create_time"]);
+        
+        
+        
+
+	//hello
+
+`
 	result := dg.GenerateCode(&Table{Name: "Person"},
 		NewTemplate(str, ""), "", true, "")
 	t.Log("--", result)

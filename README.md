@@ -40,7 +40,7 @@ tto -conf tto.conf
 
 - \#!target : 用来定义代码文件存放的目标路径
 - \#!append : 是否追加到文件,可选值为:true和false , 默认为false
-
+- \#!format : 是否启用格式化代码，可选值为:true和false，默认开启
 ## 函数
 
 大/小写函数: lower和upper

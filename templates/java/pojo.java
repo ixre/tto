@@ -9,17 +9,14 @@
 #!target:java/{{.global.Pkg}}/pojo/{{.table.Title}}Entity.java
 package {{pkg "java" .global.Pkg}}.pojo;
 
-import javax.persistence.Basic;
-import javax.persistence.Id;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.GenerationType;
-import javax.persistence.GeneratedValue;
+import javax.persistence.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /** {{.table.Comment}} */
 @Entity
 @Table(name = "{{.table.Name}}", schema = "{{.table.Schema}}")
+@Cache(usage= CacheConcurrencyStrategy.READ_WRITE)//可读可写
 public class {{.table.Title}}Entity {
     {{range $i,$c := .columns}}{{$type := type "java" $c.TypeId}}
     private {{$type}} {{$c.Name}};

@@ -2,29 +2,37 @@ package tto
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 )
 
 // 生成Go仓储代码
 func (s *Session) GenerateGoRepoCodes(tables []*Table, targetDir string) (err error) {
+	wg := sync.WaitGroup{}
 	for _, table := range tables {
-		//生成实体
-		str, path := s.tableToGoStruct(table)
-		if err = SaveFile(str, targetDir+"/"+path); err != nil {
-			return err
-		}
-		//生成仓储结构
-		str, path = s.tableToGoRepo(table, true, "")
-		if err = SaveFile(str, targetDir+"/"+path); err != nil {
-			return err
-		}
-		//生成仓储接口
-		str, path = s.tableToGoIRepo(table, true, "")
-		if err = SaveFile(str, targetDir+"/"+path); err != nil {
-			return err
-		}
+		wg.Add(1)
+		go func(wg *sync.WaitGroup, tb *Table) {
+			defer wg.Done()
+			//生成实体
+			str, path := s.tableToGoStruct(tb)
+			if err = SaveFile(str, targetDir+"/"+path); err != nil {
+				println(fmt.Sprintf("[ Gen][ Error]: save file failed! %s", err.Error()))
+			}
+			//生成仓储结构
+			str, path = s.tableToGoRepo(tb, true, "")
+			if err = SaveFile(str, targetDir+"/"+path); err != nil {
+				println(fmt.Sprintf("[ Gen][ Error]: save file failed! %s", err.Error()))
+			}
+			//生成仓储接口
+			str, path = s.tableToGoIRepo(tb, true, "")
+			if err = SaveFile(str, targetDir+"/"+path); err != nil {
+				println(fmt.Sprintf("[ Gen][ Error]: save file failed! %s", err.Error()))
+			}
+		}(&wg, table)
 	}
+	wg.Wait()
 	// 生成仓储工厂
 	code := s.GenerateCodeByTables(tables, GoRepoFactoryTemplate)
 	path, _ := s.PredefineTargetPath(GoRepoFactoryTemplate, nil)
@@ -32,7 +40,7 @@ func (s *Session) GenerateGoRepoCodes(tables []*Table, targetDir string) (err er
 }
 
 // 遍历模板文件夹, 并生成代码
-func (s *Session) WalGenerateCode(tables []*Table, tplDir string, outputDir string) error {
+func (s *Session) WalkGenerateCode(tables []*Table, tplDir string, outputDir string) error {
 	tplMap := map[string]*CodeTemplate{}
 	sliceSize := len(tplDir) - 1
 	if tplDir[sliceSize] == '/' {
@@ -57,15 +65,24 @@ func (s *Session) WalGenerateCode(tables []*Table, tplDir string, outputDir stri
 	if len(tplMap) == 0 {
 		return errors.New("no any code template")
 	}
+	wg := sync.WaitGroup{}
 	for _, tb := range tables {
 		for path, tpl := range tplMap {
-			str := s.GenerateCode(tb, tpl, "", true, "")
-			dstPath, _ := s.PredefineTargetPath(tpl, tb)
-			if dstPath == "" {
-				dstPath = s.DefaultTargetPath(path, tb)
-			}
-			SaveFile(str, outputDir+"/"+dstPath)
+			wg.Add(1)
+			go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb *Table, path string) {
+				defer wg.Done()
+				str := s.GenerateCode(tb, tpl, "", true, "")
+				dstPath, _ := s.PredefineTargetPath(tpl, tb)
+				if dstPath == "" {
+					dstPath = s.DefaultTargetPath(path, tb)
+				}
+				dst := outputDir + "/" + dstPath
+				if err := SaveFile(str, dst); err != nil {
+					println(fmt.Sprintf("[ Gen][ Error]: save file failed! %s", err.Error()))
+				}
+			}(&wg, tpl, tb, path)
 		}
 	}
+	wg.Wait()
 	return err
 }

@@ -65,7 +65,7 @@ func main() {
 	flag.BoolVar(&printVer, "v", false, "print version")
 	flag.Parse()
 	if printVer {
-		println("TTo Generator v" + tto.BuildVersion)
+		println("tto Generator v" + tto.BuildVersion)
 		return
 	}
 	re, err := LoadRegistry(confPath)
@@ -163,7 +163,7 @@ func genByArch(arch string, dg *tto.Session, tables []*tto.Table,
 		println(fmt.Sprintf("[ Gen][ Error]: generate go code fail! %s", err.Error()))
 	}
 	// 生成自定义代码
-	return dg.WalGenerateCode(tables, tplDir, genDir)
+	return dg.WalkGenerateCode(tables, tplDir, genDir)
 }
 
 // 获取数据库连接

@@ -76,9 +76,9 @@ func (s *Session) WalkGenerateCode(tables []*Table, tplDir string, outputDir str
 				if dstPath == "" {
 					dstPath = s.DefaultTargetPath(path, tb)
 				}
-				dst := outputDir + "/" + dstPath
-				if err := SaveFile(str, dst); err != nil {
-					println(fmt.Sprintf("[ Gen][ Error]: save file failed! %s", err.Error()))
+				if err := SaveFile(str, outputDir+"/"+dstPath); err != nil {
+					println(fmt.Sprintf("[ Gen][ Error]: save file failed! %s ,template:%s",
+						err.Error(), tpl.FilePath()))
 				}
 			}(&wg, tpl, tb, path)
 		}

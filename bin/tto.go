@@ -122,7 +122,8 @@ func main() {
 	if err := runAfter(re, bashExec); err != nil {
 		log.Fatalln("[ Gen][ Fail]:", err.Error())
 	}
-	println(fmt.Sprintf("[ Gen][ Success]: generate successfully! all %d tasks.", len(tables)))
+	println(fmt.Sprintf("[ Gen][ Success]: generate successfully! all %d tasks.",
+		len(tables)))
 }
 
 func runBefore(re *Registry, bashExec string) error {
@@ -232,62 +233,6 @@ func genGoRepoCode(dg *tto.Session, tables []*tto.Table,
 	genDir string) error {
 	// 生成GoRepo代码
 	err := dg.GenerateGoRepoCodes(tables, genDir)
-	//格式化代码
-	shell.Run("gofmt -w " + genDir)
-	return err
-}
-
-// 生成Go代码
-func genGoCodeOld(dg *tto.Session, tables []*tto.Table,
-	genDir string, tplDir string) error {
-	// 读取自定义模板
-	//listTP, _ := dg.ParseTemplate(tplDir + "/grid_list.html")
-	//editTP, _ := dg.ParseTemplate(tplDir + "/entity_edit.html")
-	//ctrTpl, _ := dg.ParseTemplate(tplDir + "/entity.html")
-
-	// 生成GoRepo代码
-	err := dg.GenerateGoRepoCodes(tables, genDir)
-
-	// 初始化表单引擎
-	//fe := &form.Engine{}
-	//for _, tb := range tables {
-	//	entityPath := genDir + "model/" + tb.Name + ".go"
-	//	iRepPath := genDir + "repo/auto_iface_" + tb.Name + "_repo.go"
-	//	repPath := genDir + "repo/auto_" + tb.Name + "_repo.go"
-	//	dslPath := genDir + "form/" + tb.Name + ".form"
-	//	htmPath := genDir + "html/" + tb.Name + ".html"
-	//	//生成实体
-	//	str := dg.TableToGoStruct(tb)
-	//	tto.SaveFile(str, entityPath)
-	//	//生成仓储结构
-	//	str = dg.TableToGoRepo(tb, true, "model.")
-	//	tto.SaveFile(str, repPath)
-	//	//生成仓储接口
-	//	str = dg.TableToGoIRepo(tb, true, "")
-	//	tto.SaveFile(str, iRepPath)
-	//	//生成表单DSL
-	//	f := fe.TableToForm(tb.Raw)
-	//	err = fe.SaveDSL(f, dslPath)
-	//	//生成表单
-	//	if err == nil {
-	//		_, err = fe.SaveHtmlForm(f, form.TDefaultFormHtml, htmPath)
-	//	}
-	//	if err != nil {
-	//		return err
-	//	}
-	//	// 生成列表文件
-	//	str = dg.GenerateCode(tb, listTP, "", true, "")
-	//	tto.SaveFile(str, genDir+"html_list/"+tb.Name+"_list.html")
-	//	// 生成表单文件
-	//	str = dg.GenerateCode(tb, editTP, "", true, "")
-	//	tto.SaveFile(str, genDir+"html_edit/"+tb.Name+"_edit.html")
-	//	// 生成控制器
-	//	str = dg.GenerateCode(tb, ctrTpl, "", true, "")
-	//	tto.SaveFile(str, genDir+"mvc/"+tb.Name+"_c.go")
-	//}
-	//// 生成仓储工厂
-	//code := dg.GenerateCodeByTables(tables, tto.TPL_REPO_FACTORY)
-	//tto.SaveFile(code, genDir+"repo/auto_repo_factory.go")
 	//格式化代码
 	shell.Run("gofmt -w " + genDir)
 	return err

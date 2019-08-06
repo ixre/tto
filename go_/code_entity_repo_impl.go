@@ -17,7 +17,7 @@ var (
  * guide please see https://github.com/ixre/tto
  * generate time: {{.global.Time}}*
  */
-#!target:{{.global.Pkg}}/repo/{{.table.Name}}_repo.go
+#target!{{.global.Pkg}}/repo/{{.table.Name}}_repo.go
 
             import(
                 "log"

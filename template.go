@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	predefineRegexp = regexp.MustCompilePOSIX("#\\!([^:-]+):(.+)")
+	predefineRegexp = regexp.MustCompilePOSIX("#([^\\!-]+)\\!(.+)")
 )
 
 type CodeTemplate struct {

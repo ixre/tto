@@ -3,6 +3,7 @@ package tto
 import (
 	"bytes"
 	"github.com/ixre/gof/util"
+	"strings"
 	"text/template"
 )
 
@@ -16,7 +17,7 @@ func ResolvePathString(pattern string, global map[string]interface{}, table *Tab
 	if err != nil {
 		panic("路径错误:" + pattern)
 	}
-	return s
+	return strings.TrimSpace(s)
 }
 
 func resolveTableString(tpl string, global map[string]interface{}, table *Table) (string, error) {

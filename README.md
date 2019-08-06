@@ -38,7 +38,7 @@ tto -conf tto.conf
 
 目前,支持的预定义语法如下:
 
-- \#target! 用来定义代码文件存放的目标路径
+- \#!target! 用来定义代码文件存放的目标路径
 - \#append! 是否追加到文件,可选值为:true和false , 默认为false
 - \#format! 是否启用格式化代码，可选值为:true和false，默认开启
 

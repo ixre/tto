@@ -335,7 +335,7 @@ func (s *Session) DefaultTargetPath(tplFilePath string, table *Table) string {
 		return strings.Join([]string{tplFilePath[:i], "_",
 			table.Name, ".", tplFilePath[i+1:]}, "")
 	}
-	return tplFilePath + table.Name
+	return strings.TrimSpace(tplFilePath + table.Name)
 }
 
 // 格式化代码

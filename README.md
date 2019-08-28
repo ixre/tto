@@ -146,7 +146,7 @@ generate time {{.global.Time}}
 - Name: 列名
 - Title: 列名首字大写, 同表Title
 - IsPk: 是否主键(bool)
-- Auto:  是否自动生成(bool)
+- IsAuto:  是否自动生成(bool)
 - NotNull: 是否不能为空(bool)
 - Type: 数据类型
 - Comment: 注释

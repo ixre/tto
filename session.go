@@ -82,7 +82,7 @@ type (
 		// 是否主键
 		IsPk bool
 		// 是否自动生成
-		Auto bool
+		IsAuto bool
 		// 是否不能为空
 		NotNull bool
 		// 类型
@@ -183,7 +183,7 @@ func (s *Session) parseTable(ordinal int, tb *orm.Table) *Table {
 			Name:    v.Name,
 			Title:   s.title(v.Name),
 			IsPk:    v.IsPk,
-			Auto:    v.Auto,
+			IsAuto:    v.IsAuto,
 			NotNull: v.NotNull,
 			Type:    v.Type,
 			Comment: v.Comment,

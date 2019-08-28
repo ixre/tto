@@ -57,7 +57,7 @@ func (s *Session) tableToGoStruct(table *Table) (string, string) {
 		if col.IsPk {
 			buf.WriteString(" pk:\"yes\"")
 		}
-		if col.Auto {
+		if col.IsAuto {
 			buf.WriteString(" auto:\"yes\"")
 		}
 		buf.WriteString("`")

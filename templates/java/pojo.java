@@ -12,6 +12,8 @@ package {{pkg "java" .global.Pkg}}.pojo;
 import javax.persistence.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.GenericGenerator;
+
 
 /** {{.table.Comment}} */
 @Entity
@@ -25,8 +27,9 @@ public class {{.table.Title}}Entity {
     }
 
     /** {{$c.Comment}} */{{if $c.IsPk}}
-    @Id
+    @Id{{if $c.IsAuto}}
     @GeneratedValue(strategy = GenerationType.IDENTITY){{else}}
+    @GenericGenerator(name = "id",strategy = "assigned"){{end}}{{else}}
     @Basic{{end}}
     @Column(name = "{{$c.Name}}"{{if not $c.NotNull}}, nullable = true{{end}} {{if ne $c.Length 0}},length = {{$c.Length}}{{end}})
     public {{$type}} get{{$c.Title}}() {

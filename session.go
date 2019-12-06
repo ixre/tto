@@ -183,7 +183,7 @@ func (s *Session) parseTable(ordinal int, tb *orm.Table) *Table {
 			Name:    v.Name,
 			Title:   s.title(v.Name),
 			IsPk:    v.IsPk,
-			IsAuto:    v.IsAuto,
+			IsAuto:  v.IsAuto,
 			NotNull: v.NotNull,
 			Type:    v.Type,
 			Comment: v.Comment,

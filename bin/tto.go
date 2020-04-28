@@ -157,8 +157,7 @@ func execCommand(command string, bashExec string) error {
 }
 
 // 根据规则生成代码
-func genByArch(arch string, dg *tto.Session, tables []*tto.Table,
-	genDir string, tplDir string) (err error) {
+func genByArch(arch string, dg *tto.Session, tables []*tto.Table, genDir string, tplDir string) (err error) {
 	// 按架构生成GO代码
 	switch arch {
 	case "repo":

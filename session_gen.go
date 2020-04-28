@@ -39,7 +39,7 @@ func (s *Session) GenerateGoRepoCodes(tables []*Table, targetDir string) (err er
 	return SaveFile(code, targetDir+"/"+path)
 }
 
-// 遍历模板文件夹, 并生成代码
+// 遍历模板文件夹, 并生成代码, 如果为源代码目标,文件存在,则自动生成添加 .gen后缀
 func (s *Session) WalkGenerateCode(tables []*Table, tplDir string, outputDir string) error {
 	tplMap := map[string]*CodeTemplate{}
 	sliceSize := len(tplDir) - 1

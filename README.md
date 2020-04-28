@@ -29,7 +29,24 @@ _注：您看到的文档有可能已经更新，请参见最新[使用文档](h
 3. 运行命令生成代码
 ```bash
 tto -conf tto.conf
+Usage of tto:
+  -arch string
+        program language
+  -clean
+        clean last generate files
+  -conf string
+        config path (default "./tto.conf")
+  -debug
+        debug mode
+  -out string
+        path of output directory (default "./output")
+  -table string
+        table name or table prefix
+  -tpl string
+        path of code templates directory (default "./templates")
+  -v    print version
 ```
+
 
 ## 预定义语法
 

@@ -55,12 +55,14 @@ func main() {
 	var arch string //代码架构
 	var debug bool
 	var printVer bool
+	var cleanLast bool
 
 	flag.StringVar(&genDir, "out", "./output", "path of output directory")
 	flag.StringVar(&tplDir, "tpl", "./templates", "path of code templates directory")
 	flag.StringVar(&confPath, "conf", "./tto.conf", "config path")
 	flag.StringVar(&table, "table", "", "table name or table prefix")
 	flag.StringVar(&arch, "arch", "", "program language")
+	flag.BoolVar(&cleanLast,"clean",false,"clean last generate files")
 	flag.BoolVar(&debug, "debug", false, "debug mode")
 	flag.BoolVar(&printVer, "v", false, "print version")
 	flag.Parse()
@@ -90,8 +92,10 @@ func main() {
 		}
 	}
 	// 清理之前生成的结果
-	if err = os.RemoveAll(genDir); err != nil {
-		log.Fatalln("[ Gen][ Fail]:", err.Error())
+	if cleanLast {
+		if err = os.RemoveAll(genDir); err != nil {
+			log.Fatalln("[ Gen][ Fail]:", err.Error())
+		}
 	}
 	// 生成之前执行操作
 	if err := runBefore(re, bashExec); err != nil {
@@ -196,7 +200,15 @@ func getDb(driver string, r *Registry) *sql.DB {
 	default:
 		panic("not support driver :" + driver)
 	}
-	conn := db.NewConnector(driver, connStr, nil, false)
+	conn,err := db.NewConnector(driver, connStr, nil, false)
+	if err == nil {
+		log.Println("[ tto][ init]: connect to database..")
+		if err := conn.Ping(); err != nil {
+			conn.Close()
+			//如果异常，则显示并退出
+			log.Fatalln("[ tto][ init]:" + conn.Driver() + "-" + err.Error())
+		}
+	}
 	d := conn.Raw()
 	d.SetMaxIdleConns(10)
 	d.SetMaxIdleConns(5)

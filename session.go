@@ -66,6 +66,8 @@ type (
 		Raw *orm.Table
 		// 主键
 		Pk string
+		//　主键属性
+		PkProp string
 		// 主键类型编号
 		PkTypeId int
 		// 列
@@ -161,6 +163,7 @@ func (s *Session) ParseTables(tbs []*orm.Table, err error) ([]*Table, error) {
 // 获取表结构
 func (s *Session) parseTable(ordinal int, tb *orm.Table) *Table {
 	n := &Table{
+		Ordinal: ordinal,
 		Name:     tb.Name,
 		Prefix:   s.prefix(tb.Name),
 		Title:    s.title(tb.Name),
@@ -170,12 +173,14 @@ func (s *Session) parseTable(ordinal int, tb *orm.Table) *Table {
 		Charset:  tb.Charset,
 		Raw:      tb,
 		Pk:       "id",
+		PkProp :  "Id",
 		PkTypeId: orm.TypeInt32,
 		Columns:  make([]*Column, len(tb.Columns)),
 	}
 	for i, v := range tb.Columns {
-		if v.IsPk && n.Pk == "" {
+		if v.IsPk && n.Pk != "" {
 			n.Pk = v.Name
+			n.PkProp = s.title(v.Name)
 			n.PkTypeId = v.TypeId
 		}
 		n.Columns[i] = &Column{
@@ -246,30 +251,14 @@ func (s *Session) GenerateCode(table *Table, tpl *CodeTemplate,
 	if err != nil {
 		panic(fmt.Sprintf("file:%s - error:%s", tpl.FilePath(), err.Error()))
 	}
-	columns := table.Columns
 	//n := s.title(table.Name)
-	n := table.Title
-	r2 := ""
-	if sign {
-		r2 = n
-	}
 	mp := map[string]interface{}{
 		"global": s.codeVars, // 全局变量
 		//"version": s.codeVars[VERSION], // 版本
 		//"pkg":     s.codeVars[PKG],     //包名
 		"table":   table,   // 数据表
-		"columns": columns, // 列
+		"columns": table.Columns, // 列
 		//"pk":      table.Pk,                  // 主键列名
-
-		//---------- 旧的字段 ------------------//
-		"VAR":  s.codeVars, // 全局变量
-		"T":    table,      // 数据表
-		"R":    n + structSuffix,
-		"R2":   r2,
-		"E":    n,
-		"E2":   ePrefix + n,
-		"Ptr":  strings.ToLower(table.Name[:1]),
-		"IsPK": s.title(table.Pk),
 	}
 	buf := bytes.NewBuffer(nil)
 	err = t.Execute(buf, mp)

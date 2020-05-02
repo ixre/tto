@@ -147,6 +147,7 @@ generate time {{.global.Time}}
 - Name: 表名
 - Prefix: 表前缀
 - Pk: 主键,默认为:id
+- PkProp: 主键属性, 首字母大写
 - PkTypeId: 主键类型编号
 - Title: 表名单词首字大写,通常用来表示类型,
   如:user_info对应的Title为UserInfo
@@ -161,7 +162,7 @@ generate time {{.global.Time}}
 数据列对象存储表的数据列数组, 并且可遍历. 每个数据列都包含如下属性:
 
 - Name: 列名
-- Title: 列名首字大写, 同表Title
+- Title: 列名首字大写,　通常用作属性
 - IsPk: 是否主键(bool)
 - IsAuto:  是否自动生成(bool)
 - NotNull: 是否不能为空(bool)

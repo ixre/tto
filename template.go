@@ -26,7 +26,7 @@ func (g *CodeTemplate) configure(s string) *CodeTemplate {
  * if you want to modify this code,please read guide doc
  * and modify code template later.
  *
- * guide please see https://github.com/fzen/tto
+ * guide please see https://github.com/ixre/tto
  *
  */` + s
 	}

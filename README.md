@@ -55,13 +55,17 @@ Usage of tto:
 
 目前,支持的预定义语法如下:
 
-- \#!target! 用来定义代码文件存放的目标路径
-- \#append! 是否追加到文件,可选值为:true和false , 默认为false
-- \#format! 是否启用格式化代码，可选值为:true和false，默认开启
-
+- \#!target: 用来定义代码文件存放的目标路径
+- \#!append: 是否追加到文件,可选值为:true和false , 默认为false
+- \#!format: 是否启用格式化代码，可选值为:true和false，默认开启
+- \#!lang: 指定当前生成代码的语言
 如:
 ```
-#target!java/{{.global.Pkg}}/pojo/{{.table.Title}}Entity.java
+#!target:java/{{.global.Pkg}}/pojo/{{.table.Title}}Entity.java
+```
+多个预定义表达式可以放在一行
+```
+#!format:true#!target:Entity.java
 ```
 
 ## 函数
@@ -101,11 +105,11 @@ Usage of tto:
 ```
 是否以指定字符开始
 ```
-{{start_with .table.Pk "user_"}}
+{{starts_with .table.Pk "user_"}}
 ```
 是否以指定字符结束
 ```
-{{end_with .table.Pk "_time"}}
+{{ends_with .table.Pk "_time"}}
 ```
 ## 模板
 
@@ -148,7 +152,7 @@ generate time {{.global.Time}}
 - Prefix: 表前缀
 - Pk: 主键,默认为:id
 - PkProp: 主键属性, 首字母大写
-- PkTypeId: 主键类型编号
+- PkType: 主键类型编号
 - Title: 表名单词首字大写,通常用来表示类型,
   如:user_info对应的Title为UserInfo
 - Comment: 表注释
@@ -157,7 +161,7 @@ generate time {{.global.Time}}
 - Charset: 数据库编码
 - Ordinal: 表的序号
 
-### colums 数据列对象
+### columns 数据列对象
 
 数据列对象存储表的数据列数组, 并且可遍历. 每个数据列都包含如下属性:
 
@@ -166,16 +170,16 @@ generate time {{.global.Time}}
 - IsPk: 是否主键(bool)
 - IsAuto:  是否自动生成(bool)
 - NotNull: 是否不能为空(bool)
-- Type: 数据类型
+- DbType: 数据库数据类型
 - Comment: 注释
 - Length: 长度
-- TypeId: 类型编号,使用type函数转换为对应语言的类型
+- Type: 类型编号,使用type函数转换为对应语言的类型
 - Ordinal: 列的序号
 
 示例:
 ```
 {{range $i,$c := .columns}}
-    列名:$c.Name {{if $c.IsPk}}是主键{{end}}, 类型:{{type "java" $c.TypeId}}
+    列名:$c.Name {{if $c.IsPk}}是主键{{end}}, 类型:{{type "java" $c.Type}}
 {{end}}
 ```
 
@@ -184,7 +188,7 @@ generate time {{.global.Time}}
 以下代码用于生成Java的Pojo对象, 更多示例点击[这里](templates)
 
 ```
-#target!{{.global.Pkg}}/pojo/{{.table.Title}}Entity.java
+#!target:{{.global.Pkg}}/pojo/{{.table.Title}}Entity.java
 package {{pkg "java" .global.Pkg}}.pojo;
 
 import javax.persistence.Basic;
@@ -199,7 +203,7 @@ import javax.persistence.GeneratedValue;
 @Entity
 @Table(name = "{{.table.Name}}", schema = "{{.table.Schema}}")
 public class {{.table.Title}}Entity {
-    {{range $i,$c := .columns}}{{$type := type "java" $c.TypeId}}
+    {{range $i,$c := .columns}}{{$type := type "java" $c.Type}}
     private {{$type}} {{$c.Name}}
     public void set{{$c.Title}}({{$type}} {{$c.Name}}){
         this.{{$c.Name}} = {{$c.Name}}

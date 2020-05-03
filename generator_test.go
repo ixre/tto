@@ -9,6 +9,7 @@
 package tto
 
 import (
+	"github.com/ixre/tto/utils"
 	"testing"
 )
 
@@ -25,7 +26,7 @@ var (
 
 // 生成Thrift结构
 func TestThriftStruct(t *testing.T) {
-	data, err := ThriftStruct(v)
+	data, err := utils.ThriftStruct(v)
 	if err != nil {
 		t.Error(err)
 	} else {
@@ -35,7 +36,7 @@ func TestThriftStruct(t *testing.T) {
 
 // 生成结构赋值代码
 func TestStructAssignCode(t *testing.T) {
-	data, err := StructAssignCode(v)
+	data, err := utils.GoStructAssignCode(v)
 	if err != nil {
 		t.Error(err)
 	} else {

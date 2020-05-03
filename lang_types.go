@@ -81,3 +81,21 @@ func KotlinTypes(typeId int) string {
 	}
 	return fmt.Sprintf("Unknown type id:%d", typeId)
 }
+
+func TsTypes(typeId int) string {
+	switch typeId {
+	case orm.TypeBoolean:
+		return "boolean"
+	case orm.TypeInt64:
+		return "number"
+	case orm.TypeFloat32:
+		return "number"
+	case orm.TypeFloat64:
+		return "number"
+	case orm.TypeInt16, orm.TypeInt32:
+		return "number"
+	case orm.TypeString:
+		return "string"
+	}
+	return "any"
+}

@@ -15,8 +15,11 @@ import (
 	"github.com/ixre/gof/db/orm"
 	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
+	"sync"
 	"text/template"
 	"time"
 	"unicode"
@@ -25,7 +28,6 @@ import (
 var (
 	emptyReg             = regexp.MustCompile("\\s+\"\\s*\"\\s*\\n")
 	emptyImportReg       = regexp.MustCompile("import\\s*\\(([\\n\\s\"]+)\\)")
-	revertTemplateRegexp = regexp.MustCompile("([^\\$])\\${([^\\}]+)\\}")
 )
 
 const (
@@ -69,7 +71,7 @@ type (
 		//　主键属性
 		PkProp string
 		// 主键类型编号
-		PkTypeId int
+		PkType int
 		// 列
 		Columns []*Column
 	}
@@ -88,13 +90,13 @@ type (
 		// 是否不能为空
 		NotNull bool
 		// 类型
-		Type string
+		DbType string
 		// 注释
 		Comment string
 		// 长度
 		Length int
 		// Go类型
-		TypeId int
+		Type int
 	}
 )
 type Session struct {
@@ -174,27 +176,33 @@ func (s *Session) parseTable(ordinal int, tb *orm.Table) *Table {
 		Raw:      tb,
 		Pk:       "id",
 		PkProp :  "Id",
-		PkTypeId: orm.TypeInt32,
+		PkType: orm.TypeInt32,
 		Columns:  make([]*Column, len(tb.Columns)),
 	}
+	if len(n.Comment) == 0{n.Comment = n.Title}
+
 	for i, v := range tb.Columns {
 		if v.IsPk && n.Pk != "" {
 			n.Pk = v.Name
 			n.PkProp = s.title(v.Name)
-			n.PkTypeId = v.TypeId
+			n.PkType = v.Type
 		}
-		n.Columns[i] = &Column{
+		c := &Column{
 			Ordinal: i,
 			Name:    v.Name,
 			Title:   s.title(v.Name),
 			IsPk:    v.IsPk,
 			IsAuto:  v.IsAuto,
 			NotNull: v.NotNull,
-			Type:    v.Type,
+			DbType:  v.DbType,
 			Comment: v.Comment,
 			Length:  v.Length,
-			TypeId:  v.TypeId,
+			Type:    v.Type,
 		}
+		if len(c.Comment) == 0{
+			c.Comment = c.Title
+		}
+		n.Columns[i] = c
 	}
 	return n
 }
@@ -221,12 +229,6 @@ func (s *Session) Var(key string, v interface{}) {
 // 返回所有的变量
 func (s *Session) AllVars() map[string]interface{} {
 	return s.codeVars
-}
-
-// 还原模板的标签: ${...} -> {{...}}, $$ -> $
-func (s *Session) revertTemplateVariable(str string) string {
-	str = revertTemplateRegexp.ReplaceAllString(str, "$1{{$2}}")
-	return strings.Replace(str, "$$", "$", -1)
 }
 
 // 转换成为模板
@@ -268,7 +270,6 @@ func (s *Session) GenerateCode(table *Table, tpl *CodeTemplate,
 		code = emptyImportReg.ReplaceAllString(code, "")
 		//如果不包含模型，则可能为引用空的包
 		code = emptyReg.ReplaceAllString(code, "")
-		code = s.revertTemplateVariable(code)
 		return s.formatCode(tpl, code)
 	}
 	log.Println("execute template error:", err.Error())
@@ -290,9 +291,6 @@ func (s *Session) GenerateCodeByTables(tables []*Table, tpl *CodeTemplate) strin
 	mp := map[string]interface{}{
 		"tables": tables,
 		"global": s.codeVars,
-		//todo: will remove
-		"VAR":    s.codeVars,
-		"Tables": tables,
 	}
 	buf := bytes.NewBuffer(nil)
 	err = t.Execute(buf, mp)
@@ -302,7 +300,6 @@ func (s *Session) GenerateCodeByTables(tables []*Table, tpl *CodeTemplate) strin
 		code = emptyImportReg.ReplaceAllString(code, "")
 		//如果不包含模型，则可能为引用空的包
 		code = emptyReg.ReplaceAllString(code, "")
-		code = s.revertTemplateVariable(code)
 		return s.formatCode(tpl, code)
 	}
 	log.Println("execute template error:", err.Error())
@@ -336,4 +333,52 @@ func (s *Session) formatCode(tpl *CodeTemplate, code string) string {
 	// 去除多行换行
 	code = regexp.MustCompile("(\r?\n(\\s*\r?\n)+)").ReplaceAllString(code, "\n\n")
 	return code
+}
+
+// 遍历模板文件夹, 并生成代码, 如果为源代码目标,文件存在,则自动生成添加 .gen后缀
+func (s *Session) WalkGenerateCode(tables []*Table, tplDir string, outputDir string) error {
+	tplMap := map[string]*CodeTemplate{}
+	sliceSize := len(tplDir) - 1
+	if tplDir[sliceSize] == '/' {
+		tplDir = tplDir + "/"
+		sliceSize += 1
+	}
+	err := filepath.Walk(tplDir, func(path string, info os.FileInfo, err error) error {
+		// 如果模板名称以"_"开头，则忽略
+		if info != nil && !info.IsDir() && info.Name()[0] != '_' {
+			tp, err := s.ParseTemplate(path)
+			if err != nil {
+				return errors.New("template:" + info.Name() + "-" + err.Error())
+			}
+			s.Resolve(tp)
+			tplMap[path[sliceSize:]] = tp
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	if len(tplMap) == 0 {
+		return errors.New("no any code template")
+	}
+	wg := sync.WaitGroup{}
+	for _, tb := range tables {
+		for path, tpl := range tplMap {
+			wg.Add(1)
+			go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb *Table, path string) {
+				defer wg.Done()
+				str := s.GenerateCode(tb, tpl, "", true, "")
+				dstPath, _ := s.PredefineTargetPath(tpl, tb)
+				if dstPath == "" {
+					dstPath = s.DefaultTargetPath(path, tb)
+				}
+				if err := SaveFile(str, outputDir+"/"+dstPath); err != nil {
+					println(fmt.Sprintf("[ Gen][ Error]: save file failed! %s ,template:%s",
+						err.Error(), tpl.FilePath()))
+				}
+			}(&wg, tpl, tb, path)
+		}
+	}
+	wg.Wait()
+	return err
 }

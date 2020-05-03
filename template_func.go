@@ -29,20 +29,20 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	fm["upper"] = t.upper
 	// 首字母小写: 如:{{lower_title .table.Name}}
 	fm["lower_title"] = t.lowerTitle
-	// 类型: 如:{{type "go" .columns[0].TypeId}}
+	// 类型: 如:{{type "go" .columns[0].DbType}}
 	fm["type"] = t.langType
 	// 包名: {{pkg "go" "com/tto/pkg"}}
 	fm["pkg"] = t.langPkg
-	// 默认值, 如:{{default "go" .columns[0].TypeId}}
+	// 默认值, 如:{{default "go" .columns[0].DbType}}
 	fm["default"] = t.langDefaultValue
 	// 是否相等，如：{{equal "go" "rust"}
 	fm["equal"] = t.equal
 	// 包含函数, 如:{{contain .table.Pk "id"}}
 	fm["contain"] = t.contain
-	// 是否以指定字符开始, 如:{{start_with .table.Pk "id"}}
-	fm["start_with"] = t.startWith
-	// 是否以指定字符结束, 如:{{end_with .table.Pk "id"}}
-	fm["end_with"] = t.endWith
+	// 是否以指定字符开始, 如:{{starts_with .table.Pk "id"}}
+	fm["starts_with"] = t.startsWith
+	// 是否以指定字符结束, 如:{{ends_with .table.Pk "id"}}
+	fm["ends_with"] = t.endsWith
 	return fm
 }
 
@@ -79,6 +79,8 @@ func (t *internalFunc) langType(lang string, typeId int) string {
 		return KotlinTypes(typeId)
 	case "thrift":
 		return ThriftTypes(typeId)
+	case "ts":
+		return TsTypes(typeId)
 	}
 	return strconv.Itoa(typeId)
 }
@@ -100,7 +102,7 @@ func (t *internalFunc) langPkg(lang string, pkg string) string {
 // 返回类型默认值
 func (t *internalFunc) langDefaultValue(lang string, typeId int) string {
 	switch lang {
-	case "go", "thrift":
+	case "go", "thrift","ts":
 		return GoValues(typeId)
 	case "java":
 	case "kotlin":
@@ -123,7 +125,7 @@ func (t *internalFunc) contain(v interface{}, s string) bool {
 }
 
 // 是否以指定字符开始
-func (t *internalFunc) startWith(v interface{}, s string) bool {
+func (t *internalFunc) startsWith(v interface{}, s string) bool {
 	if v == nil {
 		return false
 	}
@@ -131,7 +133,7 @@ func (t *internalFunc) startWith(v interface{}, s string) bool {
 }
 
 // 是否以指定字符结束
-func (t *internalFunc) endWith(v interface{}, s string) bool {
+func (t *internalFunc) endsWith(v interface{}, s string) bool {
 	if v == nil {
 		return false
 	}

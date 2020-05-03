@@ -1,9 +1,9 @@
 package tto
 
-import "github.com/ixre/tto/go_"
+import "github.com/ixre/tto/golang"
 
 var (
-	GoEntityRepTemplate     = NewTemplate(go_.TPL_ENTITY_REP, "")
-	GoEntityRepIfceTemplate = NewTemplate(go_.TPL_ENTITY_REP_INTERFACE, "")
-	GoRepoFactoryTemplate   = NewTemplate(go_.TPL_REPO_FACTORY, "")
+	GoEntityRepTemplate     = NewTemplate(golang.TPL_ENTITY_REP, "")
+	GoEntityRepIfceTemplate = NewTemplate(golang.TPL_ENTITY_REP_INTERFACE, "")
+	GoRepoFactoryTemplate   = NewTemplate(golang.TPL_REPO_FACTORY, "")
 )

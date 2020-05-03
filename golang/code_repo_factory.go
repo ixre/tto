@@ -1,4 +1,4 @@
-package go_
+package golang
 
 var TPL_REPO_FACTORY = `
         package {{pkg "go" .global.Pkg}} 
@@ -11,7 +11,7 @@ var TPL_REPO_FACTORY = `
  * guide please see https://github.com/ixre/tto
  * generate time: {{.global.Time}}
  */
-#target!{{.global.Pkg}}/repo_factory.go
+#!target:{{.global.Pkg}}/repo_factory.go
 
 		import(
 		    "github.com/ixre/gof/db/orm"

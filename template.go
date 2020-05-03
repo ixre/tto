@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	predefineRegexp = regexp.MustCompilePOSIX("#([^\\!-]+)\\!(.+)")
+	predefineRegexp = regexp.MustCompilePOSIX("#\\!([^\\!-]+):([^#]+?)")
 )
 
 type CodeTemplate struct {
@@ -28,7 +28,8 @@ func (g *CodeTemplate) configure(s string) *CodeTemplate {
  *
  * guide please see https://github.com/ixre/tto
  *
- */` + s
+ */
+` + s
 	}
 	g.predefine = make(map[string]string)
 	for _, match := range predefineRegexp.FindAllStringSubmatch(s, -1) {

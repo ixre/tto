@@ -6,12 +6,12 @@
  * guide please see https://github.com/ixre/tto
  *
  */
-#target!kotlin/{{.global.Pkg}}/repo/{{.table.Title}}Repository.kt
+#!target:kotlin/{{.global.Pkg}}/repo/{{.table.Title}}Repository.kt
 package {{pkg "java" .global.Pkg}}.repo;
 
 import {{pkg "java" .global.Pkg}}.pojo.{{.table.Title}}Entity
 import org.springframework.data.jpa.repository.JpaRepository
-{{$pkType := type "kotlin" .table.PkTypeId}}
+{{$pkType := type "kotlin" .table.PkType}}
 /** {{.table.Comment}}仓储接口  */
 interface {{.table.Title}}Repository : JpaRepository<{{.table.Title}}Entity, {{$pkType}}> {
 

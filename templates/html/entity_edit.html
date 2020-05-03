@@ -2,10 +2,10 @@
 <html>
 <head>
     <title>{{.table.Comment}}</title>
-    ${.Var.Header}
+    {{`{{.Var.Header}}`}}
 </head>
 <body>
-=$${helo}
+
 <form action="" method="post" class="gra-form" id="form1">
     {{range $i,$c := .T.Columns}}{{if $c.IsPk}}
     <input type="hidden" field="{{$c.Title}}" name="{{$c.Title}}" value="0"/>{{else}}
@@ -35,12 +35,12 @@
 
 </form>
 
-<script type="text/javascript" src="${.Var.StaticPath}/assets/js/base.js?hash=${.Var.Spam}"></script>
+<script type="text/javascript" src="${.Var.StaticPath}/assets/js/base.js?hash={{`{{.Var.Spam}}`}}"></script>
 <script type="text/javascript">
-    //var entity = ${.Map.Entity} || {};
+    //var entity = {{`{{.Map.Entity}}`}} || {};
     var formId = "form1";
-    var baseJsUrl = "${.Var.StaticPath}";
-    require([baseJsUrl + "/assets/js/super/require_config.js?hash=${.Var.Spam}"], function () {
+    var baseJsUrl = "{{`{{.Var.StaticPath}}`}}";
+    require([baseJsUrl + "/assets/js/super/require_config.js?hash={{`{{.Var.Spam}}`}}"], function () {
         require(["base"], pageLoad);
     });
 

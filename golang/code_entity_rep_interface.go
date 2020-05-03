@@ -1,4 +1,4 @@
-package go_
+package golang
 
 var (
 	// 实体仓储接口模板
@@ -14,7 +14,7 @@ var (
  * guide please see https://github.com/ixre/tto
  * generate time: {{.global.Time}}
  */
-#target!{{.global.Pkg}}/ifce/{{.table.Name}}_repo_ifce.go
+#!target:{{.global.Pkg}}/ifce/{{.table.Name}}_repo_ifce.go
 
         import(
             "{{.global.Pkg}}/model"

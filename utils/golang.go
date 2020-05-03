@@ -1,12 +1,4 @@
-/**
- * Copyright 2015 @ at3.net.
- * name : struct
- * author : jarryliu
- * date : 2016-11-17 13:44
- * description :
- * history :
- */
-package tto
+package utils
 
 import (
 	"bytes"
@@ -15,7 +7,7 @@ import (
 )
 
 // 生成结构赋值代码
-func StructAssignCode(v interface{}) ([]byte, error) {
+func GoStructAssignCode(v interface{}) ([]byte, error) {
 	vt := reflect.TypeOf(v)
 	if vt.Kind() == reflect.Ptr {
 		vt = vt.Elem()

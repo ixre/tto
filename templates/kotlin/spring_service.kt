@@ -6,7 +6,7 @@
  * guide please see https://github.com/ixre/tto
  *
  */
-#target!kotlin/{{.global.Pkg}}/service/{{.table.Title}}Service.kt
+#!target:kotlin/{{.global.Pkg}}/service/{{.table.Title}}Service.kt
 package {{pkg "java" .global.Pkg}}.service
 
 import {{pkg "java" .global.Pkg}}.pojo.{{.table.Title}}Entity
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 import java.util.*
 import javax.annotation.Resource
 {{$tableTitle := .table.Title}}
-{{$pkType := type "kotlin" .table.PkTypeId}}
+{{$pkType := type "kotlin" .table.PkType}}
 /** {{.table.Comment}}服务  */
 @Service
 class {{.table.Title}}Service {

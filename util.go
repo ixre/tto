@@ -34,3 +34,4 @@ func resolveTableString(tpl string, global map[string]interface{}, table *Table)
 	}
 	return "", err
 }
+

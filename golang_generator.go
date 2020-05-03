@@ -3,6 +3,7 @@ package tto
 import (
 	"bytes"
 	"fmt"
+	"sync"
 )
 
 // 表生成仓储结构,sign:函数后是否带签名，ePrefix:实体是否带前缀
@@ -49,7 +50,7 @@ func (s *Session) tableToGoStruct(table *Table) (string, string) {
 		buf.WriteString("    ")
 		buf.WriteString(s.title(col.Name))
 		buf.WriteString(" ")
-		buf.WriteString(s.fn.langType("go", col.TypeId))
+		buf.WriteString(s.fn.langType("go", col.Type))
 		buf.WriteString(" `")
 		buf.WriteString("db:\"")
 		buf.WriteString(col.Name)
@@ -67,3 +68,36 @@ func (s *Session) tableToGoStruct(table *Table) (string, string) {
 	buf.WriteString("}")
 	return buf.String(), goPath
 }
+
+
+// 生成Go仓储代码
+func (s *Session) GenerateGoRepoCodes(tables []*Table, targetDir string) (err error) {
+	wg := sync.WaitGroup{}
+	for _, table := range tables {
+		wg.Add(1)
+		go func(wg *sync.WaitGroup, tb *Table) {
+			defer wg.Done()
+			//生成实体
+			str, path := s.tableToGoStruct(tb)
+			if err = SaveFile(str, targetDir+"/"+path); err != nil {
+				println(fmt.Sprintf("[ Gen][ Error]: save file failed! %s", err.Error()))
+			}
+			//生成仓储结构
+			str, path = s.tableToGoRepo(tb, true, "")
+			if err = SaveFile(str, targetDir+"/"+path); err != nil {
+				println(fmt.Sprintf("[ Gen][ Error]: save file failed! %s", err.Error()))
+			}
+			//生成仓储接口
+			str, path = s.tableToGoIRepo(tb, true, "")
+			if err = SaveFile(str, targetDir+"/"+path); err != nil {
+				println(fmt.Sprintf("[ Gen][ Error]: save file failed! %s", err.Error()))
+			}
+		}(&wg, table)
+	}
+	wg.Wait()
+	// 生成仓储工厂
+	code := s.GenerateCodeByTables(tables, GoRepoFactoryTemplate)
+	path, _ := s.PredefineTargetPath(GoRepoFactoryTemplate, nil)
+	return SaveFile(code, targetDir+"/"+path)
+}
+

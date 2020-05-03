@@ -6,7 +6,7 @@
  * guide please see https://github.com/ixre/tto
  *
  */
-#target!java/{{.global.Pkg}}/pojo/{{.table.Title}}Entity.java
+#!target:java/{{.global.Pkg}}/pojo/{{.table.Title}}Entity.java
 package {{pkg "java" .global.Pkg}}.pojo;
 
 import javax.persistence.Basic;
@@ -21,7 +21,7 @@ import javax.persistence.GeneratedValue;
 @Entity
 @Table(name = "{{.table.Name}}", schema = "{{.table.Schema}}")
 public class {{.table.Title}}Entity {
-    {{range $i,$c := .columns}}{{$type := type "java" $c.TypeId}}
+    {{range $i,$c := .columns}}{{$type := type "java" $c.Type}}
     private {{$type}} {{$c.Name}};
     public void set{{$c.Title}}({{$type}} {{$c.Name}}){
         this.{{$c.Name}} = {{$c.Name}};

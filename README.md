@@ -99,6 +99,10 @@ Usage of tto:
 ```
 {{equal (3%2) 1}
 ```
+替换, 如将`table_name`替换为:`table-name`
+```
+{{replace "table_name" "_" "-"}}
+```
 包含函数
 ```
 {{contain .table.Pk "id"}}

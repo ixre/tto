@@ -37,6 +37,8 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	fm["default"] = t.langDefaultValue
 	// 是否相等，如：{{equal "go" "rust"}
 	fm["equal"] = t.equal
+	// 替换,如: {{replace "table_name" "_" "-"}}
+	fm["replace"] = t.replace
 	// 包含函数, 如:{{contain .table.Pk "id"}}
 	fm["contain"] = t.contain
 	// 是否以指定字符开始, 如:{{starts_with .table.Pk "id"}}
@@ -114,6 +116,11 @@ func (t *internalFunc) langDefaultValue(lang string, typeId int) string {
 // 是否相等，如：{{equal "go" "rust"}
 func (t *internalFunc) equal(v1, v2 interface{}) bool {
 	return v1 == v2
+}
+
+// 替换,如: {{replace "table_name" "_" "-"}}
+func (t *internalFunc) replace(s,oldStr,newStr string) string {
+	return strings.Replace(s,oldStr,newStr,-1)
 }
 
 // 是否包含

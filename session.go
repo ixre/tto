@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ixre/gof/db/orm"
+	"github.com/ixre/tto/config"
 	"io/ioutil"
 	"log"
 	"os"
@@ -22,7 +23,6 @@ import (
 	"sync"
 	"text/template"
 	"time"
-	"unicode"
 )
 
 var (
@@ -77,27 +77,29 @@ type (
 	}
 	// 列
 	Column struct {
-		// 顺序
-		Ordinal int
-		// 列名
-		Name string
-		// 列名首字大写
-		Title string
-		// 是否主键
-		IsPk bool
-		// 是否自动生成
-		IsAuto bool
-		// 是否不能为空
-		NotNull bool
-		// 类型
-		DbType string
-		// 注释
-		Comment string
-		// 长度
-		Length int
-		// Go类型
-		Type int
-	}
+	// 顺序
+	Ordinal int
+	// 列名
+	Name string
+	// 列名首字大写
+	Prop string
+	// 是否主键
+	IsPk bool
+	// 是否自动生成
+	IsAuto bool
+	// 是否不能为空
+	NotNull bool
+	// 类型
+	DbType string
+	// 注释
+	Comment string
+	// 长度
+	Length int
+	// Go类型
+	Type   int
+	// 输出选项
+	Render *config.PropRenderOptions
+}
 )
 type Session struct {
 	// 生成代码变量
@@ -129,83 +131,28 @@ func (s *Session) init() *Session {
 	return s
 }
 
-func (s *Session) title(str string) string {
-	// 小于3且ID大写，则返回大写
-	if s.IdUpper && len(str) < 3 {
-		return strings.ToUpper(str)
-	}
-	arr := strings.Split(str, "_")
-	for i, v := range arr {
-		arr[i] = strings.Title(v)
-	}
-	return strings.Join(arr, "")
-}
 
-func (s *Session) prefix(str string) string {
-	if i := strings.Index(str, "_"); i != -1 {
-		return str[:i]
-	}
-	for i, l := 1, len(str); i < l-1; i++ {
-		if unicode.IsUpper(rune(str[i])) {
-			return strings.ToLower(str[:i])
-		}
-	}
-	return ""
-}
 
 // 获取所有的表
 func (s *Session) ParseTables(tbs []*orm.Table, err error) ([]*Table, error) {
 	n := make([]*Table, len(tbs))
 	for i, tb := range tbs {
-		n[i] = s.parseTable(i, tb)
+		n[i] = parseTable(i,tb,s.IdUpper,false)
 	}
 	return n, err
 }
 
-// 获取表结构
-func (s *Session) parseTable(ordinal int, tb *orm.Table) *Table {
-	n := &Table{
-		Ordinal: ordinal,
-		Name:     tb.Name,
-		Prefix:   s.prefix(tb.Name),
-		Title:    s.title(tb.Name),
-		Comment:  tb.Comment,
-		Engine:   tb.Engine,
-		Schema:   tb.Schema,
-		Charset:  tb.Charset,
-		Raw:      tb,
-		Pk:       "id",
-		PkProp :  "Id",
-		PkType: orm.TypeInt32,
-		Columns:  make([]*Column, len(tb.Columns)),
-	}
-	if len(n.Comment) == 0{n.Comment = n.Title}
 
-	for i, v := range tb.Columns {
-		if v.IsPk && n.Pk != "" {
-			n.Pk = v.Name
-			n.PkProp = s.title(v.Name)
-			n.PkType = v.Type
-		}
-		c := &Column{
-			Ordinal: i,
-			Name:    v.Name,
-			Title:   s.title(v.Name),
-			IsPk:    v.IsPk,
-			IsAuto:  v.IsAuto,
-			NotNull: v.NotNull,
-			DbType:  v.DbType,
-			Comment: v.Comment,
-			Length:  v.Length,
-			Type:    v.Type,
-		}
-		if len(c.Comment) == 0{
-			c.Comment = c.Title
-		}
-		n.Columns[i] = c
+// 转换表格,如果meta为true,则读取元数据,如果没有则自动生成元数据
+func (s *Session) Parses(tbs []*orm.Table, meta bool) (arr []*Table,err error) {
+	n := make([]*Table, len(tbs))
+	for i, tb := range tbs {
+		n[i] = parseTable(i,tb,s.IdUpper,meta)
 	}
-	return n
+	return n, err
 }
+
+
 
 // 解析模板
 func (s *Session) Resolve(t *CodeTemplate) *CodeTemplate {
@@ -382,3 +329,4 @@ func (s *Session) WalkGenerateCode(tables []*Table, tplDir string, outputDir str
 	wg.Wait()
 	return err
 }
+

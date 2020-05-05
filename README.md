@@ -170,7 +170,7 @@ generate time {{.global.Time}}
 数据列对象存储表的数据列数组, 并且可遍历. 每个数据列都包含如下属性:
 
 - Name: 列名
-- Title: 列名首字大写,　通常用作属性
+- Prop: 列名首字大写,　通常用作属性
 - IsPk: 是否主键(bool)
 - IsAuto:  是否自动生成(bool)
 - NotNull: 是否不能为空(bool)
@@ -209,7 +209,7 @@ import javax.persistence.GeneratedValue;
 public class {{.table.Title}}Entity {
     {{range $i,$c := .columns}}{{$type := type "java" $c.Type}}
     private {{$type}} {{$c.Name}}
-    public void set{{$c.Title}}({{$type}} {{$c.Name}}){
+    public void set{{$c.Prop}}({{$type}} {{$c.Name}}){
         this.{{$c.Name}} = {{$c.Name}}
     }
 
@@ -220,7 +220,7 @@ public class {{.table.Title}}Entity {
     @Column(name = "{{$c.Name}}"
      {{if not $c.NotNull}}, nullable = true{{end}}
      {{if ne $c.Length 0}},length = {{$c.Length}}{{end}})
-    public {{$type}} get{{$c.Title}}() {
+    public {{$type}} get{{$c.Prop}}() {
         return this.{{$c.Name}};
     }
     {{end}}

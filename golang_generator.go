@@ -38,7 +38,7 @@ func (s *Session) tableToGoStruct(table *Table) (string, string) {
 	buf.WriteString("\n// ")
 	buf.WriteString(table.Comment)
 	buf.WriteString("\ntype ")
-	buf.WriteString(s.title(table.Name))
+	buf.WriteString(title(table.Name,s.IdUpper))
 	buf.WriteString(" struct{\n")
 
 	for _, col := range table.Columns {
@@ -48,7 +48,7 @@ func (s *Session) tableToGoStruct(table *Table) (string, string) {
 			buf.WriteString("\n")
 		}
 		buf.WriteString("    ")
-		buf.WriteString(s.title(col.Name))
+		buf.WriteString(title(col.Name,s.IdUpper))
 		buf.WriteString(" ")
 		buf.WriteString(s.fn.langType("go", col.Type))
 		buf.WriteString(" `")

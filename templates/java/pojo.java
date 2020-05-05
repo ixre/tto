@@ -22,7 +22,7 @@ import org.hibernate.annotations.GenericGenerator;
 public class {{.table.Title}}Entity {
     {{range $i,$c := .columns}}{{$type := type "java" $c.Type}}
     private {{$type}} {{$c.Name}};
-    public void set{{$c.Title}}({{$type}} {{$c.Name}}){
+    public void set{{$c.Prop}}({{$type}} {{$c.Name}}){
         this.{{$c.Name}} = {{$c.Name}};
     }
 
@@ -32,7 +32,7 @@ public class {{.table.Title}}Entity {
     @GenericGenerator(name = "id",strategy = "assigned"){{end}}{{else}}
     @Basic{{end}}
     @Column(name = "{{$c.Name}}"{{if not $c.NotNull}}, nullable = true{{end}} {{if ne $c.Length 0}},length = {{$c.Length}}{{end}})
-    public {{$type}} get{{$c.Title}}() {
+    public {{$type}} get{{$c.Prop}}() {
         return this.{{$c.Name}};
     }
     {{end}}
@@ -41,7 +41,7 @@ public class {{.table.Title}}Entity {
     public {{.table.Title}}Entity copy({{.table.Title}}Entity src){
         {{.table.Title}}Entity dst = this;
         {{range $i,$c := .columns}}
-        dst.set{{$c.Title}}(src.get{{$c.Title}}());{{end}}
+        dst.set{{$c.Prop}}(src.get{{$c.Prop}}());{{end}}
         return dst;
     }
 }

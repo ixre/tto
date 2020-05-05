@@ -112,12 +112,18 @@ func main() {
 	if re.GetBoolean("code.id_upper") {
 		dg.IdUpper = true
 	}
-	// 获取表格并转换
-	tables, err := dg.ParseTables(ds.TablesByPrefix(dbName, schema, table))
-	if err != nil {
-		println("[ Gen][ Fail]:", err.Error())
+	list,err := ds.TablesByPrefix(dbName, schema, table)
+	if err != nil{
+		println("[ tto][ error]: not found tables", err.Error())
 		return
 	}
+	// 获取表格并转换
+	tables, err := dg.Parses(list,true)
+	if err != nil {
+		println("[ tto][ error]:", err.Error())
+		return
+	}
+
 	// 生成代码
 	if err := genByArch(arch, dg, tables, genDir, tplDir); err != nil {
 		log.Fatalln("[ Gen][ Fail]:", err.Error())

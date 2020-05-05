@@ -118,7 +118,8 @@ func main() {
 		return
 	}
 	// 获取表格并转换
-	tables, err := dg.Parses(list,true)
+	userMeta := re.GetBoolean("code.meta_settings")
+	tables, err := dg.Parses(list,userMeta)
 	if err != nil {
 		println("[ tto][ error]:", err.Error())
 		return

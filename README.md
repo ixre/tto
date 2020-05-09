@@ -115,6 +115,20 @@ Usage of tto:
 ```
 {{ends_with .table.Pk "_time"}}
 ```
+是否为表的列(数组)的最后一列
+```
+{{$columns := .columns}}
+{{range $,$v := .columns}}{{if last_index $i .columns}} last column {{end}}
+```
+排除列元素, 组成新的列数组, 如：
+```
+{{ $columns := exclude .columns "id","create_time" }}
+```
+尝试获取一个列,返回列及是否存在的Boolean, 如: 
+```
+{{ $c,$exist := try_get .columns "update_time" }}
+```
+
 ## 模板
 
 模板主要包含三大对象: 

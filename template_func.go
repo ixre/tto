@@ -3,6 +3,7 @@ package tto
 import (
 	"github.com/ixre/gof/util"
 	ht "html/template"
+	"reflect"
 	"strconv"
 	"strings"
 	"unicode"
@@ -45,6 +46,12 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	fm["starts_with"] = t.startsWith
 	// 是否以指定字符结束, 如:{{ends_with .table.Pk "id"}}
 	fm["ends_with"] = t.endsWith
+	// 返回是否为数组中的最后一个元素索引
+	fm["last_index"] = t.lastIndex
+	// 排除列元素, 组成新的列数组, 如：{{ $columns := exclude .columns "id","create_time" }}
+	fm["exclude"] = t.exclude
+	// 尝试获取一个列,返回列及是否存在的Boolean, 如: {{ $c,$exist := try_get .columns "update_time" }}
+	fm["try_get"] = t.tryGet
 	return fm
 }
 
@@ -145,6 +152,49 @@ func (t *internalFunc) endsWith(v interface{}, s string) bool {
 		return false
 	}
 	return strings.HasSuffix(t.str(v), s)
+}
+
+// 返回是否为数组中的最后一个元素索引,如：
+// {{$columns := .columns}}
+// {{range $,$v := .columns}}
+//	  {{if last_index $i .columns}}
+//		last column
+//	  {{end}}
+// {{end}}
+func (t *internalFunc) lastIndex(i int,arr interface{})bool {
+	kind := reflect.TypeOf(arr).Kind()
+	if kind == reflect.Slice || kind == reflect.Array {
+		return i == reflect.ValueOf(arr).Len()-1
+	}
+	return false
+}
+
+// 排除列元素, 组成新的列数组, 如：{{ $columns := exclude .columns "id","create_time" }}
+func (t *internalFunc) exclude(columns []*Column,names ...string)[]*Column{
+	arr := make([]*Column,0)
+	for _,c := range columns {
+		b := false
+		for _, n := range names {
+			if c.Name == n {
+				b = true
+				break
+			}
+		}
+		if !b {
+			arr = append(arr, c)
+		}
+	}
+	return arr
+}
+
+// 尝试获取一个列,返回列. 如果不存在,返回空, 如: {{ $c := try_get .columns "update_time" }}
+func (t *internalFunc) tryGet(columns []*Column,name string) *Column {
+	for _,c := range columns{
+		if c.Name == name{
+			return c
+		}
+	}
+	return nil
 }
 
 // 判断是否为true

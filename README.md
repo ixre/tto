@@ -118,7 +118,7 @@ Usage of tto:
 是否为表的列(数组)的最后一列
 ```
 {{$columns := .columns}}
-{{range $,$v := .columns}}{{if last_index $i .columns}} last column {{end}}
+{{range $,$v := .columns}}{{if last_index $i .columns}} last column {{end}}{{end}}
 ```
 排除列元素, 组成新的列数组, 如：
 ```
@@ -131,8 +131,10 @@ Usage of tto:
 
 ## 模板
 
-模板主要包含三大对象: 
+使用`go template`作为模板引擎, 可以通过内置的函数和语法, 生成任意代码. 如果在模板行的末尾添加`\`,
+将自动合并下一行.
 
+模板主要包含三大对象: 
 - global
 - table
 - columns

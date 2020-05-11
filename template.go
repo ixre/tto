@@ -7,6 +7,7 @@ import (
 
 var (
 	predefineRegexp = regexp.MustCompilePOSIX("#\\!([^\\!-]+):([^#]+?)")
+	lineJoinRegexp = regexp.MustCompile("\\s*\\\\(\\s+)")
 )
 
 type CodeTemplate struct {
@@ -35,8 +36,14 @@ func (g *CodeTemplate) configure(s string) *CodeTemplate {
 	for _, match := range predefineRegexp.FindAllStringSubmatch(s, -1) {
 		g.predefine[match[1]] = match[2]
 	}
-	g.template = predefineRegexp.ReplaceAllString(s, "")
+	g.template = g.format(s)
 	return g
+}
+
+func (g *CodeTemplate) format(s string) string {
+	s = predefineRegexp.ReplaceAllString(s, "")
+	s = lineJoinRegexp.ReplaceAllString(s, "")
+	return s
 }
 
 // 文件路径
@@ -59,3 +66,4 @@ func (g *CodeTemplate) Replace(s, old string, n int) *CodeTemplate {
 	g.template = strings.Replace(g.template, s, old, n)
 	return g
 }
+

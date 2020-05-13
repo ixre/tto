@@ -45,9 +45,9 @@ func TestGenAll(t *testing.T) {
 	// 清理上次生成的代码
 	os.RemoveAll(genDir)
 	// 生成GoRepo代码
-	dg.GenerateGoRepoCodes(tables, genDir)
+	//dg.GenerateGoRepoCodes(tables, genDir)
 	// 生成自定义代码
-	dg.WalkGenerateCode(tables, "./templates", genDir)
+	dg.WalkGenerateCode(tables, "./templates", genDir, []string{"grid_list.html"})
 	//格式化代码
 	shell.Run("gofmt -w " + genDir)
 	t.Log("生成成功, 输出目录", genDir)

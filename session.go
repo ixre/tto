@@ -283,7 +283,10 @@ func (s *Session) formatCode(tpl *CodeTemplate, code string) string {
 }
 
 // 遍历模板文件夹, 并生成代码, 如果为源代码目标,文件存在,则自动生成添加 .gen后缀
-func (s *Session) WalkGenerateCode(tables []*Table, tplDir string, outputDir string) error {
+func (s *Session) WalkGenerateCode(tables []*Table, tplDir string, outputDir string, excludeFiles []string) error {
+	if len(excludeFiles)==1 && excludeFiles[0] == ""{
+		excludeFiles = nil
+	}
 	tplMap := map[string]*CodeTemplate{}
 	sliceSize := len(tplDir) - 1
 	if tplDir[sliceSize] == '/' {
@@ -292,7 +295,7 @@ func (s *Session) WalkGenerateCode(tables []*Table, tplDir string, outputDir str
 	}
 	err := filepath.Walk(tplDir, func(path string, info os.FileInfo, err error) error {
 		// 如果模板名称以"_"开头，则忽略
-		if info != nil && !info.IsDir() && info.Name()[0] != '_' {
+		if info != nil && !info.IsDir() && s.testName(info.Name(),excludeFiles){
 			tp, err := s.ParseTemplate(path)
 			if err != nil {
 				return errors.New("template:" + info.Name() + "-" + err.Error())
@@ -328,5 +331,28 @@ func (s *Session) WalkGenerateCode(tables []*Table, tplDir string, outputDir str
 	}
 	wg.Wait()
 	return err
+}
+
+// 验证文件名, 是否可以生成
+func (s *Session) testName(name string, files []string) bool {
+	if name[0] == '_' {
+		return false
+	}
+	if files != nil {
+		for _, v := range files{
+			if v== name{return false}
+		}
+		/*
+		i := sort.Search(len(files), func(i int) bool {
+			println("---",len(files),files[i],name)
+			return files[i] == name
+		})
+		println("---", i, name, fmt.Sprintf("%#v", files), sort.SearchStrings(files, name))
+		if files != nil && sort.SearchStrings(files, name) != -1 {
+			return false
+		}
+		 */
+	}
+	return true
 }
 

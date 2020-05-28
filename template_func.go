@@ -111,7 +111,7 @@ func (t *internalFunc) langPkg(lang string, pkg string) string {
 // 返回类型默认值
 func (t *internalFunc) langDefaultValue(lang string, typeId int) string {
 	switch lang {
-	case "go", "thrift","ts":
+	case "go", "thrift", "ts":
 		return GoValues(typeId)
 	case "java":
 	case "kotlin":
@@ -126,8 +126,8 @@ func (t *internalFunc) equal(v1, v2 interface{}) bool {
 }
 
 // 替换,如: {{replace "table_name" "_" "-"}}
-func (t *internalFunc) replace(s,oldStr,newStr string) string {
-	return strings.Replace(s,oldStr,newStr,-1)
+func (t *internalFunc) replace(s, oldStr, newStr string) string {
+	return strings.Replace(s, oldStr, newStr, -1)
 }
 
 // 是否包含
@@ -161,7 +161,7 @@ func (t *internalFunc) endsWith(v interface{}, s string) bool {
 //		last column
 //	  {{end}}
 // {{end}}
-func (t *internalFunc) lastIndex(i int,arr interface{})bool {
+func (t *internalFunc) lastIndex(i int, arr interface{}) bool {
 	kind := reflect.TypeOf(arr).Kind()
 	if kind == reflect.Slice || kind == reflect.Array {
 		return i == reflect.ValueOf(arr).Len()-1
@@ -170,9 +170,9 @@ func (t *internalFunc) lastIndex(i int,arr interface{})bool {
 }
 
 // 排除列元素, 组成新的列数组, 如：{{ $columns := exclude .columns "id","create_time" }}
-func (t *internalFunc) exclude(columns []*Column,names ...string)[]*Column{
-	arr := make([]*Column,0)
-	for _,c := range columns {
+func (t *internalFunc) exclude(columns []*Column, names ...string) []*Column {
+	arr := make([]*Column, 0)
+	for _, c := range columns {
 		b := false
 		for _, n := range names {
 			if c.Name == n {
@@ -188,9 +188,9 @@ func (t *internalFunc) exclude(columns []*Column,names ...string)[]*Column{
 }
 
 // 尝试获取一个列,返回列. 如果不存在,返回空, 如: {{ $c := try_get .columns "update_time" }}
-func (t *internalFunc) tryGet(columns []*Column,name string) *Column {
-	for _,c := range columns{
-		if c.Name == name{
+func (t *internalFunc) tryGet(columns []*Column, name string) *Column {
+	for _, c := range columns {
+		if c.Name == name {
 			return c
 		}
 	}

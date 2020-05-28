@@ -8,9 +8,7 @@ import (
 	"unicode"
 )
 
-
-
-func  prefix(str string) string {
+func prefix(str string) string {
 	if i := strings.Index(str, "_"); i != -1 {
 		return str[:i]
 	}
@@ -22,7 +20,7 @@ func  prefix(str string) string {
 	return ""
 }
 
-func title(str string,shortUpper bool) string {
+func title(str string, shortUpper bool) string {
 	// 小于3且ID大写，则返回大写
 	if shortUpper && len(str) < 3 {
 		return strings.ToUpper(str)
@@ -33,7 +31,6 @@ func title(str string,shortUpper bool) string {
 	}
 	return strings.Join(arr, "")
 }
-
 
 // 保存到文件
 func SaveFile(s string, path string) error {
@@ -62,4 +59,3 @@ func resolveTableString(tpl string, global map[string]interface{}, table *Table)
 	}
 	return "", err
 }
-

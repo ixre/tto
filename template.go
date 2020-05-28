@@ -7,7 +7,7 @@ import (
 
 var (
 	predefineRegexp = regexp.MustCompilePOSIX("#\\!([^\\!-]+):([^#]+?)")
-	lineJoinRegexp = regexp.MustCompile("\\s*\\\\(\\s+)")
+	lineJoinRegexp  = regexp.MustCompile("\\s*\\\\(\\s+)")
 )
 
 type CodeTemplate struct {
@@ -66,4 +66,3 @@ func (g *CodeTemplate) Replace(s, old string, n int) *CodeTemplate {
 	g.template = strings.Replace(g.template, s, old, n)
 	return g
 }
-

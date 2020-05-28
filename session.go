@@ -26,8 +26,8 @@ import (
 )
 
 var (
-	emptyReg             = regexp.MustCompile("\\s+\"\\s*\"\\s*\\n")
-	emptyImportReg       = regexp.MustCompile("import\\s*\\(([\\n\\s\"]+)\\)")
+	emptyReg       = regexp.MustCompile("\\s+\"\\s*\"\\s*\\n")
+	emptyImportReg = regexp.MustCompile("import\\s*\\(([\\n\\s\"]+)\\)")
 )
 
 const (
@@ -77,29 +77,29 @@ type (
 	}
 	// 列
 	Column struct {
-	// 顺序
-	Ordinal int
-	// 列名
-	Name string
-	// 列名首字大写
-	Prop string
-	// 是否主键
-	IsPk bool
-	// 是否自动生成
-	IsAuto bool
-	// 是否不能为空
-	NotNull bool
-	// 类型
-	DbType string
-	// 注释
-	Comment string
-	// 长度
-	Length int
-	// Go类型
-	Type   int
-	// 输出选项
-	Render *config.PropRenderOptions
-}
+		// 顺序
+		Ordinal int
+		// 列名
+		Name string
+		// 列名首字大写
+		Prop string
+		// 是否主键
+		IsPk bool
+		// 是否自动生成
+		IsAuto bool
+		// 是否不能为空
+		NotNull bool
+		// 类型
+		DbType string
+		// 注释
+		Comment string
+		// 长度
+		Length int
+		// Go类型
+		Type int
+		// 输出选项
+		Render *config.PropRenderOptions
+	}
 )
 type Session struct {
 	// 生成代码变量
@@ -131,28 +131,23 @@ func (s *Session) init() *Session {
 	return s
 }
 
-
-
 // 获取所有的表
 func (s *Session) ParseTables(tbs []*orm.Table, err error) ([]*Table, error) {
 	n := make([]*Table, len(tbs))
 	for i, tb := range tbs {
-		n[i] = parseTable(i,tb,s.IdUpper,false)
+		n[i] = parseTable(i, tb, s.IdUpper, false)
 	}
 	return n, err
 }
-
 
 // 转换表格,如果meta为true,则读取元数据,如果没有则自动生成元数据
-func (s *Session) Parses(tbs []*orm.Table, meta bool) (arr []*Table,err error) {
+func (s *Session) Parses(tbs []*orm.Table, meta bool) (arr []*Table, err error) {
 	n := make([]*Table, len(tbs))
 	for i, tb := range tbs {
-		n[i] = parseTable(i,tb,s.IdUpper,meta)
+		n[i] = parseTable(i, tb, s.IdUpper, meta)
 	}
 	return n, err
 }
-
-
 
 // 解析模板
 func (s *Session) Resolve(t *CodeTemplate) *CodeTemplate {
@@ -205,7 +200,7 @@ func (s *Session) GenerateCode(table *Table, tpl *CodeTemplate,
 		"global": s.codeVars, // 全局变量
 		//"version": s.codeVars[VERSION], // 版本
 		//"pkg":     s.codeVars[PKG],     //包名
-		"table":   table,   // 数据表
+		"table":   table,         // 数据表
 		"columns": table.Columns, // 列
 		//"pk":      table.Pk,                  // 主键列名
 	}
@@ -284,7 +279,7 @@ func (s *Session) formatCode(tpl *CodeTemplate, code string) string {
 
 // 遍历模板文件夹, 并生成代码, 如果为源代码目标,文件存在,则自动生成添加 .gen后缀
 func (s *Session) WalkGenerateCode(tables []*Table, tplDir string, outputDir string, excludeFiles []string) error {
-	if len(excludeFiles)==1 && excludeFiles[0] == ""{
+	if len(excludeFiles) == 1 && excludeFiles[0] == "" {
 		excludeFiles = nil
 	}
 	tplMap := map[string]*CodeTemplate{}
@@ -295,7 +290,7 @@ func (s *Session) WalkGenerateCode(tables []*Table, tplDir string, outputDir str
 	}
 	err := filepath.Walk(tplDir, func(path string, info os.FileInfo, err error) error {
 		// 如果模板名称以"_"开头，则忽略
-		if info != nil && !info.IsDir() && s.testName(info.Name(),excludeFiles){
+		if info != nil && !info.IsDir() && s.testName(info.Name(), excludeFiles) {
 			tp, err := s.ParseTemplate(path)
 			if err != nil {
 				return errors.New("template:" + info.Name() + "-" + err.Error())
@@ -339,20 +334,21 @@ func (s *Session) testName(name string, files []string) bool {
 		return false
 	}
 	if files != nil {
-		for _, v := range files{
-			if v== name{return false}
+		for _, v := range files {
+			if v == name {
+				return false
+			}
 		}
 		/*
-		i := sort.Search(len(files), func(i int) bool {
-			println("---",len(files),files[i],name)
-			return files[i] == name
-		})
-		println("---", i, name, fmt.Sprintf("%#v", files), sort.SearchStrings(files, name))
-		if files != nil && sort.SearchStrings(files, name) != -1 {
-			return false
-		}
-		 */
+			i := sort.Search(len(files), func(i int) bool {
+				println("---",len(files),files[i],name)
+				return files[i] == name
+			})
+			println("---", i, name, fmt.Sprintf("%#v", files), sort.SearchStrings(files, name))
+			if files != nil && sort.SearchStrings(files, name) != -1 {
+				return false
+			}
+		*/
 	}
 	return true
 }
-

@@ -38,11 +38,11 @@ Usage of tto:
         config path (default "./tto.conf")
   -debug
         debug mode
-  -out string
+  -o string
         path of output directory (default "./output")
   -table string
         table name or table prefix
-  -tpl string
+  -t string
         path of code templates directory (default "./templates")
   -v    print version
 ```

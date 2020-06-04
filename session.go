@@ -257,7 +257,7 @@ func (s *Session) PredefineTargetPath(tpl *CodeTemplate, table *Table) (string, 
 }
 
 // 连接文件路径
-func (s *Session) DefaultTargetPath(tplFilePath string, table *Table) string {
+func (s *Session) defaultTargetPath(tplFilePath string, table *Table) string {
 	i := strings.Index(tplFilePath, ".")
 	if i != -1 {
 		return strings.Join([]string{tplFilePath[:i], "_",
@@ -283,8 +283,8 @@ func (s *Session) WalkGenerateCode(tables []*Table, tplDir string, outputDir str
 		excludeFiles = nil
 	}
 	tplMap := map[string]*CodeTemplate{}
-	sliceSize := len(tplDir) - 1
-	if tplDir[sliceSize] == '/' {
+	sliceSize := len(tplDir)
+	if tplDir[sliceSize-1] == '/' {
 		tplDir = tplDir + "/"
 		sliceSize += 1
 	}
@@ -315,7 +315,7 @@ func (s *Session) WalkGenerateCode(tables []*Table, tplDir string, outputDir str
 				str := s.GenerateCode(tb, tpl, "", true, "")
 				dstPath, _ := s.PredefineTargetPath(tpl, tb)
 				if dstPath == "" {
-					dstPath = s.DefaultTargetPath(path, tb)
+					dstPath = s.defaultTargetPath(path, tb)
 				}
 				if err := SaveFile(str, outputDir+"/"+dstPath); err != nil {
 					println(fmt.Sprintf("[ Gen][ Error]: save file failed! %s ,template:%s",

@@ -34,7 +34,7 @@ func title(str string, shortUpper bool) string {
 
 // 保存到文件
 func SaveFile(s string, path string) error {
-	return util.BytesToFile([]byte(s), path)
+	return util.BytesToFile([]byte(strings.TrimSpace(s)), path)
 }
 
 func ResolvePathString(pattern string, global map[string]interface{}, table *Table) string {

@@ -11,6 +11,9 @@ import (
     "github.com/ixre/gof/util"
 )
 
+{{$c := try_get .columns "update_time"}}
+{{if $c }}haha{{$c.Prop}}{{end}}
+
 type {{.table.Title}}C struct{
 }
 

@@ -126,7 +126,8 @@ Usage of tto:
 ```
 尝试获取一个列,返回列及是否存在的Boolean, 如: 
 ```
-{{ $c,$exist := try_get .columns "update_time" }}
+{{ $c := try_get .columns "update_time" }}
+{{if $c}}prop={{$c.Prop}}{{end}}
 ```
 
 ## 模板

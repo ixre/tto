@@ -85,7 +85,11 @@ Usage of tto:
 ```
 语言类型函数: type
 ```
-{{type "go" .columns[0].TypeId}}
+{{type "go" .columns[0].Type}}
+```
+返回SQL/ORM类型: sql_type
+```
+{{sql_type "py" .columns[0].Type .columns[0].Length}}
 ```
 包名函数: pkg
 ```

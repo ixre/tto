@@ -174,12 +174,12 @@ func (s *Session) AllVars() map[string]interface{} {
 }
 
 // 转换成为模板
-func (s *Session) ParseTemplate(file string) (*CodeTemplate, error) {
+func (s *Session) parseTemplate(file string, attachCopy bool) (*CodeTemplate, error) {
 	data, err := ioutil.ReadFile(file)
 	if err == nil {
-		return NewTemplate(string(data), file), nil
+		return NewTemplate(string(data), file, attachCopy), nil
 	}
-	return NewTemplate("", file), err
+	return NewTemplate("", file, attachCopy), err
 }
 
 // 生成代码
@@ -273,25 +273,23 @@ func (s *Session) formatCode(tpl *CodeTemplate, code string) string {
 		return code
 	}
 	// 去除多行换行
-	code = regexp.MustCompile("(\r?\n(\\s*\r?\n)+)").ReplaceAllString(code, "\n\n")
+	//code = regexp.MustCompile("(\r?\n(\\s*\r?\n)+)").ReplaceAllString(code, "\n\n")
 	return code
 }
 
 // 遍历模板文件夹, 并生成代码, 如果为源代码目标,文件存在,则自动生成添加 .gen后缀
-func (s *Session) WalkGenerateCode(tables []*Table, tplDir string, outputDir string, excludeFiles []string) error {
-	if len(excludeFiles) == 1 && excludeFiles[0] == "" {
-		excludeFiles = nil
-	}
+func (s *Session) WalkGenerateCode(tables []*Table, opt *GenerateOptions) error {
+	opt.prepare()
 	tplMap := map[string]*CodeTemplate{}
-	sliceSize := len(tplDir)
-	if tplDir[sliceSize-1] == '/' {
-		tplDir = tplDir + "/"
+	sliceSize := len(opt.TplDir)
+	if opt.TplDir[sliceSize-1] == '/' {
+		opt.TplDir = opt.TplDir + "/"
 		sliceSize += 1
 	}
-	err := filepath.Walk(tplDir, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(opt.TplDir, func(path string, info os.FileInfo, err error) error {
 		// 如果模板名称以"_"开头，则忽略
-		if info != nil && !info.IsDir() && s.testName(info.Name(), excludeFiles) {
-			tp, err := s.ParseTemplate(path)
+		if info != nil && !info.IsDir() && s.testName(info.Name(), opt.ExcludeFiles) {
+			tp, err := s.parseTemplate(path, opt.AttachCopyright)
 			if err != nil {
 				return errors.New("template:" + info.Name() + "-" + err.Error())
 			}
@@ -317,7 +315,7 @@ func (s *Session) WalkGenerateCode(tables []*Table, tplDir string, outputDir str
 				if dstPath == "" {
 					dstPath = s.defaultTargetPath(path, tb)
 				}
-				if err := SaveFile(str, outputDir+"/"+dstPath); err != nil {
+				if err := SaveFile(str, opt.OutputDir+"/"+dstPath); err != nil {
 					println(fmt.Sprintf("[ Gen][ Error]: save file failed! %s ,template:%s",
 						err.Error(), tpl.FilePath()))
 				}
@@ -351,4 +349,23 @@ func (s *Session) testName(name string, files []string) bool {
 		*/
 	}
 	return true
+}
+
+type GenerateOptions struct {
+	TplDir          string
+	AttachCopyright bool
+	OutputDir       string
+	ExcludeFiles    []string
+}
+
+func (g *GenerateOptions) prepare() {
+	if len(g.ExcludeFiles) == 1 && g.ExcludeFiles[0] == "" {
+		g.ExcludeFiles = nil
+	}
+	if g.TplDir == "" {
+		g.TplDir = "./templates"
+	}
+	if g.OutputDir == "" {
+		g.OutputDir = "./output"
+	}
 }

@@ -30,11 +30,13 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	fm["upper"] = t.upper
 	// 首字母小写: 如:{{lower_title .table.Name}}
 	fm["lower_title"] = t.lowerTitle
-	// 类型: 如:{{type "go" .columns[0].DbType}}
+	// 类型: 如:{{type "go" .columns[0].Type}}
 	fm["type"] = t.langType
+	// 返回SQL/ORM类型, 如：{{sql_type "py" .columns[0].Type}}
+	fm["sql_type"] = t.sqlType
 	// 包名: {{pkg "go" "com/tto/pkg"}}
 	fm["pkg"] = t.langPkg
-	// 默认值, 如:{{default "go" .columns[0].DbType}}
+	// 默认值, 如:{{default "go" .columns[0].Type}}
 	fm["default"] = t.langDefaultValue
 	// 是否相等，如：{{equal "go" "rust"}
 	fm["equal"] = t.equal
@@ -92,6 +94,14 @@ func (t *internalFunc) langType(lang string, typeId int) string {
 		return TsTypes(typeId)
 	}
 	return strconv.Itoa(typeId)
+}
+
+// 返回SQL/ORM类型
+func (t *internalFunc) sqlType(lang string, typeId int, len int) string {
+	if lang == "py" {
+		return PySqlTypes(typeId, len)
+	}
+	panic("not support language except for py")
 }
 
 // 将包名替换为.分割, 通常C#,JAVA语言使用"."分割包名

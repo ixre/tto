@@ -18,7 +18,7 @@ package {{.global.Pkg}}.pojo;
   column: {{$c.Name}}
  {{end}}
 
-`, "")
+`, "", false)
 
 	t.Log(tp.String())
 }

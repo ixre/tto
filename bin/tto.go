@@ -125,10 +125,17 @@ func main() {
 		return
 	}
 	// 获取排除的文件名
-	exludeFiles := strings.Split(re.GetString("code.exclude_files"),",")
-
+	excludeFiles := strings.Split(re.GetString("code.exclude_files"),",")
+	disableAttachCopy := re.GetBoolean("code.disable_attach")
+	// 生成自定义代码
+	opt := &tto.GenerateOptions{
+		TplDir:          tplDir,
+		AttachCopyright: !disableAttachCopy,
+		OutputDir:       genDir,
+		ExcludeFiles:    excludeFiles,
+	}
 	// 生成代码
-	if err := genByArch(arch, dg, tables, genDir, tplDir,exludeFiles); err != nil {
+	if err := genByArch(arch, dg, tables,opt); err != nil {
 		log.Fatalln("[ Gen][ Fail]:", err.Error())
 	}
 	// 生成之后执行操作
@@ -166,17 +173,16 @@ func execCommand(command string, bashExec string) error {
 }
 
 // 根据规则生成代码
-func genByArch(arch string, dg *tto.Session, tables []*tto.Table, genDir string, tplDir string, excludeFiles []string) (err error) {
+func genByArch(arch string, dg *tto.Session, tables []*tto.Table, opt *tto.GenerateOptions) (err error) {
 	// 按架构生成GO代码
 	switch arch {
 	case "repo":
-		err = genGoRepoCode(dg, tables, genDir)
+		err = genGoRepoCode(dg, tables, opt.OutputDir)
 	}
 	if err != nil {
 		println(fmt.Sprintf("[ Gen][ Error]: generate go code fail! %s", err.Error()))
 	}
-	// 生成自定义代码
-	return dg.WalkGenerateCode(tables, tplDir, genDir,excludeFiles)
+	return dg.WalkGenerateCode(tables,opt)
 }
 
 // 获取数据库连接

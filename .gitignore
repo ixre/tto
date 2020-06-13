@@ -28,3 +28,4 @@ go.sum
 generated_code
 *-bin
 tto_*.conf
+*.iml

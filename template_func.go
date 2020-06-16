@@ -48,6 +48,8 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	fm["replace_n"] = t.replaceN
 	// 截取第N个字符位置后的字符串,如:{{substr_n "sys_user_list" "_" 1}}得到:user_list
 	fm["substr_n"] = t.substrN
+	// 截取索引为N的元素,如:{{get_n .tables 0}}
+	fm["get_n"] = t.getN
 	// 字符组合,如：{{str_join "," "1","2","3"}}结果为:1,2,3
 	fm["str_join"] = t.strJoin
 	// 包含函数, 如:{{contain .table.Pk "id"}}
@@ -174,6 +176,26 @@ func (t *internalFunc) substrN(s, char string, n int) string {
 	}
 	return sub
 }
+
+
+// 截取索引为N的元素,如:{{get_n .tables 0}}
+func (t *internalFunc) getN(args interface{},n int) interface{} {
+	kind := reflect.TypeOf(args).Kind()
+	if kind == reflect.Slice || kind == reflect.Array {
+		value := reflect.ValueOf(args)
+		if value.Len()-1<n{
+			return nil
+		}
+		return value.Index(n).Interface()
+	}
+	return nil
+
+	//if len(args)-1 < n{
+	//	return nil
+	//}
+	//return args[n]
+}
+
 
 // 字符组合,如：{{str_join "," "1","2","3"}}结果为:1,2,3
 func (t *internalFunc) strJoin(s string, args ...string) string {

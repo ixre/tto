@@ -116,6 +116,10 @@ Usage of tto:
 ```
 {{substr_n "sys_user_list" "_" 1}}
 ```
+截取索引为N的元素
+```
+{{$first_table := get_n .tables 0}}
+```
 字符组合,如以下语句将输出:`1,2,3`
 ```
 {{str_join "," "1","2","3"}}

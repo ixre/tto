@@ -176,7 +176,8 @@ func (s *Session) GenerateCode(table *Table, tpl *CodeTemplate) string {
 	t.Funcs(s.funcMap)
 	t, err = t.Parse(tpl.template)
 	if err != nil {
-		panic(fmt.Sprintf("file:%s - error:%s", tpl.FilePath(), err.Error()))
+		log.Println("[ app][ fatal]: " + fmt.Sprintf("file:%s - error:%s", tpl.FilePath(), err.Error()))
+		return ""
 	}
 	//n := s.title(table.Name)
 	mp := map[string]interface{}{
@@ -207,7 +208,8 @@ func (s *Session) GenerateCodeByTables(tables []*Table, tpl *CodeTemplate) strin
 	t := (&template.Template{}).Funcs(s.funcMap)
 	t, err = t.Parse(tpl.template)
 	if err != nil {
-		panic(err)
+		log.Println("[ app][ fatal]: "+fmt.Sprintf("file:%s - error:%s", tpl.FilePath(), err.Error()))
+		return ""
 	}
 	mp := map[string]interface{}{
 		"tables": tables,

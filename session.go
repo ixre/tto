@@ -37,12 +37,6 @@ const (
 	TIME = "time"
 	// 版本
 	VERSION = "version"
-	//模型包名
-	ModelPkgName = "ModelPkgName"
-	//仓储结构包名
-	RepoPkgName = "RepoPkgName"
-	//仓储接口包名
-	IfcePkgName = "IfacePkgName"
 )
 
 type (
@@ -120,16 +114,12 @@ func DBCodeGenerator() *Session {
 }
 
 func (s *Session) init() *Session {
-	s.Var(ModelPkgName, "model")
-	s.Var(RepoPkgName, "repo")
-	s.Var(IfcePkgName, "ifce")
-
 	// predefine default vars
-	s.Var("url_prefix","")
+	s.Var("url_prefix", "")
 	// load global registry
 	rd := GetRegistry()
-	for _,k := range rd.Keys{
-		s.Var(k,rd.Data[k])
+	for _, k := range rd.Keys {
+		s.Var(k, rd.Data[k])
 	}
 	// put system vars
 	s.Var(PKG, "com/tto/pkg")
@@ -139,15 +129,6 @@ func (s *Session) init() *Session {
 	return s
 }
 
-// 获取所有的表
-func (s *Session) ParseTables(tbs []*orm.Table, err error) ([]*Table, error) {
-	n := make([]*Table, len(tbs))
-	for i, tb := range tbs {
-		n[i] = parseTable(i, tb, s.IdUpper, false)
-	}
-	return n, err
-}
-
 // 转换表格,如果meta为true,则读取元数据,如果没有则自动生成元数据
 func (s *Session) Parses(tbs []*orm.Table, meta bool) (arr []*Table, err error) {
 	n := make([]*Table, len(tbs))
@@ -155,11 +136,6 @@ func (s *Session) Parses(tbs []*orm.Table, meta bool) (arr []*Table, err error) 
 		n[i] = parseTable(i, tb, s.IdUpper, meta)
 	}
 	return n, err
-}
-
-// 解析模板
-func (s *Session) Resolve(t *CodeTemplate) *CodeTemplate {
-	return t
 }
 
 // 添加函数
@@ -204,7 +180,7 @@ func (s *Session) GenerateCode(table *Table, tpl *CodeTemplate) string {
 	}
 	//n := s.title(table.Name)
 	mp := map[string]interface{}{
-		"global": s.codeVars, // 全局变量
+		"global":  s.codeVars,    // 全局变量
 		"table":   table,         // 数据表
 		"columns": table.Columns, // 列
 	}
@@ -292,9 +268,118 @@ func (s *Session) formatCode(tpl *CodeTemplate, code string) string {
 	return code
 }
 
+
+
 // 遍历模板文件夹, 并生成代码, 如果为源代码目标,文件存在,则自动生成添加 .gen后缀
 func (s *Session) WalkGenerateCode(tables []*Table, opt *GenerateOptions) error {
 	opt.prepare()
+	tplMap, err := s.findTemplates(opt)
+	if err != nil {
+		return err
+	}
+	rc := NewRunnerCalc()
+	s.generateAllTablesCode(tables,tplMap,opt,&rc)
+	s.generateGroupTablesCode(tables,tplMap,opt,&rc)
+	wg := sync.WaitGroup{}
+	for path, tpl := range tplMap {
+		// 生成所有表的代码
+		if tpl.Kind() == KindTables {
+			if !rc.TablesStates[path] {
+				wg.Add(1)
+				go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb []*Table, rc *RunnerCalc) {
+					defer wg.Done()
+					rc.TablesStates[tpl.path] = true
+					out := s.GenerateCodeByTables(tables, tpl)
+					s.flushToFile(tpl, nil, path, out, opt)
+				}(&wg, tpl, tables, &rc)
+			}
+			continue
+		}
+		// 生成带前缀的表的代码
+		if tpl.Kind() == KindTablePrefix {
+
+		}
+		for _, tb := range tables {
+			wg.Add(1)
+			go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb *Table, path string) {
+				defer wg.Done()
+				out := s.GenerateCode(tb, tpl)
+				s.flushToFile(tpl, tb, path, out, opt)
+			}(&wg, tpl, tb, path)
+		}
+	}
+	wg.Wait()
+	return err
+}
+
+
+// 生成所有表的代码
+func (s *Session) generateAllTablesCode(tables []*Table, tplMap map[string]*CodeTemplate, opt *GenerateOptions, rc *RunnerCalc) {
+	wg := sync.WaitGroup{}
+	for path, tpl := range tplMap {
+		if tpl.Kind() != KindTables || rc.TablesStates[path] {
+			continue // 如果生成类型不符合或已经生成,跳过
+		}
+		wg.Add(1)
+		go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb []*Table, rc *RunnerCalc) {
+			defer wg.Done()
+			rc.TablesStates[tpl.path] = true
+			out := s.GenerateCodeByTables(tables, tpl)
+			s.flushToFile(tpl, nil, path, out, opt)
+		}(&wg, tpl, tables, rc)
+	}
+	wg.Wait()
+}
+
+// 按表前缀分组生成代码
+func (s *Session) generateGroupTablesCode(tables []*Table, tplMap map[string]*CodeTemplate, opt *GenerateOptions, rc *RunnerCalc) {
+	// 按前缀分组
+	groups := make(map[string][]*Table,0)
+	for _,t := range tables{
+		prefix:= t.Prefix
+		if prefix == ""{
+			prefix = t.Name
+		}
+		if arr,ok := groups[prefix];ok{
+			arr = append(arr,t)
+		}else {
+			groups[prefix] = []*Table{t}
+		}
+	}
+	wg := sync.WaitGroup{}
+	for path, tpl := range tplMap {
+		if tpl.Kind() != KindTablePrefix{
+			continue
+		}
+		for prefix,tbs := range groups{
+			key := path+"$"+prefix
+			if rc.GroupTablesState[key]{
+				break
+			}
+			wg.Add(1)
+			go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb []*Table, rc *RunnerCalc) {
+				defer wg.Done()
+				rc.TablesStates[tpl.path] = true
+				out := s.GenerateCodeByTables(tbs, tpl)
+				s.flushToFile(tpl, tbs[0], path, out, opt)
+			}(&wg, tpl, tables, rc)
+		}
+	}
+	wg.Wait()
+}
+
+
+func (s *Session) flushToFile(tpl *CodeTemplate, tb *Table, path string, output string, opt *GenerateOptions) {
+	dstPath, _ := s.PredefineTargetPath(tpl, tb)
+	if dstPath == "" {
+		dstPath = s.defaultTargetPath(path, tb)
+	}
+	if err := SaveFile(output, opt.OutputDir+"/"+dstPath); err != nil {
+		println(fmt.Sprintf("[ Gen][ Error]: save file failed! %s ,template:%s", err.Error(), tpl.FilePath()))
+	}
+}
+
+func (s *Session) findTemplates(opt *GenerateOptions) (map[string]*CodeTemplate, error) {
 	tplMap := map[string]*CodeTemplate{}
 	sliceSize := len(opt.TplDir)
 	if opt.TplDir[sliceSize-1] == '/' {
@@ -308,37 +393,14 @@ func (s *Session) WalkGenerateCode(tables []*Table, opt *GenerateOptions) error 
 			if err != nil {
 				return errors.New("template:" + info.Name() + "-" + err.Error())
 			}
-			s.Resolve(tp)
 			tplMap[path[sliceSize:]] = tp
 		}
 		return nil
 	})
-	if err != nil {
-		return err
+	if err == nil && len(tplMap) == 0 {
+		err = errors.New("no any code template")
 	}
-	if len(tplMap) == 0 {
-		return errors.New("no any code template")
-	}
-	wg := sync.WaitGroup{}
-	for _, tb := range tables {
-		for path, tpl := range tplMap {
-			wg.Add(1)
-			go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb *Table, path string) {
-				defer wg.Done()
-				str := s.GenerateCode(tb, tpl)
-				dstPath, _ := s.PredefineTargetPath(tpl, tb)
-				if dstPath == "" {
-					dstPath = s.defaultTargetPath(path, tb)
-				}
-				if err := SaveFile(str, opt.OutputDir+"/"+dstPath); err != nil {
-					println(fmt.Sprintf("[ Gen][ Error]: save file failed! %s ,template:%s",
-						err.Error(), tpl.FilePath()))
-				}
-			}(&wg, tpl, tb, path)
-		}
-	}
-	wg.Wait()
-	return err
+	return tplMap, err
 }
 
 // 验证文件名, 是否可以生成

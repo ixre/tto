@@ -1,0 +1,6 @@
+#!kind:1
+#!target:tables.txt
+
+{{range $i,$table := .tables}}\
+    {{$table.Name}}({{$table.Comment}})
+{{end}}

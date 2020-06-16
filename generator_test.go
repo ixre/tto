@@ -98,7 +98,6 @@ s$
 	//hello
 
 `
-	result := dg.GenerateCode(&Table{Name: "Person"},
-		NewTemplate(str, "", true), "", true, "")
+	result := dg.GenerateCode(&Table{Name: "Person"}, NewTemplate(str, "", true))
 	t.Log("--", result)
 }

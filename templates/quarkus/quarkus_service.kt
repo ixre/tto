@@ -1,8 +1,8 @@
-#!target:kotlin/{{.global.Pkg}}/service/{{.table.Title}}Service.kt.gen
-package {{pkg "java" .global.Pkg}}.service
+#!target:kotlin/{{.global.pkg}}/service/{{.table.Title}}Service.kt.gen
+package {{pkg "java" .global.pkg}}.service
 
-import {{pkg "java" .global.Pkg}}.pojo.{{.table.Title}}Entity
-import {{pkg "java" .global.Pkg}}.repo.{{.table.Title}}JpaRepository
+import {{pkg "java" .global.pkg}}.pojo.{{.table.Title}}Entity
+import {{pkg "java" .global.pkg}}.repo.{{.table.Title}}JpaRepository
 import javax.inject.Inject
 import javax.enterprise.inject.Default
 import javax.enterprise.context.ApplicationScoped

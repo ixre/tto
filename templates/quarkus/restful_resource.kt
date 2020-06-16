@@ -1,9 +1,9 @@
-#!target:kotlin/{{.global.Pkg}}/resources/{{.table.Title}}Resource.kt.gen
-package {{pkg "java" .global.Pkg}}.resources
+#!target:kotlin/{{.global.pkg}}/resources/{{.table.Title}}Resource.kt.gen
+package {{pkg "java" .global.pkg}}.resources
 
-import {{pkg "java" .global.Pkg}}.pojo.{{.table.Title}}Entity
-import {{pkg "java" .global.Pkg}}.service.{{.table.Title}}Service
-import {{pkg "java" .global.Pkg}}.component.TinyQueryComponent
+import {{pkg "java" .global.pkg}}.pojo.{{.table.Title}}Entity
+import {{pkg "java" .global.pkg}}.service.{{.table.Title}}Service
+import {{pkg "java" .global.pkg}}.component.TinyQueryComponent
 import net.fze.arch.commons.std.Result
 import net.fze.arch.component.report.DataResult
 import javax.inject.Inject

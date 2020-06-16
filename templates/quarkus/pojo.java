@@ -1,5 +1,5 @@
-#!target:java/{{.global.Pkg}}/pojo/{{.table.Title}}Entity.java
-package {{pkg "java" .global.Pkg}}.pojo;
+#!target:java/{{.global.pkg}}/pojo/{{.table.Title}}Entity.java
+package {{pkg "java" .global.pkg}}.pojo;
 
 import javax.persistence.Basic;
 import javax.persistence.Id;

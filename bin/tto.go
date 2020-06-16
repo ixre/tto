@@ -8,7 +8,6 @@ import (
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/shell"
 	"github.com/ixre/tto"
-	"github.com/pelletier/go-toml"
 	"log"
 	"os"
 	"runtime"
@@ -16,36 +15,7 @@ import (
 	"time"
 )
 
-type Registry struct {
-	tree *toml.Tree
-}
 
-func LoadRegistry(path string) (*Registry, error) {
-	tree, err := toml.LoadFile(path)
-	if err == nil {
-		return &Registry{tree: tree}, err
-	}
-	return nil, err
-}
-func (r Registry) Contains(key string) bool {
-	return r.tree.Has(key)
-}
-func (r Registry) GetString(key string) string {
-	if r.Contains(key) {
-		return r.Get(key).(string)
-	}
-	return ""
-}
-
-func (r Registry) Get(key string) interface{} {
-	return r.tree.Get(key)
-}
-func (r Registry) GetBoolean(key string) bool {
-	if r.Contains(key) {
-		return r.Get(key).(bool)
-	}
-	return false
-}
 
 func main() {
 	var genDir string   //输出目录
@@ -70,7 +40,7 @@ func main() {
 		println("tto Generator v" + tto.BuildVersion)
 		return
 	}
-	re, err := LoadRegistry(confPath)
+	re, err := tto.LoadRegistry(confPath)
 	if err != nil {
 		println("[ Gen][ Fail]:", err.Error())
 		return
@@ -82,6 +52,7 @@ func main() {
 	if re.Contains("code.pkg") {
 		pkgName = re.GetString("code.pkg")
 	}
+
 	// 获取bash启动脚本，默认unix系统包含了bash，windows下需指定
 	bashExec := ""
 	if runtime.GOOS == "windows" {
@@ -146,12 +117,12 @@ func main() {
 		len(tables)))
 }
 
-func runBefore(re *Registry, bashExec string) error {
+func runBefore(re *tto.Registry, bashExec string) error {
 	beforeRun := strings.TrimSpace(re.GetString("command.before"))
 	return execCommand(beforeRun, bashExec)
 }
 
-func runAfter(re *Registry, bashExec string) error {
+func runAfter(re *tto.Registry, bashExec string) error {
 	afterRun := strings.TrimSpace(re.GetString("command.after"))
 	return execCommand(afterRun, bashExec)
 }
@@ -186,7 +157,7 @@ func genByArch(arch string, dg *tto.Session, tables []*tto.Table, opt *tto.Gener
 }
 
 // 获取数据库连接
-func getDb(driver string, r *Registry) *sql.DB {
+func getDb(driver string, r *tto.Registry) *sql.DB {
 	//数据库连接字符串
 	//root@tcp(127.0.0.1:3306)/db_name?charset=utf8
 	var prefix = "database"

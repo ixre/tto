@@ -32,11 +32,11 @@ var (
 
 const (
 	// 包名
-	PKG = "Pkg"
+	PKG = "pkg"
 	// 当前时间
-	TIME = "Time"
+	TIME = "time"
 	// 版本
-	VERSION = "Version"
+	VERSION = "version"
 	//模型包名
 	ModelPkgName = "ModelPkgName"
 	//仓储结构包名
@@ -107,7 +107,6 @@ type Session struct {
 	// 模板函数
 	funcMap map[string]interface{}
 	IdUpper bool
-	fn      *internalFunc
 }
 
 // 数据库代码生成器
@@ -115,19 +114,28 @@ func DBCodeGenerator() *Session {
 	fn := &internalFunc{}
 	return (&Session{
 		codeVars: make(map[string]interface{}),
-		fn:       fn,
 		funcMap:  fn.funcMap(),
 		IdUpper:  false,
 	}).init()
 }
 
 func (s *Session) init() *Session {
-	s.Var(PKG, "com/tto/pkg")
-	s.Var(TIME, time.Now().Format("2006/01/02 15:04:05"))
-	s.Var(VERSION, BuildVersion)
 	s.Var(ModelPkgName, "model")
 	s.Var(RepoPkgName, "repo")
 	s.Var(IfcePkgName, "ifce")
+
+	// predefine default vars
+	s.Var("url_prefix","")
+	// load global registry
+	rd := GetRegistry()
+	for _,k := range rd.Keys{
+		s.Var(k,rd.Data[k])
+	}
+	// put system vars
+	s.Var(PKG, "com/tto/pkg")
+	s.Var(TIME, time.Now().Format("2006/01/02 15:04:05"))
+	s.Var(VERSION, BuildVersion)
+
 	return s
 }
 
@@ -183,8 +191,7 @@ func (s *Session) parseTemplate(file string, attachCopy bool) (*CodeTemplate, er
 }
 
 // 生成代码
-func (s *Session) GenerateCode(table *Table, tpl *CodeTemplate,
-	structSuffix string, sign bool, ePrefix string) string {
+func (s *Session) GenerateCode(table *Table, tpl *CodeTemplate) string {
 	if table == nil {
 		return ""
 	}
@@ -198,11 +205,8 @@ func (s *Session) GenerateCode(table *Table, tpl *CodeTemplate,
 	//n := s.title(table.Name)
 	mp := map[string]interface{}{
 		"global": s.codeVars, // 全局变量
-		//"version": s.codeVars[VERSION], // 版本
-		//"pkg":     s.codeVars[PKG],     //包名
 		"table":   table,         // 数据表
 		"columns": table.Columns, // 列
-		//"pk":      table.Pk,                  // 主键列名
 	}
 	buf := bytes.NewBuffer(nil)
 	err = t.Execute(buf, mp)
@@ -273,7 +277,7 @@ func (s *Session) formatCode(tpl *CodeTemplate, code string) string {
 		return code
 	}
 	// 去除多行换行
-	//code = regexp.MustCompile("(\r?\n(\\s*\r?\n)+)").ReplaceAllString(code, "\n\n")
+	//code = regexp.MustCompile("(\Data?\n(\\s*\Data?\n)+)").ReplaceAllString(code, "\n\n")
 	return code
 }
 
@@ -310,7 +314,7 @@ func (s *Session) WalkGenerateCode(tables []*Table, opt *GenerateOptions) error 
 			wg.Add(1)
 			go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb *Table, path string) {
 				defer wg.Done()
-				str := s.GenerateCode(tb, tpl, "", true, "")
+				str := s.GenerateCode(tb, tpl)
 				dstPath, _ := s.PredefineTargetPath(tpl, tb)
 				if dstPath == "" {
 					dstPath = s.defaultTargetPath(path, tb)

@@ -44,7 +44,7 @@ func CommonValues(typeId int) string {
 	case orm.TypeFloat32, orm.TypeFloat64:
 		return "0.0"
 	case orm.TypeString:
-		return "null"
+		return "\"\""
 	}
-	return fmt.Sprintf("Unknown type id:%d", typeId)
+	return "null"
 }

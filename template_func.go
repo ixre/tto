@@ -24,6 +24,8 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	fm["mathRemain"] = t.mathRemain
 	// 单词首字大写
 	fm["title"] = t.title
+	// 将名称转为路径,规则： 替换首个"_"为"/"
+	fm["name_path"] = t.nameToPath
 	// 小写
 	fm["lower"] = t.lower
 	// 大写
@@ -49,7 +51,7 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	// 是否以指定字符结束, 如:{{ends_with .table.Pk "id"}}
 	fm["ends_with"] = t.endsWith
 	// 返回是否为数组中的最后一个元素索引
-	fm["last_index"] = t.lastIndex
+	fm["is_last"] = t.isLast
 	// 排除列元素, 组成新的列数组, 如：{{ $columns := exclude .columns "id","create_time" }}
 	fm["exclude"] = t.exclude
 	// 尝试获取一个列,返回列及是否存在的Boolean, 如: {{ $c,$exist := try_get .columns "update_time" }}
@@ -78,6 +80,11 @@ func (t *internalFunc) lowerTitle(s string) string {
 // 将字符串单词首字母大写
 func (t *internalFunc) title(s string) string {
 	return strings.Title(s)
+}
+
+// 将名称转为路径,规则： 替换首个"_"为"/"
+func (t *internalFunc) nameToPath(s string) string{
+	return strings.Replace(s,"_","/",1)
 }
 
 func (t *internalFunc) langType(lang string, typeId int) string {
@@ -126,6 +133,8 @@ func (t *internalFunc) langDefaultValue(lang string, typeId int) string {
 	case "java":
 	case "kotlin":
 		return JavaValues(typeId)
+	case "py":
+		return CommonValues(typeId)
 	}
 	return CommonValues(typeId)
 }
@@ -167,11 +176,11 @@ func (t *internalFunc) endsWith(v interface{}, s string) bool {
 // 返回是否为数组中的最后一个元素索引,如：
 // {{$columns := .columns}}
 // {{range $,$v := .columns}}
-//	  {{if last_index $i .columns}}
+//	  {{if is_last $i .columns}}
 //		last column
 //	  {{end}}
 // {{end}}
-func (t *internalFunc) lastIndex(i int, arr interface{}) bool {
+func (t *internalFunc) isLast(i int, arr interface{}) bool {
 	kind := reflect.TypeOf(arr).Kind()
 	if kind == reflect.Slice || kind == reflect.Array {
 		return i == reflect.ValueOf(arr).Len()-1

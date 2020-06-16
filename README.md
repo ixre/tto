@@ -61,7 +61,7 @@ Usage of tto:
 - \#!lang: 指定当前生成代码的语言
 如:
 ```
-#!target:java/{{.global.Pkg}}/pojo/{{.table.Title}}Entity.java
+#!target:java/{{.global.pkg}}/pojo/{{.table.Title}}Entity.java
 ```
 多个预定义表达式可以放在一行
 ```
@@ -93,7 +93,7 @@ Usage of tto:
 ```
 包名函数: pkg
 ```
-{{pkg "go" .global.Pkg}}
+{{pkg "go" .global.pkg}}
 ```
 默认值函数: default
 ```
@@ -106,6 +106,10 @@ Usage of tto:
 替换, 如将`table_name`替换为:`table-name`
 ```
 {{replace "table_name" "_" "-"}}
+```
+替换N次, 如将`table_name`替换为:`table-name`
+```
+{{replace_n "table_name" "_" "-" 1}}
 ```
 包含函数
 ```
@@ -122,7 +126,7 @@ Usage of tto:
 是否为表的列(数组)的最后一列
 ```
 {{$columns := .columns}}
-{{range $,$v := .columns}}{{if last_index $i .columns}} last column {{end}}{{end}}
+{{range $,$v := .columns}}{{if is_last $i .columns}} last column {{end}}{{end}}
 ```
 排除列元素, 组成新的列数组, 如：
 ```
@@ -133,6 +137,11 @@ Usage of tto:
 {{ $c := try_get .columns "update_time" }}
 {{if $c}}prop={{$c.Prop}}{{end}}
 ```
+将名称转为路径,规则： 替换首个"_"为"/"
+```
+{{$path := name_path .table.Name}}
+```
+
 
 ## 模板
 
@@ -147,26 +156,36 @@ Usage of tto:
 
 ### global
 
-**用于读取全局变量, global的属性均以大写开头; global为小写.**
+**用于读取全局变量**
 
 1. 输出生成器的版本号
 ```
-// this file created by generate {{.global.Version}}
+// this file created by generate {{.global.version}}
 ```
 2. 输出包名,包名通过配置文件配置.格式为: com/pkg
 ```
-package {{.global.Pkg}}
+package {{.global.pkg}}
 ```
 如果是Java或其他语言, 包名以"."分割, 可使用pkg函数,如:
 ```
 // java package
-package {{pkg "java" .global.Pkg}}
+package {{pkg "java" .global.pkg}}
 // c# namespace
-namespace {{pkg "csharp" .global.Pkg}}
+namespace {{pkg "csharp" .global.pkg}}
 ```
 3. 输出当前时间
 ```
-generate time {{.global.Time}}
+generate time {{.global.time}}
+```
+4. 输出自定义变量
+用户可以通过在配置文件的节点`[global]`中进行添加变量,如:
+```
+[global]
+url_prefix="/api"
+```
+使用以下语法读取变量
+```
+{{.global.url_prefix}}
 ```
 
 ### table 数据表对象
@@ -213,8 +232,8 @@ generate time {{.global.Time}}
 以下代码用于生成Java的Pojo对象, 更多示例点击[这里](templates)
 
 ```
-#!target:{{.global.Pkg}}/pojo/{{.table.Title}}Entity.java
-package {{pkg "java" .global.Pkg}}.pojo;
+#!target:{{.global.pkg}}/pojo/{{.table.Title}}Entity.java
+package {{pkg "java" .global.pkg}}.pojo;
 
 import javax.persistence.Basic;
 import javax.persistence.Id;

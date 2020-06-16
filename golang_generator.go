@@ -11,8 +11,7 @@ func (s *Session) tableToGoRepo(table *Table,
 	sign bool, ePrefix string) (string, string) {
 	tpl := GoEntityRepTemplate
 	path, _ := s.PredefineTargetPath(tpl, table)
-	return s.GenerateCode(table, GoEntityRepTemplate,
-		"Repo", sign, ePrefix), path
+	return s.GenerateCode(table, GoEntityRepTemplate), path
 }
 
 // 表生成仓库仓储接口
@@ -20,8 +19,7 @@ func (s *Session) tableToGoIRepo(table *Table,
 	sign bool, ePrefix string) (string, string) {
 	tpl := GoEntityRepIfceTemplate
 	path, _ := s.PredefineTargetPath(tpl, table)
-	return s.GenerateCode(table, tpl,
-		"Repo", sign, ePrefix), path
+	return s.GenerateCode(table, tpl), path
 }
 
 // 表生成结构
@@ -41,6 +39,7 @@ func (s *Session) tableToGoStruct(table *Table) (string, string) {
 	buf.WriteString(title(table.Name, s.IdUpper))
 	buf.WriteString(" struct{\n")
 
+	fn := internalFunc{}
 	for _, col := range table.Columns {
 		if col.Comment != "" {
 			buf.WriteString("    // ")
@@ -50,7 +49,7 @@ func (s *Session) tableToGoStruct(table *Table) (string, string) {
 		buf.WriteString("    ")
 		buf.WriteString(title(col.Name, s.IdUpper))
 		buf.WriteString(" ")
-		buf.WriteString(s.fn.langType("go", col.Type))
+		buf.WriteString(fn.langType("go", col.Type))
 		buf.WriteString(" `")
 		buf.WriteString("db:\"")
 		buf.WriteString(col.Name)

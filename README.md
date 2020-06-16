@@ -164,6 +164,9 @@ Usage of tto:
 - table
 - columns
 
+按所有表(前缀分组)模板包含对象：
+- global
+- tables
 
 ### global
 

@@ -239,6 +239,10 @@ func (s *Session) PredefineTargetPath(tpl *CodeTemplate, table *Table) (string, 
 		mp := map[string]interface{}{
 			"global": s.AllVars(),
 			"table":  table,
+			"prefix":"",
+		}
+		if table != nil{
+			mp["prefix"] = table.Prefix
 		}
 		buf := bytes.NewBuffer(nil)
 		err = t.Execute(buf, mp)
@@ -282,30 +286,15 @@ func (s *Session) WalkGenerateCode(tables []*Table, opt *GenerateOptions) error 
 	s.generateGroupTablesCode(tables,tplMap,opt,&rc)
 	wg := sync.WaitGroup{}
 	for path, tpl := range tplMap {
-		// 生成所有表的代码
-		if tpl.Kind() == KindTables {
-			if !rc.TablesStates[path] {
+		if tpl.Kind() == KindNormal {
+			for _, tb := range tables {
 				wg.Add(1)
-				go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb []*Table, rc *RunnerCalc) {
+				go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb *Table, path string) {
 					defer wg.Done()
-					rc.TablesStates[tpl.path] = true
-					out := s.GenerateCodeByTables(tables, tpl)
-					s.flushToFile(tpl, nil, path, out, opt)
-				}(&wg, tpl, tables, &rc)
+					out := s.GenerateCode(tb, tpl)
+					s.flushToFile(tpl, tb, path, out, opt)
+				}(&wg, tpl, tb, path)
 			}
-			continue
-		}
-		// 生成带前缀的表的代码
-		if tpl.Kind() == KindTablePrefix {
-
-		}
-		for _, tb := range tables {
-			wg.Add(1)
-			go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb *Table, path string) {
-				defer wg.Done()
-				out := s.GenerateCode(tb, tpl)
-				s.flushToFile(tpl, tb, path, out, opt)
-			}(&wg, tpl, tb, path)
 		}
 	}
 	wg.Wait()
@@ -321,12 +310,12 @@ func (s *Session) generateAllTablesCode(tables []*Table, tplMap map[string]*Code
 			continue // 如果生成类型不符合或已经生成,跳过
 		}
 		wg.Add(1)
-		go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb []*Table, rc *RunnerCalc) {
+		go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb []*Table, rc *RunnerCalc,path string) {
 			defer wg.Done()
 			rc.TablesStates[tpl.path] = true
 			out := s.GenerateCodeByTables(tables, tpl)
 			s.flushToFile(tpl, nil, path, out, opt)
-		}(&wg, tpl, tables, rc)
+		}(&wg, tpl, tables, rc,path)
 	}
 	wg.Wait()
 }
@@ -341,7 +330,7 @@ func (s *Session) generateGroupTablesCode(tables []*Table, tplMap map[string]*Co
 			prefix = t.Name
 		}
 		if arr,ok := groups[prefix];ok{
-			arr = append(arr,t)
+			groups[prefix] = append(arr,t)
 		}else {
 			groups[prefix] = []*Table{t}
 		}
@@ -357,12 +346,12 @@ func (s *Session) generateGroupTablesCode(tables []*Table, tplMap map[string]*Co
 				break
 			}
 			wg.Add(1)
-			go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb []*Table, rc *RunnerCalc) {
+			go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb []*Table, rc *RunnerCalc,path string) {
 				defer wg.Done()
-				rc.TablesStates[tpl.path] = true
+				rc.TablesStates[key] = true
 				out := s.GenerateCodeByTables(tbs, tpl)
 				s.flushToFile(tpl, tbs[0], path, out, opt)
-			}(&wg, tpl, tables, rc)
+			}(&wg, tpl, tables, rc,path)
 		}
 	}
 	wg.Wait()

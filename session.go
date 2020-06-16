@@ -228,8 +228,7 @@ func (s *Session) GenerateCodeByTables(tables []*Table, tpl *CodeTemplate) strin
 		return ""
 	}
 	var err error
-	t := &template.Template{}
-	t.Funcs(s.funcMap)
+	t := (&template.Template{}).Funcs(s.funcMap)
 	t, err = t.Parse(tpl.template)
 	if err != nil {
 		panic(err)
@@ -254,10 +253,22 @@ func (s *Session) GenerateCodeByTables(tables []*Table, tpl *CodeTemplate) strin
 
 // 获取生成目标代码文件路径
 func (s *Session) PredefineTargetPath(tpl *CodeTemplate, table *Table) (string, error) {
-	if n, ok := tpl.Predefine("target"); ok {
-		return ResolvePathString(n, s.AllVars(), table), nil
+	n, ok := tpl.Predefine("target")
+	if !ok {
+		return "", errors.New("template not contain predefine command #!target")
 	}
-	return "", errors.New("template not contain predefine command #!target")
+	var t = (&template.Template{}).Funcs(s.funcMap)
+	t, err := t.Parse(n)
+	if err == nil {
+		mp := map[string]interface{}{
+			"global": s.AllVars(),
+			"table":  table,
+		}
+		buf := bytes.NewBuffer(nil)
+		err = t.Execute(buf, mp)
+		return strings.TrimSpace(buf.String()), err
+	}
+	return "", err
 }
 
 // 连接文件路径

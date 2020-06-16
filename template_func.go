@@ -44,6 +44,12 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	fm["equal"] = t.equal
 	// 替换,如: {{replace "table_name" "_" "-"}}
 	fm["replace"] = t.replace
+	// 替换N次,如: {{replace_n "table_name" "_" "-" 1}}
+	fm["replace_n"] = t.replaceN
+	// 截取第N个字符位置后的字符串,如:{{substr_n "sys_user_list" "_" 1}}得到:user_list
+	fm["substr_n"] = t.substrN
+	// 字符组合,如：{{str_join "," "1","2","3"}}结果为:1,2,3
+	fm["str_join"] = t.strJoin
 	// 包含函数, 如:{{contain .table.Pk "id"}}
 	fm["contain"] = t.contain
 	// 是否以指定字符开始, 如:{{starts_with .table.Pk "id"}}
@@ -83,8 +89,8 @@ func (t *internalFunc) title(s string) string {
 }
 
 // 将名称转为路径,规则： 替换首个"_"为"/"
-func (t *internalFunc) nameToPath(s string) string{
-	return strings.Replace(s,"_","/",1)
+func (t *internalFunc) nameToPath(s string) string {
+	return strings.Replace(s, "_", "/", 1)
 }
 
 func (t *internalFunc) langType(lang string, typeId int) string {
@@ -146,7 +152,32 @@ func (t *internalFunc) equal(v1, v2 interface{}) bool {
 
 // 替换,如: {{replace "table_name" "_" "-"}}
 func (t *internalFunc) replace(s, oldStr, newStr string) string {
-	return strings.Replace(s, oldStr, newStr, -1)
+	return t.replaceN(s, oldStr, newStr, -1)
+}
+
+// 替换N次,如: {{replace_n "table_name" "_" "-" 1}}
+func (t *internalFunc) replaceN(s, oldStr, newStr string, n int) string {
+	return strings.Replace(s, oldStr, newStr, n)
+}
+
+// 截取第N个字符位置后的字符串,如:{{substr_n "sys_user_list" "_" 1}}得到:user_list
+func (t *internalFunc) substrN(s, char string, n int) string {
+	sub := s
+	i, times := 0, 0
+	for {
+		if i = strings.Index(sub, char); i > -1 {
+			sub = sub[i+1:]
+			if times++; times == n {
+				break
+			}
+		}
+	}
+	return sub
+}
+
+// 字符组合,如：{{str_join "," "1","2","3"}}结果为:1,2,3
+func (t *internalFunc) strJoin(s string, args ...string) string {
+	return strings.Join(args, s)
 }
 
 // 是否包含

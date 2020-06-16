@@ -111,6 +111,16 @@ Usage of tto:
 ```
 {{replace_n "table_name" "_" "-" 1}}
 ```
+截取第N个字符位置后的字符串,如以下语句将输出:user_list
+```
+{{substr_n "sys_user_list" "_" 1}}
+```
+字符组合,如以下语句将输出:`1,2,3`
+```
+{{str_join "," "1","2","3"}}
+{{$api := str_join "/" .global.url_prefix (name_path .table.Name)}}
+```
+
 包含函数
 ```
 {{contain .table.Pk "id"}}

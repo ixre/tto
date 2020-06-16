@@ -22,3 +22,9 @@ package {{.global.pkg}}.pojo;
 
 	t.Log(tp.String())
 }
+
+func TestSubstrN(t *testing.T) {
+	fn := &internalFunc{}
+	s := fn.substrN("admin_user_list", "_", 2)
+	println(s)
+}

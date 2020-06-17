@@ -22,6 +22,7 @@ func main() {
 	var confPath string //设置目录
 	var tplDir string   //模板目录
 	var table string
+	var excludedTables string
 	var arch string //代码架构
 	var debug bool
 	var printVer bool
@@ -31,6 +32,7 @@ func main() {
 	flag.StringVar(&tplDir, "t", "./templates", "path of code templates directory")
 	flag.StringVar(&confPath, "conf", "./tto.conf", "config path")
 	flag.StringVar(&table, "table", "", "table name or table prefix")
+	flag.StringVar(&excludedTables,"excludes","","exclude tables by prefix")
 	flag.StringVar(&arch, "arch", "", "program language")
 	flag.BoolVar(&cleanLast,"clean",false,"clean last generate files")
 	flag.BoolVar(&debug, "debug", false, "debug mode")
@@ -44,13 +46,13 @@ func main() {
 	}
 	re, err := tto.LoadRegistry(confPath)
 	if err != nil {
-		println("[ Gen][ Fail]:", err.Error())
+		println("[ tto][ fatal]:", err.Error())
 		return
 	}
 	log.SetFlags(log.Ltime | log.Lshortfile)
 	defer crashRecover(debug)
 	// 获取包名
-	pkgName := "com/pkg"
+	pkgName := "com/tto/pkg"
 	if re.Contains("code.pkg") {
 		pkgName = re.GetString("code.pkg")
 	}
@@ -61,18 +63,18 @@ func main() {
 		if re.Contains("command.bash_path") {
 			bashExec = re.GetString("command.bash_path")
 		} else {
-			println("[ Gen][ Warning]: guest os need config bash path")
+			println("[ tto][ warning]: guest os need config bash path")
 		}
 	}
 	// 清理之前生成的结果
 	if cleanLast {
 		if err = os.RemoveAll(genDir); err != nil {
-			log.Fatalln("[ Gen][ Fail]:", err.Error())
+			log.Fatalln("[ tto][ fatal]:", err.Error())
 		}
 	}
 	// 生成之前执行操作
 	if err := runBefore(re, bashExec); err != nil {
-		log.Fatalln("[ Gen][ Fail]:", err.Error())
+		log.Fatalln("[ tto][ fatal]:", err.Error())
 	}
 	// 初始化生成器
 	driver := re.GetString("database.driver")
@@ -87,7 +89,12 @@ func main() {
 	}
 	list,err := ds.TablesByPrefix(dbName, schema, table)
 	if err != nil{
-		println("[ tto][ error]: not found tables", err.Error())
+		println("[ app][ info]: ", err.Error())
+		return
+	}
+	list = filterTables(list, excludedTables)
+	if len(list) == 0 {
+		println("[ app][ info]: no any tables")
 		return
 	}
 	// 获取表格并转换
@@ -109,14 +116,35 @@ func main() {
 	}
 	// 生成代码
 	if err := genByArch(arch, dg, tables,opt); err != nil {
-		log.Fatalln("[ Gen][ Fail]:", err.Error())
+		log.Fatalln("[ tto][ fatal]:", err.Error())
 	}
 	// 生成之后执行操作
 	if err := runAfter(re, bashExec); err != nil {
-		log.Fatalln("[ Gen][ Fail]:", err.Error())
+		log.Fatalln("[ tto][ fatal]:", err.Error())
 	}
 	println(fmt.Sprintf("[ Gen][ Success]: generate successfully! all %d tasks.",
 		len(tables)))
+}
+
+func filterTables(tables []*orm.Table, noTable string) ([]*orm.Table) {
+	if noTable == "" {
+		return tables
+	}
+	excludes := strings.Split(noTable,";")
+	arr := make([]*orm.Table, 0)
+	for _, v := range tables {
+		match := false
+		for _,k := range excludes {
+			if strings.Index(v.Name,k) != -1{
+				match = true
+				break
+			}
+		}
+		if !match{
+			arr =append(arr,v)
+		}
+	}
+	return arr
 }
 
 func runBefore(re *tto.Registry, bashExec string) error {

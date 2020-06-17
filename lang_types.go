@@ -99,3 +99,17 @@ func TsTypes(typeId int) string {
 	}
 	return "any"
 }
+
+func PyTypes(typeId int) string {
+	switch typeId {
+	case orm.TypeBoolean:
+		return "bool"
+	case orm.TypeFloat32,orm.TypeFloat64:
+		return "float"
+	case orm.TypeInt16, orm.TypeInt32, orm.TypeInt64:
+		return "int"
+	case orm.TypeString:
+		return "str"
+	}
+	return "any"
+}

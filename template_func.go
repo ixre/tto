@@ -107,6 +107,8 @@ func (t *internalFunc) langType(lang string, typeId int) string {
 		return ThriftTypes(typeId)
 	case "ts":
 		return TsTypes(typeId)
+	case "py":
+		return PyTypes(typeId)
 	}
 	return strconv.Itoa(typeId)
 }
@@ -122,7 +124,7 @@ func (t *internalFunc) sqlType(lang string, typeId int, len int) string {
 // 将包名替换为.分割, 通常C#,JAVA语言使用"."分割包名
 func (t *internalFunc) langPkg(lang string, pkg string) string {
 	switch lang {
-	case "java", "kotlin", "csharp", "thrift":
+	case "java", "kotlin", "csharp", "thrift","py":
 		return strings.Replace(pkg, "/", ".", -1)
 	case "go", "rust", "php", "python":
 		i := strings.LastIndexAny(pkg, "/.")

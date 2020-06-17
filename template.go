@@ -3,6 +3,7 @@ package tto
 import (
 	"regexp"
 	"strings"
+	"sync"
 )
 
 var (
@@ -25,18 +26,21 @@ type CodeTemplate struct {
 	template  string
 	predefine map[string]string
 	kind  TemplateKind
+	mux *sync.RWMutex
 }
 
 func NewTemplate(s string, path string, attach bool) *CodeTemplate {
-	t := &CodeTemplate{path: path}
+	t := &CodeTemplate{path: path,mux: &sync.RWMutex{}}
 	return t.resolve(t.attach(s,attach))
 }
 
 func (g *CodeTemplate) resolve(s string) *CodeTemplate {
+	g.mux.Lock()
 	g.predefine = make(map[string]string)
 	for _, match := range predefineRegexp.FindAllStringSubmatch(s, -1) {
 		g.predefine[match[1]] = match[2]
 	}
+	g.mux.Unlock()
 	g.template = g.format(s)
 	// 识别类型
 	switch g.predefine["kind"] {
@@ -72,6 +76,8 @@ func (g *CodeTemplate) String() string {
 
 // 获取预定义的参数
 func (g *CodeTemplate) Predefine(key string) (string, bool) {
+	g.mux.RLock()
+	defer g.mux.RUnlock()
 	n, ok := g.predefine[key]
 	return n, ok
 }

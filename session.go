@@ -246,6 +246,7 @@ func (s *Session) PredefineTargetPath(tpl *CodeTemplate, table *Table) (string, 
 		if table != nil{
 			mp["prefix"] = table.Prefix
 		}
+
 		buf := bytes.NewBuffer(nil)
 		err = t.Execute(buf, mp)
 		return strings.TrimSpace(buf.String()), err
@@ -286,6 +287,7 @@ func (s *Session) WalkGenerateCode(tables []*Table, opt *GenerateOptions) error 
 	rc := NewRunnerCalc()
 	s.generateAllTablesCode(tables,tplMap,opt,&rc)
 	s.generateGroupTablesCode(tables,tplMap,opt,&rc)
+
 	wg := sync.WaitGroup{}
 	for path, tpl := range tplMap {
 		if tpl.Kind() == KindNormal {
@@ -308,23 +310,23 @@ func (s *Session) WalkGenerateCode(tables []*Table, opt *GenerateOptions) error 
 func (s *Session) generateAllTablesCode(tables []*Table, tplMap map[string]*CodeTemplate, opt *GenerateOptions, rc *RunnerCalc) {
 	wg := sync.WaitGroup{}
 	for path, tpl := range tplMap {
-		if tpl.Kind() != KindTables || rc.TablesStates[path] {
+		if tpl.Kind() != KindTables || rc.State(path) {
 			continue // 如果生成类型不符合或已经生成,跳过
 		}
 		wg.Add(1)
 		go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb []*Table, rc *RunnerCalc,path string) {
 			defer wg.Done()
-			rc.TablesStates[tpl.path] = true
+			rc.SignState(tpl.path, true)
 			out := s.GenerateCodeByTables(tables, tpl)
 			s.flushToFile(tpl, nil, path, out, opt)
 		}(&wg, tpl, tables, rc,path)
 	}
 	wg.Wait()
+
 }
 
 // 按表前缀分组生成代码
 func (s *Session) generateGroupTablesCode(tables []*Table, tplMap map[string]*CodeTemplate, opt *GenerateOptions, rc *RunnerCalc) {
-	// 按前缀分组
 	groups := make(map[string][]*Table,0)
 	for _,t := range tables{
 		prefix:= t.Prefix
@@ -337,6 +339,7 @@ func (s *Session) generateGroupTablesCode(tables []*Table, tplMap map[string]*Co
 			groups[prefix] = []*Table{t}
 		}
 	}
+
 	wg := sync.WaitGroup{}
 	for path, tpl := range tplMap {
 		if tpl.Kind() != KindTablePrefix{
@@ -344,16 +347,18 @@ func (s *Session) generateGroupTablesCode(tables []*Table, tplMap map[string]*Co
 		}
 		for prefix,tbs := range groups{
 			key := path+"$"+prefix
-			if rc.GroupTablesState[key]{
+			if rc.State(key){
 				break
 			}
-			wg.Add(1)
 			go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb []*Table, rc *RunnerCalc,path string) {
-				defer wg.Done()
-				rc.TablesStates[key] = true
+				//defer wg.Done()
+				rc.SignState(key,true)
+				wg.Done()  //todo: 在执行模板时会导致挂起BUG
 				out := s.GenerateCodeByTables(tbs, tpl)
 				s.flushToFile(tpl, tbs[0], path, out, opt)
 			}(&wg, tpl, tables, rc,path)
+			wg.Add(1)
+			time.Sleep(time.Second/5)
 		}
 	}
 	wg.Wait()

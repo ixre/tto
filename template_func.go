@@ -2,10 +2,10 @@ package tto
 
 import (
 	"github.com/ixre/gof/util"
-	ht "html/template"
 	"reflect"
 	"strconv"
 	"strings"
+	ht "text/template"
 	"unicode"
 )
 
@@ -17,7 +17,6 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	fm := make(map[string]interface{})
 	fm["boolInt"] = t.boolInt
 	fm["isEmpty"] = t.isEmpty
-	fm["raw"] = t.rawHtml
 	fm["add"] = t.plus
 	fm["plus"] = t.plus
 	fm["multi"] = t.multi
@@ -124,7 +123,7 @@ func (t *internalFunc) sqlType(lang string, typeId int, len int) string {
 // 将包名替换为.分割, 通常C#,JAVA语言使用"."分割包名
 func (t *internalFunc) langPkg(lang string, pkg string) string {
 	switch lang {
-	case "java", "kotlin", "csharp", "thrift","py":
+	case "java", "kotlin", "csharp", "thrift", "py":
 		return strings.Replace(pkg, "/", ".", -1)
 	case "go", "rust", "php", "python":
 		i := strings.LastIndexAny(pkg, "/.")
@@ -166,26 +165,26 @@ func (t *internalFunc) replaceN(s, oldStr, newStr string, n int) string {
 
 // 截取第N个字符位置后的字符串,如:{{substr_n "sys_user_list" "_" 1}}得到:user_list
 func (t *internalFunc) substrN(s, char string, n int) string {
-	sub := s
 	i, times := 0, 0
 	for {
-		if i = strings.Index(sub, char); i > -1 {
-			sub = sub[i+1:]
-			if times++; times == n {
-				break
-			}
+		i = strings.Index(s, char)
+		if i == -1 {
+			break
+		}
+		s = s[i+1:]
+		if times++; times == n {
+			break
 		}
 	}
-	return sub
+	return s
 }
 
-
 // 截取索引为N的元素,如:{{get_n .tables 0}}
-func (t *internalFunc) getN(args interface{},n int) interface{} {
+func (t *internalFunc) getN(args interface{}, n int) interface{} {
 	kind := reflect.TypeOf(args).Kind()
 	if kind == reflect.Slice || kind == reflect.Array {
 		value := reflect.ValueOf(args)
-		if value.Len()-1<n{
+		if value.Len()-1 < n {
 			return nil
 		}
 		return value.Index(n).Interface()
@@ -197,7 +196,6 @@ func (t *internalFunc) getN(args interface{},n int) interface{} {
 	//}
 	//return args[n]
 }
-
 
 // 字符组合,如：{{str_join "," "1","2","3"}}结果为:1,2,3
 func (t *internalFunc) strJoin(s string, args ...string) string {
@@ -312,11 +310,6 @@ func (t *internalFunc) isEmpty(s string) bool {
 		return true
 	}
 	return strings.TrimSpace(s) == ""
-}
-
-// 转换为HTML
-func (t *internalFunc) rawHtml(v interface{}) ht.HTML {
-	return ht.HTML(util.Str(v))
 }
 
 //求余

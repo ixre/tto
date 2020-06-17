@@ -38,8 +38,8 @@ func main() {
 	flag.BoolVar(&debug, "debug", false, "debug mode")
 	flag.BoolVar(&printVer, "v", false, "print version")
 	flag.Parse()
-
-	//tplDir = "./templates/java"
+	tplDir = "./templates/vue-ts"
+	excludedTables ="phpyun_;"
 	if printVer {
 		println("tto Generator v" + tto.BuildVersion)
 		return
@@ -126,7 +126,7 @@ func main() {
 		len(tables)))
 }
 
-func filterTables(tables []*orm.Table, noTable string) ([]*orm.Table) {
+func filterTables(tables []*orm.Table, noTable string) []*orm.Table {
 	if noTable == "" {
 		return tables
 	}
@@ -135,7 +135,7 @@ func filterTables(tables []*orm.Table, noTable string) ([]*orm.Table) {
 	for _, v := range tables {
 		match := false
 		for _,k := range excludes {
-			if strings.Index(v.Name,k) != -1{
+			if k != "" && strings.Index(v.Name,k) != -1{
 				match = true
 				break
 			}
@@ -218,11 +218,12 @@ func getDb(driver string, r *tto.Registry) *sql.DB {
 	conn,err := db.NewConnector(driver, connStr, nil, false)
 	if err == nil {
 		log.Println("[ tto][ init]: connect to database..")
-		if err := conn.Ping(); err != nil {
-			conn.Close()
-			//如果异常，则显示并退出
-			log.Fatalln("[ tto][ init]:" + conn.Driver() + "-" + err.Error())
-		}
+		err = conn.Ping()
+	}
+	if err != nil {
+		conn.Close()
+		//如果异常，则显示并退出
+		log.Fatalln("[ tto][ init]:" + conn.Driver() + "-" + err.Error())
 	}
 	d := conn.Raw()
 	d.SetMaxIdleConns(10)

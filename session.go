@@ -208,7 +208,7 @@ func (s *Session) GenerateCodeByTables(tables []*Table, tpl *CodeTemplate) strin
 	t := (&template.Template{}).Funcs(s.funcMap)
 	t, err = t.Parse(tpl.template)
 	if err != nil {
-		log.Println("[ app][ fatal]: "+fmt.Sprintf("file:%s - error:%s", tpl.FilePath(), err.Error()))
+		log.Println("[ app][ fatal]: " + fmt.Sprintf("file:%s - error:%s", tpl.FilePath(), err.Error()))
 		return ""
 	}
 	mp := map[string]interface{}{
@@ -241,12 +241,12 @@ func (s *Session) PredefineTargetPath(tpl *CodeTemplate, table *Table) (string, 
 		mp := map[string]interface{}{
 			"global": s.AllVars(),
 			"table":  table,
-			"prefix":"",
+			"prefix": "",
 		}
-		if table != nil{
+		// 添加前缀
+		if table != nil {
 			mp["prefix"] = table.Prefix
 		}
-
 		buf := bytes.NewBuffer(nil)
 		err = t.Execute(buf, mp)
 		return strings.TrimSpace(buf.String()), err
@@ -275,8 +275,6 @@ func (s *Session) formatCode(tpl *CodeTemplate, code string) string {
 	return code
 }
 
-
-
 // 遍历模板文件夹, 并生成代码, 如果为源代码目标,文件存在,则自动生成添加 .gen后缀
 func (s *Session) WalkGenerateCode(tables []*Table, opt *GenerateOptions) error {
 	opt.prepare()
@@ -285,9 +283,17 @@ func (s *Session) WalkGenerateCode(tables []*Table, opt *GenerateOptions) error 
 		return err
 	}
 	rc := NewRunnerCalc()
-	s.generateAllTablesCode(tables,tplMap,opt,&rc)
-	s.generateGroupTablesCode(tables,tplMap,opt,&rc)
+	ch := make(chan int, 3)
+	s.generateAllTablesCode(ch, tables, tplMap, opt, &rc)
+	s.generateGroupTablesCode(ch, tables, tplMap, opt, &rc)
+	s.generateTables(ch, tables, opt, tplMap)
+	<-ch
+	<-ch
+	<-ch
+	return err
+}
 
+func (s *Session) generateTables(ch chan int, tables []*Table, opt *GenerateOptions, tplMap map[string]*CodeTemplate) {
 	wg := sync.WaitGroup{}
 	for path, tpl := range tplMap {
 		if tpl.Kind() == KindNormal {
@@ -302,68 +308,64 @@ func (s *Session) WalkGenerateCode(tables []*Table, opt *GenerateOptions) error 
 		}
 	}
 	wg.Wait()
-	return err
+	ch <- 1
 }
 
-
 // 生成所有表的代码
-func (s *Session) generateAllTablesCode(tables []*Table, tplMap map[string]*CodeTemplate, opt *GenerateOptions, rc *RunnerCalc) {
+func (s *Session) generateAllTablesCode(ch chan int, tables []*Table, tplMap map[string]*CodeTemplate, opt *GenerateOptions, rc *RunnerCalc) {
 	wg := sync.WaitGroup{}
 	for path, tpl := range tplMap {
 		if tpl.Kind() != KindTables || rc.State(path) {
 			continue // 如果生成类型不符合或已经生成,跳过
 		}
 		wg.Add(1)
-		go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb []*Table, rc *RunnerCalc,path string) {
+		go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb []*Table, rc *RunnerCalc, path string) {
 			defer wg.Done()
 			rc.SignState(tpl.path, true)
 			out := s.GenerateCodeByTables(tables, tpl)
 			s.flushToFile(tpl, nil, path, out, opt)
-		}(&wg, tpl, tables, rc,path)
+		}(&wg, tpl, tables, rc, path)
 	}
 	wg.Wait()
-
+	ch <- 1
 }
 
 // 按表前缀分组生成代码
-func (s *Session) generateGroupTablesCode(tables []*Table, tplMap map[string]*CodeTemplate, opt *GenerateOptions, rc *RunnerCalc) {
-	groups := make(map[string][]*Table,0)
-	for _,t := range tables{
-		prefix:= t.Prefix
-		if prefix == ""{
-			prefix = t.Name
-		}
-		if arr,ok := groups[prefix];ok{
-			groups[prefix] = append(arr,t)
-		}else {
+func (s *Session) generateGroupTablesCode(ch chan int, tables []*Table, tplMap map[string]*CodeTemplate, opt *GenerateOptions, rc *RunnerCalc) {
+	//　分组,无前缀的所有表归类到一组
+	groups := make(map[string][]*Table, 0)
+	for _, t := range tables {
+		prefix := t.Prefix
+		if arr, ok := groups[prefix]; ok {
+			groups[prefix] = append(arr, t)
+		} else {
 			groups[prefix] = []*Table{t}
 		}
 	}
-
 	wg := sync.WaitGroup{}
 	for path, tpl := range tplMap {
-		if tpl.Kind() != KindTablePrefix{
+		if tpl.Kind() != KindTablePrefix {
 			continue
 		}
-		for prefix,tbs := range groups{
-			key := path+"$"+prefix
-			if rc.State(key){
+		for prefix, tbs := range groups {
+			key := path + "$" + prefix
+			if rc.State(key) {
 				break
 			}
-			go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb []*Table, rc *RunnerCalc,path string) {
-				//defer wg.Done()
-				rc.SignState(key,true)
-				wg.Done()  //todo: 在执行模板时会导致挂起BUG
+			wg.Add(1)
+			//time.Sleep(time.Second/5)
+			go func(wg *sync.WaitGroup, tpl *CodeTemplate, tbs []*Table,
+				rc *RunnerCalc, path string, key string) {
+				defer wg.Done()
+				rc.SignState(tpl.path, true)
 				out := s.GenerateCodeByTables(tbs, tpl)
 				s.flushToFile(tpl, tbs[0], path, out, opt)
-			}(&wg, tpl, tables, rc,path)
-			wg.Add(1)
-			time.Sleep(time.Second/5)
+			}(&wg, tpl, tbs, rc, path, key)
 		}
 	}
 	wg.Wait()
+	ch <- 1
 }
-
 
 func (s *Session) flushToFile(tpl *CodeTemplate, tb *Table, path string, output string, opt *GenerateOptions) {
 	dstPath, _ := s.PredefineTargetPath(tpl, tb)
@@ -389,7 +391,7 @@ func (s *Session) findTemplates(opt *GenerateOptions) (map[string]*CodeTemplate,
 			if err != nil {
 				return errors.New("template:" + info.Name() + "-" + err.Error())
 			}
-			tplMap[path[sliceSize:]] = tp
+			tplMap[path[sliceSize-1:]] = tp
 		}
 		return nil
 	})

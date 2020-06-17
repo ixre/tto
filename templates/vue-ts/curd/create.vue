@@ -1,5 +1,5 @@
 #!lang:ts＃!name:新增界面
-#!target:ts/feature/{{.table.Prefix}}/{{.table.Name}}/create.vue
+#!target:ts/feature/{{name_path .table.Name}}/create.vue
 <template>
   <{{replace .table.Name "_" "-"}}-form :is-edit="false" />
 </template>

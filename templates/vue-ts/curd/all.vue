@@ -1,74 +1,92 @@
 #!lang:ts＃!name:全功能界面
-#!lang:ts#!target:ts/feature/{{.table.Prefix}}/{{.table.Name}}/all.vue
+#!lang:ts#!target:ts/feature/{{name_path .table.Name}}/all.vue
 <template>
-    <div class="app-container mod-grid-container">
-        <!-- 查询和其他操作 -->
-        <div class="filter-container mod-grid-bar">
-            <div class="mod-grid-bar-create">
-                <el-button v-permission="['admin']" class="filter-item" type="primary" icon="el-icon-edit" @click="handleCreate">新增</el-button>
-            </div>
-            <div class="mod-grid-bar-filter">
-                <el-form :inline="true">
-                    <el-form-item label="关键词：">
-                        <el-input v-model="listQuery.keyword" clearable class="filter-item" style="width: 200px;" placeholder="输入关键词" />
-                    </el-form-item>
-                    <el-form-item label="状态：">
-                        <el-select v-model="listQuery.state" clearable style="width: 200px" class="filter-item" placeholder="选择状态" >
-                            <el-option v-for="(item,index) in stateOptions" :key="index" :label="item.key" :value="item.value" />
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button v-permission="['admin']" class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查找</el-button>
-                    </el-form-item>
-                </el-form>
-            </div>
-            <div class="mod-grid-bar-del">
-                <el-button v-show="selectedRows.length > 0" v-permission="['admin']" class="filter-item" type="danger" icon="el-icon-edit" @click="batchDelete">删除</el-button>
-            </div>
+<div class="app-container mod-grid-container">
+    <!-- 查询和其他操作 -->
+    <div class="filter-container mod-grid-bar">
+        <div class="mod-grid-bar-create">
+            <el-button v-permission="['admin']" class="filter-item" type="primary" icon="el-icon-edit" @click="handleCreate">新增</el-button>
         </div>
-        <!-- 表单数据　-->
-        <el-table ref="table" v-loading="listLoading" :data="list" :height="tableHeight" border fit highlight-current-row
-                  element-loading-text="正在查询中..." @selection-change="handleSelectionChange"
-                  class="mod-grid-table">
-            <el-table-column align="center" type="selection" width="55" />
-            {{range $i,$c := .columns}}
-            {{if ends_with $c.Name "_time"}}
-            <el-table-column width="100px" align="center" label="{{$c.Comment}}">
-                <template slot-scope="scope">
-                    <span>{{`{{ scope.row.`}}{{$c.Name}}{{ `| parseTime}}`}}</span>
-                </template>
-            </el-table-column>
-            {{else}}
-            <el-table-column  width="80" align="center" label="{{$c.Comment}}" prop="{{$c.Name}}"/>
-            {{end}}
-            {{end}}
-
-            <el-table-column align="center" label="操作" width="120">
-                <template slot-scope="scope">
-                    <el-button type="primary" size="mini" icon="el-icon-edit" @click="handleEdit(scope.row)">编辑</el-button>
-                    <el-button type="danger" size="mini" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-
-        <!-- 分页　-->
-        <pagination class="mod-grid-pagination" v-show="total>0" :total="total" :page.sync="listQuery.page"
-                    :limit.sync="listQuery.rows" @pagination="fetchData"/>
-
-        <!-- 弹出操作框 -->
-        <el-dialog class="mod-dialog" :title="dialog.title" :visible.sync="dialog.open" width="40%" @close="dialogClosed">
-            <component v-bind:is="modal" :id="dialog.id" @refresh="refresh"></component>
-        </el-dialog>
-
+        <div class="mod-grid-bar-filter">
+            <el-form :inline="true">
+                <el-form-item label="关键词：">
+                    <el-input v-model="queryParams.keyword" clearable class="filter-item" style="width: 200px;" placeholder="输入关键词" />
+                </el-form-item>
+                <el-form-item label="状态：">
+                    <el-select v-model="queryParams.state" clearable style="width: 200px" class="filter-item" @change="fetchData" >
+                        <el-option v-for="(value,attr) in states" :key="value" :label="attr" :value="value" />
+                    </el-select>
+                </el-form-item>
+                <el-form-item>
+                    <el-button v-permission="['admin']" class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查找</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
+        <div class="mod-grid-bar-del">
+            <el-button v-show="selectedRows.length > 0" v-permission="['admin']" class="filter-item" type="danger" icon="el-icon-edit" @click="batchDelete">删除</el-button>
+        </div>
     </div>
+    <!-- 表单数据　-->
+    <el-table ref="table" v-loading="list.loading" :data="list.data" :height="tableHeight" border fit highlight-current-row
+              @selection-change="handleSelectionChange" class="mod-grid-table">
+        <el-table-column align="center" type="selection" width="55" />
+        {{range $i,$c := .columns}}
+        {{if ends_with $c.Name "_time"}}
+        <el-table-column width="160" align="center" label="{{$c.Comment}}">
+            <template slot-scope="scope">
+                <span>{{`{{ scope.row.`}}{{$c.Name}}{{ `| parseTime}}`}}</span>
+            </template>
+        </el-table-column>
+        {{else if ends_with $c.Name "state"}}
+        <el-table-column width="120" align="center" label="{{$c.Comment}}">
+            <template slot-scope="scope">
+                <span v-for="(value,attr) in states" v-if="value === scope.row.state">{{`{{attr}}`}}</span>
+            </template>
+        </el-table-column>
+        {{else if starts_with $c.Name "is_"}}
+        <el-table-column width="120" align="center" label="{{$c.Comment}}">
+             <template slot-scope="scope">
+                <span v-for="(it,i) in ['否','是']" v-if="i===scope.row.{{$c.Name}}-1">{{`{{it}}`}}</span>
+             </template>
+        </el-table-column>
+        {{else}}
+        <el-table-column width="120" align="center" label="{{$c.Comment}}" prop="{{$c.Name}}"/>
+        {{end}}
+        {{end}}
+
+        <el-table-column align="center" label="操作">
+            <template slot-scope="scope">
+                <el-button type="primary" size="mini" icon="el-icon-edit" @click="handleEdit(scope.row)">编辑</el-button>
+                <el-button type="danger" size="mini" icon="el-icon-delete" v-loading="requesting" @click="handleDelete(scope.row)">删除</el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+
+    <!-- 分页　-->
+    <pagination class="mod-grid-pagination" v-show="list.total>0" :total="list.total" :page.sync="list.page"
+                :limit.sync="list.rows" @pagination="fetchData"/>
+
+    <!-- 弹出操作框 -->
+    <el-dialog class="mod-dialog" :title="dialog.title" :visible.sync="dialog.open" width="40%" @close="dialogClosed">
+        <component v-bind:is="modal" :id="dialog.id" @refresh="refresh"></component>
+    </el-dialog>
+
+</div>
 </template>
 {{$Class := .table.Title}}
 {{$PkType := .table.PkType}}
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import Pagination from '@/components/Pagination/index.vue';
-import { I{{$Class}}Dbo,getPaging{{$Class}},delete{{$Class}},batchDelete{{$Class}} } from './api';
+import {getPaging{{$Class}},delete{{$Class}},batchDelete{{$Class}} } from './api';
 import {{$Class}}Form from './form.vue';
+
+
+// {{.table.Comment}}数据库映射类
+interface IListModel {
+    {{range $i,$c := .columns}}{{$c.Name}}:{{type "ts" $c.Type}} // {{$c.Comment}}
+    {{end}}
+}
 
 @Component({
     name: '{{$Class}}List',
@@ -79,21 +97,20 @@ import {{$Class}}Form from './form.vue';
 })
 export default class extends Vue {
     private dialog = {title:"标题",open:false,id:0};
-    private modal :any;
+    private modal :any = null;
+    private requesting = 0;
     private tableHeight = 0;
-    private total = 0;
-    private list: I{{$Class}}Dbo[] = [];
-    private listLoading = true;
-    private stateOptions = [{key:"全部",value:-1},{key:"正常",value:1},{key:"停用",value:0}];
     private selectedIds :{{type "ts" $PkType}}[]= [];
-    private selectedRows:I{{$Class}}Dbo[] = [];
-    private listQuery = {
-        page: 1,
-        rows: 20,
-        keyword:"",
-        state:0,
-        params: "",
+    private selectedRows:IListModel[] = [];
+    private list:{loading:boolean,total:number,page:number,rows:number,data: IListModel[]} = {loading:false,total:0, page: 1, rows: 10,data:[]};
+    /** 定义查询参数 */
+    private queryParams = {
+       keyword:"",
+       state:-1
     };
+    /** 根据实际情况调整 */
+    private states = {"全部":-1,"正常":1,"停用":0};
+
     created() {
         this.fetchData();
     }
@@ -109,22 +126,21 @@ export default class extends Vue {
 
     // 读取分页数据
     private async fetchData(args:any|null = null) {
-        this.listLoading = true;
-        const { data } = await getPaging{{$Class}}(this.listQuery)
-        this.list = data.rows;
-        this.total = data.total;
-        this.listLoading = false;
+        const { data } = await getPaging{{$Class}}(this.list.page,this.list.rows,this.queryParams)
+        this.list.data = data.rows;
+        this.list.total = data.total;
+        setTimeout(()=>this.list.loading = false,300);
     }
 
     private handleFilter() {
-        this.listQuery.page = 1
+        this.list.page = 1
         this.fetchData();
     }
 
-    private handleSelectionChange(rows:I{{$Class}}Dbo[]) {
+    private handleSelectionChange(rows:IListModel[]) {
         this.selectedRows = rows;
         this.selectedIds = [];
-        rows.map(it=> this.selectedIds.push(it.id));
+        rows.map(it=> this.selectedIds.push(it.{{.table.Pk}}));
     }
 
     // 新增数据
@@ -133,12 +149,12 @@ export default class extends Vue {
     }
 
     // 编辑数据
-    private handleEdit(row:I{{$Class}}Dbo){
-        this.modalForm(null,"编辑{{.table.Comment}}");
+    private handleEdit(row:IListModel){
+        this.modalForm(row,"编辑{{.table.Comment}}");
     }
 
     // 打开模态表单
-    private modalForm(row:I{{$Class}}Dbo|null,title:string){
+    private modalForm(row:IListModel|null,title:string){
       this.dialog.open = true;
       this.dialog.id = row?row.{{.table.Pk}}:0;
       this.modal = {{$Class}}Form;
@@ -154,7 +170,7 @@ export default class extends Vue {
     private refresh(s:{state:number,args:any}){
         if(!s.state)return;
         this.modal = null;
-        this.dialog.open = true;
+        this.dialog.open = false;
         this.fetchData(s.args);
     }
 
@@ -164,18 +180,21 @@ export default class extends Vue {
             cancelButtonText: '取消',
             type: 'warning'
         }).then(async () => {
-            let ret = await deleteProdVersion(row.{{.table.Pk}});
+            if(this.requesting === 1)return;this.requesting = 1;
+            let ret = await delete{{$Class}}(row.{{.table.Pk}}).finally(()=>this.requesting = 0);
             const {errCode,errMsg} = ret.data;
             if(errCode === 0){
                 this.$notify.success({
                     title: '操作成功',
-                    message: '操作成功'
+                    message: '操作成功',
+                    duration:2000
                 });
-                this.fetchData();
+                await this.fetchData();
             }else{
                 this.$notify.error({
                     title: '操作失败',
-                    message: errMsg
+                    message: errMsg,
+                    duration:2000
                 });
             }
         }).catch(() => {
@@ -189,18 +208,21 @@ export default class extends Vue {
             cancelButtonText: '取消',
             type: 'warning'
         }).then(async () => {
-            let ret = await batchDeleteProdVersion(this.selectedIds);
+            if(this.requesting === 1)return;this.requesting = 1;
+            let ret = await batchDelete{{$Class}}(this.selectedIds).finally(()=>this.requesting = 0);
             const {errCode,errMsg} = ret.data;
             if(errCode === 0){
                 this.$notify.success({
                     title: '操作成功',
-                    message: '操作成功'
+                    message: '操作成功',
+                    duration:2000
                 });
-                this.fetchData();
+                await this.fetchData();
             }else{
                 this.$notify.error({
                     title: '删除失败',
-                    message: errMsg
+                    message: errMsg,
+                    duration:2000
                 });
             }
         }).catch(() => {

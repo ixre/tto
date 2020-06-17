@@ -1,5 +1,5 @@
 #!lang:ts＃!name:编辑界面
-#!target:ts/feature/{{.table.Prefix}}/{{.table.Name}}/edit.vue
+#!target:ts/feature/{{name_path .table.Name}}/edit.vue
 <template>
   <{{replace .table.Name "_" "-"}}-form :id="id"/>
 </template>

@@ -1,13 +1,7 @@
 #!lang:ts＃!name:API和定义文件
-#!target:ts/feature/{{.table.Prefix}}/{{.table.Name}}/api.ts
+#!target:ts/feature/{{name_path .table.Name}}/api.ts
 import request from '@/utils/request'
-
-// {{.table.Comment}}数据库映射类
-export interface I{{.table.Title}}Dbo {
-    {{range $i,$c := .columns}}// {{$c.Comment}}
-    {{$c.Name}}:{{type "ts" $c.Type}}
-    {{end}}
-}
+{{$path := str_join "/" .global.url_prefix (name_path .table.Name)}}
 
 // {{.table.Comment}}对象
 export interface I{{.table.Title}} {
@@ -23,60 +17,51 @@ export const default{{.table.Title}}:()=>I{{.table.Title}}=()=>{
     };
 }
 
-export const get{{.table.Title}}s = (params: any) =>
+export const get{{.table.Title}} = (id: any, params: any = {}) =>
     request({
-        url: '/{{.table.Name}}/list',
+        url: `{{$path}}/${id}`,
         method: 'get',
-        params:{...params,portal:"{{.table.Title}}List"}
+        params:{...params}
     })
 
-
-
-export const get{{.table.Title}}List = (params: any) =>
+export const get{{.table.Title}}List = (params: any = {}) =>
     request({
-        url: '/{{.table.Name}}',
-        method: 'post',
-        params:params
-    })
-
-export const get{{.table.Title}} = (id: any, params: any) =>
-    request({
-        url: `/{{.table.Name}}/${id}`,
+        url: '{{$path}}',
         method: 'get',
-        params
+        params:{...params}
     })
 
 export const create{{.table.Title}} = (data: any) =>
     request({
-        url: '/{{.table.Name}}',
+        url: '{{$path}}',
         method: 'post',
         data
     })
 
 export const update{{.table.Title}} = (id: any, data: any) =>
     request({
-        url: `/{{.table.Name}}/${id}`,
+        url: `{{$path}}/${id}`,
         method: 'put',
         data
     })
 
 export const delete{{.table.Title}} = (id: any) =>
     request({
-        url: `/{{.table.Name}}/${id}`,
+        url: `{{$path}}/${id}`,
         method: 'delete'
     });
 
 export const batchDelete{{.table.Title}} = (arr: any[]) =>
     request({
-        url: '/{{.table.Name}}',
+        url: '{{$path}}',
         method: 'delete',
         data:arr
     });
 
 
-export const getPaging{{.table.Title}} = (params: any) =>
+export const getPaging{{.table.Title}} = (page:number,rows:number,params: any) =>
     request({
-        url: '/{{.table.Name}}/paging',
+        url: '{{$path}}/paging',
         method: 'get',
-        params:{...params,portal:"{{.table.Title}}List"}
+        params:{page,rows,params}
     })

@@ -10,7 +10,9 @@ package tto
 
 import (
 	"github.com/ixre/tto/utils"
+	"sync"
 	"testing"
+	"time"
 )
 
 type testStruct struct {
@@ -45,24 +47,16 @@ func TestStructAssignCode(t *testing.T) {
 }
 
 func TestGenByTemplate(t *testing.T) {
-	dg := DBCodeGenerator()
-	str := `#!target:ts/feature/{{name_path .table.Name}}/api.ts
-<div class="gra-form-field col-md-6">
-        <div class="gra-form-label">&nbsp;</div>
-        <div class="gra-form-col">
-            <div class="gra-btn gra-btn-inline btn-submit">确认订单</div>
-        </div>
-    </div>
-</div>
-
-s$
-		${x}
-        entity["create_time"] = utils.unix2str(entity["create_time"]);
-        entity["create_time"] = utils.unix2str(entity["create_time"]);
-        entity["create_time"] = utils.unix2str(entity["create_time"]);
-	//hello
-
-`
-	result := dg.GenerateCode(&Table{Name: "admin_user"}, NewTemplate(str, "", true))
-	t.Log("--", result)
+	wg := &sync.WaitGroup{}
+	wg.Add(10)
+	for i:=0;i<10;i++ {
+		go func(wg *sync.WaitGroup) {
+			wg.Done()
+			//result := dg.GenerateCode(&Table{Name: "admin_user"}, NewTemplate(str, "", true))
+			//t.Log("--", result)
+		}(wg)
+	}
+	wg.Wait()
+	println("haha")
+	time.Sleep(30*time.Second)
 }

@@ -38,8 +38,7 @@ func main() {
 	flag.BoolVar(&debug, "debug", false, "debug mode")
 	flag.BoolVar(&printVer, "v", false, "print version")
 	flag.Parse()
-	tplDir = "./templates/vue-ts"
-	excludedTables ="phpyun_;"
+
 	if printVer {
 		println("tto Generator v" + tto.BuildVersion)
 		return

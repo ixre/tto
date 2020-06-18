@@ -96,7 +96,7 @@ interface IListModel {
     }
 })
 export default class extends Vue {
-    private dialog = {title:"标题",open:false,id:0};
+    private dialog:{title:string,open:boolean,id:number|string}= {title:"Form",open:false,id:0};
     private modal :any = null;
     private requesting = 0;
     private tableHeight = 0;

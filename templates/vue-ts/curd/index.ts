@@ -2,7 +2,7 @@
 import Layout from "@/layout/index.vue";
 import {RouteConfig} from "vue-router";
 
-{{$path := ""}}
+{{$path := substr_n .table.Name "_" 1}}
 
 /** 如果新增编辑在新的窗口打开, 去掉create/edit/list 的hidden属性 */
 export const {{.table.Title}}Routes : RouteConfig = {

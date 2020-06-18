@@ -5,7 +5,7 @@
     <el-form ref="formData" :model="formData" :rules="rules" size="mini" class="form-container mod-form">
       <div class="createPost-main-container mod-form-container">
         {{range $i,$c := .columns}}\
-        {{if ne $c.IsPk true}}{{$name:= lower_title $c.Prop}}{{$ele:= $c.Render.Element}}\
+        {{if not $c.IsPk}}{{$name:= lower_title $c.Prop}}{{$ele:= $c.Render.Element}}\
         <el-row>
           <el-col :span="24">
             <el-form-item class="mod-form-item" label-width="80px" label="{{$c.Comment}}:"　prop="{{$name}}">
@@ -53,8 +53,7 @@ import {I{{$Class}}, default{{$Class}},get{{$Class}},create{{$Class}},update{{$C
   }
 })
 export default class extends Vue {
-  @Prop({ default: false }) private isEdit!: boolean;
-  @Prop({ default: 0 }) private id!: number|string;
+  @Prop({ default: 0 }) private id!: number|string; /* 如果id有值,则为更新.　反之为新增.　如：:disabled="id" */
 
   private formData :I{{$Class}} = default{{$Class}}();
   private requesting = 0;
@@ -73,7 +72,7 @@ export default class extends Vue {
     }
   }
 
-  // 设置验证表单字段的规则
+  // 设置验证表单字段的规则,取消验证请注释对应的规则
   private rules = {
     {{range $i,$c := $validateColumns}}{{if ne $c.IsPk true}}
     {{lower_title $c.Prop}}: [{label:"{{$c.Comment}}", validator: this.validate }] \
@@ -87,16 +86,14 @@ export default class extends Vue {
 
   created() {
     if(!this.id && this.$route.params)this.id = this.$route.params.id;
-    if (this.id) {
-      this.fetchData(this.id);
-    }
+    if (this.id)this.fetchData(this.id);
   }
 
   private async fetchData(id: any) {
     try {
+      /* document.title = (this.lang === 'zh' ? '编辑{{$Comment}}' : 'Edit {{$Class}}')+'-'+id; */
       const { data } = await get{{$Class}}(id, { /* Your params here */ });
       this.formData = data;
-      document.title = (this.lang === 'zh' ? '编辑{{$Comment}}' : 'Edit {{$Class}}')+'-'+id;
     } catch (err) {
       console.error(err);
     }

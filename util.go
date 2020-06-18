@@ -2,6 +2,7 @@ package tto
 
 import (
 	"github.com/ixre/gof/util"
+	"os"
 	"strings"
 	"unicode"
 )
@@ -32,6 +33,15 @@ func title(str string, shortUpper bool) string {
 
 // 保存到文件
 func SaveFile(s string, path string) error {
+	// 将路径转为正确的路径
+	//path = filepath.Clean(path)
+	// 如果保存到自定义目录,　源文件存在时,自动添加.gen后缀
+	if strings.Index(path,"/output/") == -1{
+		fi,_ := os.Stat(path)
+		if fi != nil{
+			path += ".gen"
+		}
+	}
 	return util.BytesToFile([]byte(strings.TrimSpace(s)), path)
 }
 

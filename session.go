@@ -18,17 +18,12 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"sync"
 	"text/template"
 	"time"
 )
 
-var (
-	emptyReg       = regexp.MustCompile("\\s+\"\\s*\"\\s*\\n")
-	emptyImportReg = regexp.MustCompile("import\\s*\\(([\\n\\s\"]+)\\)")
-)
 
 const (
 	// 包名
@@ -188,12 +183,7 @@ func (s *Session) GenerateCode(table *Table, tpl *CodeTemplate) string {
 	buf := bytes.NewBuffer(nil)
 	err = t.Execute(buf, mp)
 	if err == nil {
-		code := buf.String()
-		//去除空引用
-		code = emptyImportReg.ReplaceAllString(code, "")
-		//如果不包含模型，则可能为引用空的包
-		code = emptyReg.ReplaceAllString(code, "")
-		return s.formatCode(tpl, code)
+		return s.formatCode(tpl, buf.String())
 	}
 	log.Println("execute template error:", err.Error())
 	return ""
@@ -218,12 +208,7 @@ func (s *Session) GenerateCodeByTables(tables []*Table, tpl *CodeTemplate) strin
 	buf := bytes.NewBuffer(nil)
 	err = t.Execute(buf, mp)
 	if err == nil {
-		code := buf.String()
-		//去除空引用
-		code = emptyImportReg.ReplaceAllString(code, "")
-		//如果不包含模型，则可能为引用空的包
-		code = emptyReg.ReplaceAllString(code, "")
-		return s.formatCode(tpl, code)
+		return s.formatCode(tpl, buf.String())
 	}
 	log.Println("execute template error:", err.Error())
 	return ""
@@ -270,6 +255,11 @@ func (s *Session) formatCode(tpl *CodeTemplate, code string) string {
 	if k, _ := tpl.Predefine("format"); k == "false" {
 		return code
 	}
+	//emptyReg       = regexp.MustCompile("\\s+\"\\s*\"\\s*\\n")
+	//regexp.MustCompile("import\\s*\\(([\\n\\s\"]+)\\)")
+
+	//如果不包含模型，则可能为引用空的包
+	//code = emptyReg.ReplaceAllString(code, "")
 	// 去除多行换行
 	//code = regexp.MustCompile("(\Data?\n(\\s*\Data?\n)+)").ReplaceAllString(code, "\n\n")
 	return code
@@ -372,16 +362,9 @@ func (s *Session) flushToFile(tpl *CodeTemplate, tb *Table, path string, output 
 	if dstPath == "" {
 		dstPath = s.defaultTargetPath(path, tb)
 	}
-	savedPath := opt.OutputDir+"/"+dstPath
-	// 如果保存到自定义目录,　源文件存在时,自动添加.gen后缀
-	if strings.Index(savedPath,"/output/") == -1{
-		fi,_ := os.Stat(savedPath)
-		if fi != nil{
-			savedPath += ".gen"
-		}
-	}
-	if err := SaveFile(output,savedPath); err != nil {
-		println(fmt.Sprintf("[ Gen][ Error]: save file failed! %s ,template:%s", err.Error(), tpl.FilePath()))
+	savedPath := filepath.Clean(opt.OutputDir + "/" + dstPath)
+	if err := SaveFile(output, savedPath); err != nil {
+		println(fmt.Sprintf("[ tto][ error]: save file failed! %s ,template:%s", err.Error(), tpl.FilePath()))
 	}
 }
 

@@ -28,3 +28,12 @@ func TestSubstrN(t *testing.T) {
 	s := fn.substrN("admin_user_list", "_", 2)
 	println(s)
 }
+
+func TestMultiQuota(t *testing.T){
+	str := `--, ""
+	haha
+`
+	dg := DBCodeGenerator()
+	result := dg.GenerateCode(&Table{Name: "admin_user"}, NewTemplate(str, "", true))
+	t.Log("--", result)
+}

@@ -104,6 +104,10 @@ Usage of tto:
 ```
 {{equal (3%2) 1}
 ```
+是否与多个值相等,　如表的主键是否为int类型
+```
+{{equals .table.PkType 3 4 5}}
+```
 替换, 如将`table_name`替换为:`table-name`
 ```
 {{replace "table_name" "_" "-"}}

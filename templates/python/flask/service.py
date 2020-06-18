@@ -21,7 +21,7 @@ class {{$title}}Service:
     # 保存{{$comment}}
     def save(self, e) -> ({{$pkType}}, str):
         dst = None
-        {{if equals $pkTypeId 3 4 5}}\
+        {{if equal_any $pkTypeId 3 4 5}}\
         if e.{{$pkName}} > 0: \
         {{else if eq $pkTypeId 1}}\
         if e.{{$pkName}} is not None and e.{{$pkName}} != "":\

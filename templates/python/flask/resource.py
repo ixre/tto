@@ -80,7 +80,7 @@ class {{$title}}Paging(Resource):
         p = dump_query.parse_params(query.get("params"))
         p["page_size"] = query.get("rows")
         p["page_index"] = query.get("page")
-        count, data = self.items.get("{{.table.Prefix}}/{{$title}}List").dumps_data(p)
+        count, data = self.items.get("{{.table.Prefix}}/{{substr_n .table.Name "_" 1}}_list").dumps_data(p)
         return {"total": count, "rows": data}
 
 

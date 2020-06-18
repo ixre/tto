@@ -41,8 +41,8 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	fm["default"] = t.langDefaultValue
 	// 是否相等，如：{{equal "go" "rust"}
 	fm["equal"] = t.equal
-	// 是否与多个值相等,　如：{{equals 1 2 3 4}}, 1是否与2,3,4相等
-	fm["equals"] = t.equalsValue
+	// 是否与任意值相等,　如：{{equal_any 1 2 3 4}}, 1是否与2,3,4相等
+	fm["equal_any"] = t.equalAnyValue
 	// 替换,如: {{replace "table_name" "_" "-"}}
 	fm["replace"] = t.replace
 	// 替换N次,如: {{replace_n "table_name" "_" "-" 1}}
@@ -155,8 +155,8 @@ func (t *internalFunc) equal(v1, v2 interface{}) bool {
 	return v1 == v2
 }
 
-// 是否与多个值相等,　如：{{equals 1 2 3 4}}, 1是否与2,3,4相等
-func (t *internalFunc) equalsValue(src interface{},args ...interface{})bool{
+// 是否与任意值相等,　如：{{equal_any 1 2 3 4}}, 1是否与2,3,4相等
+func (t *internalFunc) equalAnyValue(src interface{},args ...interface{})bool{
 	for _,v := range args{
 		if v == src{
 			return true

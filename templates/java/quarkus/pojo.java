@@ -1,4 +1,4 @@
-#!target:java/{{.global.pkg}}/pojo/{{.table.Title}}Entity.java
+#!target:src/main/java/{{.global.pkg}}/pojo/{{.table.Title}}Entity.java
 package {{pkg "java" .global.pkg}}.pojo;
 
 import javax.persistence.Basic;
@@ -14,19 +14,23 @@ import javax.persistence.GeneratedValue;
 @Table(name = "{{.table.Name}}", schema = "{{.table.Schema}}")
 public class {{.table.Title}}Entity {
     {{range $i,$c := .columns}}{{$type := type "java" $c.Type}}
-    private {{$type}} {{$c.Name}};
-    public void set{{$c.Prop}}({{$type}} {{$c.Name}}){
-        this.{{$c.Name}} = {{$c.Name}};
-    }
 
-    /** {{$c.Comment}} */{{if $c.IsPk}}
+    {{if $c.IsPk}}\
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY){{else}}
     @Basic{{end}}
     @Column(name = "{{$c.Name}}"{{if not $c.NotNull}}, nullable = true{{end}} {{if ne $c.Length 0}},length = {{$c.Length}}{{end}})
+    private {{$type}} {{$c.Name}};
+
+    /** {{$c.Comment}} */
     public {{$type}} get{{$c.Prop}}() {
         return this.{{$c.Name}};
     }
+
+    public void set{{$c.Prop}}({{$type}} {{$c.Name}}){
+        this.{{$c.Name}} = {{$c.Name}};
+    }
+
     {{end}}
 
     /** 拷贝数据  */

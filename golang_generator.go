@@ -78,17 +78,17 @@ func (s *Session) GenerateGoRepoCodes(tables []*Table, targetDir string) (err er
 			//生成实体
 			str, path := s.tableToGoStruct(tb)
 			if err = SaveFile(str, targetDir+"/"+path); err != nil {
-				println(fmt.Sprintf("[ Gen][ Error]: save file failed! %s", err.Error()))
+				println(fmt.Sprintf("[ tto][ error]: save file failed! %s", err.Error()))
 			}
 			//生成仓储结构
 			str, path = s.tableToGoRepo(tb, true, "")
 			if err = SaveFile(str, targetDir+"/"+path); err != nil {
-				println(fmt.Sprintf("[ Gen][ Error]: save file failed! %s", err.Error()))
+				println(fmt.Sprintf("[ tto][ error]: save file failed! %s", err.Error()))
 			}
 			//生成仓储接口
 			str, path = s.tableToGoIRepo(tb, true, "")
 			if err = SaveFile(str, targetDir+"/"+path); err != nil {
-				println(fmt.Sprintf("[ Gen][ Error]: save file failed! %s", err.Error()))
+				println(fmt.Sprintf("[ tto][ error]: save file failed! %s", err.Error()))
 			}
 		}(&wg, table)
 	}

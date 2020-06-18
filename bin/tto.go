@@ -121,7 +121,7 @@ func main() {
 	if err := runAfter(re, bashExec); err != nil {
 		log.Fatalln("[ tto][ fatal]:", err.Error())
 	}
-	println(fmt.Sprintf("[ Gen][ Success]: generate successfully! all %d tasks.",
+	println(fmt.Sprintf("generate successfully! all %d tasks.",
 		len(tables)))
 }
 
@@ -180,7 +180,7 @@ func genByArch(arch string, dg *tto.Session, tables []*tto.Table, opt *tto.Gener
 		err = genGoRepoCode(dg, tables, opt.OutputDir)
 	}
 	if err != nil {
-		println(fmt.Sprintf("[ Gen][ Error]: generate go code fail! %s", err.Error()))
+		println(fmt.Sprintf("[ tto][ Error]: generate go code fail! %s", err.Error()))
 	}
 	return dg.WalkGenerateCode(tables,opt)
 }
@@ -247,9 +247,9 @@ func crashRecover(debug bool) {
 		r := recover()
 		if r != nil {
 			if _, f, l, ok := runtime.Caller(3); ok {
-				log.Println(fmt.Sprintf("[ Gen][ Crash]:file:%s line:%d %v ", f, l, r))
+				log.Println(fmt.Sprintf("[ tto][ crash]:file:%s line:%d %v ", f, l, r))
 			} else {
-				log.Println(fmt.Sprintf("[ Gen][ Crash]: %v", r))
+				log.Println(fmt.Sprintf("[ tto][ crash]: %v", r))
 			}
 		}
 	}

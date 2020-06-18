@@ -1,11 +1,11 @@
-#!target:kotlin/{{.global.pkg}}/resources/{{.table.Title}}Resource.kt.gen
+#!target:src/main/kotlin/{{.global.pkg}}/resources/{{.table.Title}}Resource.kt
 package {{pkg "java" .global.pkg}}.resources
 
 import {{pkg "java" .global.pkg}}.pojo.{{.table.Title}}Entity
 import {{pkg "java" .global.pkg}}.service.{{.table.Title}}Service
 import {{pkg "java" .global.pkg}}.component.TinyQueryComponent
-import net.fze.arch.commons.std.Result
-import net.fze.arch.component.report.DataResult
+import net.fze.commons.Result
+import net.fze.extras.report.DataResult
 import javax.inject.Inject
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
@@ -16,7 +16,7 @@ import javax.annotation.security.PermitAll
 {{$pkType := type "kotlin" .table.PkType}}
 
 /* {{.table.Comment}}资源 */
-@Path("/{{.table.Name}}")
+@Path("/{{name_path .table.Name}}")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @RequestScoped
@@ -24,13 +24,14 @@ class {{.table.Title}}Resource {
     @Inject private lateinit var service:{{.table.Title}}Service
     @Inject private lateinit var queryComponent: TinyQueryComponent
 
+    /** 获取{{.table.Comment}} */
     @GET@Path("/{id}")
     @PermitAll
     fun get(@PathParam("id") id:{{$pkType}}): {{.table.Title}}Entity? {
         return service.findByIdOrNull(id)
     }
 
-
+    /** 创建{{.table.Comment}} */
     @POST
     @PermitAll
     fun create(entity: {{.table.Title}}Entity):Result {
@@ -39,6 +40,7 @@ class {{.table.Title}}Resource {
         return Result.OK
     }
 
+    /** 更新{{.table.Comment}} */
     @PUT@Path("/{id}")
     @PermitAll
     fun save(@PathParam("id") id:{{$pkType}},entity: {{.table.Title}}Entity):Result {
@@ -49,6 +51,7 @@ class {{.table.Title}}Resource {
     }
 
 
+    /** 删除{{.table.Comment}} */
     @DELETE@Path("/{id}")
     @PermitAll
     fun delete(@PathParam("id") id:{{$pkType}}):Result {
@@ -60,8 +63,8 @@ class {{.table.Title}}Resource {
     /** {{.table.Comment}}列表 */
     @GET
     @PermitAll
-    fun list(): Set<{{.table.Title}}Entity> {
-        return mutableSetOf()
+    fun list(): List<{{.table.Title}}Entity> {
+        return mutableListOf()
     }
 
     /** {{.table.Comment}}分页数据 */
@@ -72,6 +75,6 @@ class {{.table.Title}}Resource {
                @QueryParam("rows") rows:String
     ): DataResult {
         return this.queryComponent.fetchData("default",
-                "{{.table.Title}}List", params, page, rows)
+                "{{.table.Prefix}}/{{substr_n .table.Name "_" 1}}_list", params, page, rows)
     }
 }

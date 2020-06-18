@@ -69,7 +69,7 @@ class {{$title}}Repo:
     def save(self, entity: {{$Model}}) -> {{$pkType}}:
         db = self.sess
         pk = entity.{{$pkName}}
-        {{if equals $pkTypeId 3 4 5}}\
+        {{if equal_any $pkTypeId 3 4 5}}\
         if pk <= 0:
             entity.{{$pkName}} = None
         {{else if eq $pkTypeId 1}}\

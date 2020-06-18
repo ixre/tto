@@ -372,7 +372,15 @@ func (s *Session) flushToFile(tpl *CodeTemplate, tb *Table, path string, output 
 	if dstPath == "" {
 		dstPath = s.defaultTargetPath(path, tb)
 	}
-	if err := SaveFile(output, opt.OutputDir+"/"+dstPath); err != nil {
+	savedPath := opt.OutputDir+"/"+dstPath
+	// 如果保存到自定义目录,　源文件存在时,自动添加.gen后缀
+	if strings.Index(savedPath,"/output/") == -1{
+		fi,_ := os.Stat(savedPath)
+		if fi != nil{
+			savedPath += ".gen"
+		}
+	}
+	if err := SaveFile(output,savedPath); err != nil {
 		println(fmt.Sprintf("[ Gen][ Error]: save file failed! %s ,template:%s", err.Error(), tpl.FilePath()))
 	}
 }

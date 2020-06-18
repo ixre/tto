@@ -4,10 +4,7 @@
 <div class="app-container mod-grid-container">
     <!-- 查询和其他操作 -->
     <div class="filter-container mod-grid-bar">
-        <div class="mod-grid-bar-create">
-            <el-button v-permission="['admin']" class="filter-item" type="primary" icon="el-icon-edit" @click="handleCreate">新增</el-button>
-        </div>
-        <div class="mod-grid-bar-filter">
+        <div class="it mod-grid-bar-filter">
             <el-form :inline="true">
                 <el-form-item label="关键词：">
                     <el-input v-model="queryParams.keyword" clearable class="filter-item" style="width: 200px;" placeholder="输入关键词" />
@@ -22,39 +19,44 @@
                 </el-form-item>
             </el-form>
         </div>
-        <div class="mod-grid-bar-del">
+        <div class="it mod-grid-bar-create">
+            <el-button v-permission="['admin']" class="filter-item" type="primary" icon="el-icon-edit" @click="handleCreate">新增</el-button>
+        </div>
+        <div class="it mod-grid-bar-del">
             <el-button v-show="selectedRows.length > 0" v-permission="['admin']" class="filter-item" type="danger" icon="el-icon-edit" @click="batchDelete">删除</el-button>
         </div>
     </div>
     <!-- 表单数据　-->
-    <el-table ref="table" v-loading="list.loading" :data="list.data" :height="tableHeight" border fit highlight-current-row
+    <el-table ref="table" v-loading="list.loading" :data="list.data" :height="tableHeight" fit highlight-current-row
               @selection-change="handleSelectionChange" class="mod-grid-table">
         <el-table-column align="center" type="selection" width="55" />
         {{range $i,$c := .columns}}
         {{if ends_with $c.Name "_time"}}
-        <el-table-column width="160" align="center" label="{{$c.Comment}}">
+        <el-table-column width="160" align="left" label="{{$c.Comment}}">
             <template slot-scope="scope">
                 <span>{{`{{ scope.row.`}}{{$c.Name}}{{ `| parseTime}}`}}</span>
             </template>
         </el-table-column>
         {{else if ends_with $c.Name "state"}}
-        <el-table-column width="120" align="center" label="{{$c.Comment}}">
+        <el-table-column width="140" align="left" label="{{$c.Comment}}">
             <template slot-scope="scope">
                 <span v-for="(value,attr) in states" v-if="value === scope.row.state">{{`{{attr}}`}}</span>
             </template>
         </el-table-column>
         {{else if starts_with $c.Name "is_"}}
-        <el-table-column width="120" align="center" label="{{$c.Comment}}">
+        <el-table-column width="140" align="left" label="{{$c.Comment}}">
              <template slot-scope="scope">
                 <span v-for="(it,i) in ['否','是']" v-if="i===scope.row.{{$c.Name}}-1">{{`{{it}}`}}</span>
              </template>
         </el-table-column>
+        {{else if $c.IsPk }}
+        <el-table-column width="120" align="left" label="{{$c.Comment}}" prop="{{$c.Name}}"/>
         {{else}}
-        <el-table-column width="120" align="center" label="{{$c.Comment}}" prop="{{$c.Name}}"/>
+        <el-table-column align="left" label="{{$c.Comment}}" prop="{{$c.Name}}"/>
         {{end}}
         {{end}}
 
-        <el-table-column align="center" label="操作">
+        <el-table-column width="200" align="center" label="操作">
             <template slot-scope="scope">
                 <el-button type="primary" size="mini" icon="el-icon-edit" @click="handleEdit(scope.row)">编辑</el-button>
                 <el-button type="danger" size="mini" icon="el-icon-delete" v-loading="requesting" @click="handleDelete(scope.row)">删除</el-button>

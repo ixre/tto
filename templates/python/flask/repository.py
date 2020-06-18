@@ -1,4 +1,4 @@
-#!target:../../src/repo/{{.table.Name}}_repo.py.gen
+#!target:../../src/repo/{{.table.Name}}_repo.py
 {{$title := .table.Title}}{{$pkName := .table.Pk}}\
 {{$comment := .table.Comment}}\
 {{$Model := str_join "" .table.Title "Model"}}
@@ -48,18 +48,31 @@ class {{$title}}Repo:
             return db.query({{$Model}}).filter_by(kwargs)
 
     # 删除{{$comment}}
-    def delete(self, pk: {{$pkType}}):
+    def delete(self, pk: {{$pkType}}) -> int:
         with session_maker(self.sess) as db:
-            db.delete(pk)
+            e = db.query({{$Model}}).filter({{$Model}}.id == pk)
+            if e is None:
+                return -1
+            e.delete()
+            return 1
+
+    # 批量删除{{$comment}}
+    def batch_delete(self, arr: list) -> int:
+        with session_maker(self.sess) as db:
+            e = db.query({{$Model}}).filter({{$Model}}.id in arr)
+            if e is None:
+                return -1
+            e.delete()
+            return 1
 
     # 保存{{$comment}}
     def save(self, entity: {{$Model}}) -> {{$pkType}}:
         db = self.sess
         pk = entity.{{$pkName}}
-        {{if eq $pkTypeId 5}}\
+        {{if equals $pkTypeId 3 4 5}}\
         if pk <= 0:
             entity.{{$pkName}} = None
-        {{else if eq $pkTypeId 24}}\
+        {{else if eq $pkTypeId 1}}\
         if pk == "":
             entity.{{$pkName}} = None
         {{end}}\
@@ -79,8 +92,9 @@ class {{$title}}Repo:
         return pk
 
     # 更新数据{{$comment}}
-    def __update__(self,s,pk,entity):
+    def __update__(self, s, pk, entity):
         dst = s.query({{$title}}Model).filter({{$title}}Model.{{$pkName}} == pk).first()
         {{range $i,$c := exclude .columns $pkName}}\
         dst.{{$c.Name}} = entity.{{$c.Name}}
         {{end}}
+

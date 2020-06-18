@@ -1,6 +1,0 @@
-#!kind:2
-#!target:tables_{{.prefix}}.txt
-
-{{range $i,$table := .tables}}\
-    {{$table.Name}}({{$table.Comment}})
-{{end}}

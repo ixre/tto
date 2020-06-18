@@ -29,7 +29,7 @@ func main() {
 	var cleanLast bool
 
 	flag.StringVar(&genDir, "o", "./output", "path of output directory")
-	flag.StringVar(&tplDir, "t", "./templates/vue-ts", "path of code templates directory")
+	flag.StringVar(&tplDir, "t", "./templates", "path of code templates directory")
 	flag.StringVar(&confPath, "conf", "./tto.conf", "config path")
 	flag.StringVar(&table, "table", "", "table name or table prefix")
 	flag.StringVar(&excludedTables,"excludes","","exclude tables by prefix")

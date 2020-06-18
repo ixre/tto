@@ -1,10 +1,10 @@
-#!target:../../src/service/{{.table.Name}}_service.py.gen
+#!target:../../src/service/{{.table.Name}}_service.py
 {{$title := .table.Title}}{{$pkName := .table.Pk}}\
 {{$comment := .table.Comment}}\
-from time import time
 from ..model.{{.table.Name}} import {{$title}}Model
 from ..repo.{{.table.Name}}_repo import {{$title}}Repo
-{{$pkTypeId := $.table.PkType}}
+{{$pkType := type "py" .table.PkType}} \
+{{$pkTypeId := $.table.PkType}} \
 
 
 # {{$comment}}服务
@@ -18,16 +18,12 @@ class {{$title}}Service:
     def get(self, id):
         return self.repo.get(id)
 
-    # 删除{{$comment}}
-    def delete(self, id):
-        return self.repo.delete(id)
-
     # 保存{{$comment}}
-    def save(self, e):
+    def save(self, e) -> ({{$pkType}}, str):
         dst = None
-        {{if eq $pkTypeId 5}}\
+        {{if equals $pkTypeId 3 4 5}}\
         if e.{{$pkName}} > 0: \
-        {{else if eq $pkTypeId 24}}\
+        {{else if eq $pkTypeId 1}}\
         if e.{{$pkName}} is not None and e.{{$pkName}} != "":\
         {{else}}\
         if e.{{$pkName}} is not None: \
@@ -41,9 +37,18 @@ class {{$title}}Service:
         dst.{{$c.Name}} = e.{{$c.Name}}{{end}}\
         {{$c := try_get .columns "update_time"}}\
         {{if $c}}dst.updateTime = time(){{end}}
-        return self.repo.save(dst)
+        return self.repo.save(dst), ""
 
     # 查询{{$comment}}
     def query_list(self, param):
         return []
 
+    # 删除{{$comment}}
+    def delete(self, id) -> (int, str):
+        # 处理删除逻辑,如果有错误返回字符
+        return self.repo.delete(id), ""
+
+    # 批量删除{{$comment}}
+    def batch_delete(self, arr: list) -> (int, str):
+        i = self.repo.batch_delete(arr)
+        return i, ""

@@ -1,4 +1,4 @@
-#!target:../../src/resource/{{.table.Name}}_res.py.gen
+#!target:../../src/resource/{{.table.Name}}_res.py
 {{$title := .table.Title}}
 {{$pkName := .table.Pk}}\
 {{$comment := .table.Comment}}\
@@ -27,8 +27,9 @@ class {{$title}}(Resource):
 
     # 删除{{$comment}}
     def delete(self, id):
-        if self.s.delete({{$pkType}}(id)) >= 0:
-            return error("删除失败")
+        r = self.s.delete(int(id))
+        if r[0] < 0:
+            return error("删除失败"+r[1])
         else:
             return ok()
 
@@ -38,32 +39,42 @@ class {{$title}}(Resource):
             return error("error data")
         d = {{$title}}Model().from_dict(request.get_json())
         d.{{$pkName}} = {{$pkType}}(id)
-        if self.s.save(d) <= 0:
-            return error("更新失败")
+        r = self.s.save(d)
+        if r[0] <= 0:
+            return error("更新失败" + r[1])
         return ok()
 
 
 class {{$title}}List(Resource):
     s = _s
 
-    # 返回列表
+    # 返回{{$comment}}列表
     def get(self):
         return self.s.query_list("")
 
-    # 新增
+    # 新增{{$comment}}
     def post(self):
         if not request.is_json:
             return error("error data")
         d = {{$title}}Model().from_dict(request.get_json())
-        if self.s.save(d) <= 0:
-            return error("新增失败")
+        r = self.s.save(d)
+        if r[0] <= 0:
+            return error("新增失败" + r[1])
+        return ok()
+
+    # 批量删除{{$comment}}
+    def delete(self):
+        return error("警告：处于安全考虑,未启用批量操作")
+        r = self.s.batch_delete(request.get_json())
+        if r[0] < 0:
+            return error("删除失败"+r[1])
         return ok()
 
 
 class {{$title}}Paging(Resource):
     items = report_query.items
 
-    # 返回列表
+    # 返回{{$comment}}列表
     def get(self):
         query = request.args
         p = dump_query.parse_params(query.get("params"))

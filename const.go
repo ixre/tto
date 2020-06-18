@@ -1,4 +1,4 @@
 package tto
 
 // 版本号
-const BuildVersion = "0.3.17"
+const BuildVersion = "0.3.18"

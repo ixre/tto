@@ -2,13 +2,13 @@
 #!target:ts/feature/{{name_path .table.Name}}/form.vue
 <template>
   <div class="createPost-container">
-    <el-form ref="formData" :model="formData" :rules="rules" size="mini" class="form-container mod-form">
+    <el-form ref="formData" :model="formData" :rules="rules" size="small" class="form-container mod-form">
       <div class="createPost-main-container mod-form-container">
         {{range $i,$c := .columns}}\
         {{if not $c.IsPk}}{{$name:= lower_title $c.Prop}}{{$ele:= $c.Render.Element}}\
         <el-row>
           <el-col :span="24">
-            <el-form-item class="mod-form-item" label-width="80px" label="{{$c.Comment}}:"　prop="{{$name}}">
+            <el-form-item class="mod-form-item" label-width="78px" label="{{$c.Comment}}"　prop="{{$name}}">
             {{if eq $ele "radio"}}\
                 <el-radio-group v-model="formData.{{$name}}">
                   <el-radio :label="1">是</el-radio>

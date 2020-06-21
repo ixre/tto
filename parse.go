@@ -170,7 +170,8 @@ func smartElement(name string, len int) (string, map[string]string) {
 	if strings.HasPrefix(name, "upload_") ||
 		strings.HasPrefix(name, "file_") ||
 		strings.HasSuffix(name, "_image") ||
-		strings.HasSuffix(name, "_img") {
+		strings.HasSuffix(name, "_img") ||
+		strings.HasPrefix(name,"attachment"){
 		return "upload", map[string]string{}
 	}
 	if len > 64 {

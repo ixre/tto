@@ -174,7 +174,7 @@ func smartElement(name string, len int) (string, map[string]string) {
 		strings.HasPrefix(name,"attachment"){
 		return "upload", map[string]string{}
 	}
-	if len > 64 {
+	if len > 64  || len == 0{
 		return "textarea", map[string]string{}
 	}
 	return "input", map[string]string{}

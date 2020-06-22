@@ -45,10 +45,10 @@
 
     function pageLoad(_) {
         {{range $i,$c := .columns}}
-        {{if end_with $c.Name "_time"}}
+        {{if ends_with $c.Name "_time"}}
         entity["{{$c.Name}}"] = utils.unix2str(entity["{{$c.Name}}"]);
         {{end}}
-        {{if end_with $c.Name "_amount"}}
+        {{if ends_with $c.Name "_amount"}}
         entity["{{$c.Name}}"] = utils.toAmount(entity["{{$c.Name}}"]);
         {{end}}
         {{end}}

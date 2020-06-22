@@ -27,6 +27,7 @@ func main() {
 	var debug bool
 	var printVer bool
 	var cleanLast bool
+	var compactMode bool
 
 	flag.StringVar(&genDir, "o", "./output", "path of output directory")
 	flag.StringVar(&tplDir, "t", "./templates", "path of code templates directory")
@@ -36,6 +37,7 @@ func main() {
 	flag.StringVar(&arch, "arch", "", "program language")
 	flag.BoolVar(&cleanLast,"clean",false,"clean last generate files")
 	flag.BoolVar(&debug, "debug", false, "debug mode")
+	flag.BoolVar(&compactMode,"compact",false,"compact mode for old project")
 	flag.BoolVar(&printVer, "v", false, "print version")
 	flag.Parse()
 
@@ -50,12 +52,15 @@ func main() {
 	}
 	log.SetFlags(log.Ltime | log.Lshortfile)
 	defer crashRecover(debug)
+	// 兼容模式
+	if compactMode{
+		tto.CompactMode = true
+	}
 	// 获取包名
 	pkgName := "com/tto/pkg"
 	if re.Contains("code.pkg") {
 		pkgName = re.GetString("code.pkg")
 	}
-
 	// 获取bash启动脚本，默认unix系统包含了bash，windows下需指定
 	bashExec := ""
 	if runtime.GOOS == "windows" {

@@ -1,11 +1,11 @@
 #!target:../../src/service/{{.table.Name}}_service.py
 {{$title := .table.Title}}{{$pkName := .table.Pk}}\
 {{$comment := .table.Comment}}\
+from time import time
 from ..model.{{.table.Name}} import {{$title}}Model
 from ..repo.{{.table.Name}}_repo import {{$title}}Repo
 {{$pkType := type "py" .table.PkType}} \
-{{$pkTypeId := $.table.PkType}} \
-
+{{$pkTypeId := $.table.PkType}}
 
 # {{$comment}}服务
 class {{$title}}Service:

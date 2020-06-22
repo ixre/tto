@@ -4,62 +4,66 @@
 <div class="app-container mod-grid-container">
     <!-- 查询和其他操作 -->
     <div class="filter-container mod-grid-bar">
+        <div class="it mod-grid-bar-back" v-show="false">
+            <el-button class="filter-item" @click="handleBack">返回</el-button>
+        </div>
         <div class="it mod-grid-bar-filter">
             <el-form :inline="true">
-                <el-form-item label="关键词：">
-                    <el-input v-model="queryParams.keyword" clearable class="filter-item" style="width: 200px;" placeholder="输入关键词" />
-                </el-form-item>
-                <el-form-item label="状态：">
+                <el-form-item label="状态">
                     <el-select v-model="queryParams.state" clearable style="width: 200px" class="filter-item" @change="fetchData" >
                         <el-option v-for="(value,attr) in states" :key="value" :label="attr" :value="value" />
                     </el-select>
                 </el-form-item>
+                <el-form-item label="关键词">
+                    <el-input v-model="queryParams.keyword" clearable class="filter-item" style="width: 200px;" placeholder="输入关键词" />
+                </el-form-item>
                 <el-form-item>
-                    <el-button v-permission="['admin']" class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查找</el-button>
+                    <el-button v-permission="['admin']" class="filter-item" type="primary" @click="handleFilter">查找</el-button>
                 </el-form-item>
             </el-form>
         </div>
         <div class="it mod-grid-bar-create">
-            <el-button v-permission="['admin']" class="filter-item" type="primary" icon="el-icon-edit" @click="handleCreate">新增</el-button>
+            <el-button v-permission="['admin']" class="filter-item" @click="handleCreate">新增</el-button>
         </div>
         <div class="it mod-grid-bar-del">
-            <el-button v-show="selectedRows.length > 0" v-permission="['admin']" class="filter-item" type="danger" icon="el-icon-edit" @click="batchDelete">删除</el-button>
+            <el-button v-show="selectedRows.length > 0" v-permission="['admin']" class="filter-item" type="danger" @click="batchDelete">删除</el-button>
         </div>
     </div>
     <!-- 表单数据　-->
-    <el-table ref="table" v-loading="list.loading" :data="list.data" :height="tableHeight" fit highlight-current-row
+    <el-table ref="table" v-loading="list.loading" :data="list.data" :height="tableHeight"
+              fit :highlight-current-row="false"
               @selection-change="handleSelectionChange" class="mod-grid-table">
-        <el-table-column align="center" type="selection" width="55" />
-        {{range $i,$c := .columns}}
-        {{if ends_with $c.Name "_time"}}
+        <el-table-column align="center" type="selection" width="45" />
+        {{range $i,$c := .columns}} \
+        {{if ends_with $c.Name "_time"}} \
         <el-table-column width="160" align="left" label="{{$c.Comment}}">
             <template slot-scope="scope">
                 <span>{{`{{ scope.row.`}}{{$c.Name}}{{ `| parseTime}}`}}</span>
             </template>
         </el-table-column>
-        {{else if ends_with $c.Name "state"}}
+        {{else if ends_with $c.Name "state"}} \
         <el-table-column width="140" align="left" label="{{$c.Comment}}">
             <template slot-scope="scope">
                 <span v-for="(value,attr) in states" v-if="value === scope.row.state">{{`{{attr}}`}}</span>
             </template>
         </el-table-column>
-        {{else if starts_with $c.Name "is_"}}
+        {{else if starts_with $c.Name "is_"}} \
         <el-table-column width="140" align="left" label="{{$c.Comment}}">
              <template slot-scope="scope">
                 <span v-for="(it,i) in ['否','是']" v-if="i===scope.row.{{$c.Name}}-1">{{`{{it}}`}}</span>
              </template>
         </el-table-column>
-        {{else if $c.IsPk }}
-        <el-table-column width="120" align="left" label="{{$c.Comment}}" prop="{{$c.Name}}"/>
-        {{else}}
+        {{else if $c.IsPk }} \
+        <el-table-column width="60" align="left" label="{{$c.Comment}}" prop="{{$c.Name}}"/>
+        {{else}} \
         <el-table-column align="left" label="{{$c.Comment}}" prop="{{$c.Name}}"/>
-        {{end}}
-        {{end}}
+        {{end}} \
+        {{end}} \
 
-        <el-table-column width="200" align="center" label="操作">
+        <el-table-column align="center" width="160" label="操作">
             <template slot-scope="scope">
-                <el-button type="primary" size="mini" icon="el-icon-edit" @click="handleEdit(scope.row)">编辑</el-button>
-                <el-button type="danger" size="mini" icon="el-icon-delete" v-loading="requesting" @click="handleDelete(scope.row)">删除</el-button>
+                <el-button type="text" size="mini" @click="handleEdit(scope.row)">编辑</el-button>
+                <el-button type="text" size="mini" v-loading="requesting" @click="handleDelete(scope.row)">删除</el-button>
             </template>
         </el-table-column>
     </el-table>
@@ -69,8 +73,8 @@
                 :limit.sync="list.rows" @pagination="fetchData"/>
 
     <!-- 弹出操作框 -->
-    <el-dialog class="mod-dialog" :title="dialog.title" :visible.sync="dialog.open" width="40%" @close="dialogClosed">
-        <component v-bind:is="modal" :id="dialog.id" @refresh="refresh"></component>
+    <el-dialog class="mod-dialog" :title="dialog.title" :visible.sync="dialog.open" width="40%" @close="closeModal">
+        <component v-bind:is="modal" :id="dialog.id" @callback="refresh"></component>
     </el-dialog>
 
 </div>
@@ -85,8 +89,8 @@ import {{$Class}}Form from './form.vue';
 
 
 // {{.table.Comment}}数据库映射类
-interface IListModel {
-    {{range $i,$c := .columns}}{{$c.Name}}:{{type "ts" $c.Type}} // {{$c.Comment}}
+interface IListModel {  {{range $i,$c := .columns}}
+    {{$c.Name}}:{{type "ts" $c.Type}} // {{$c.Comment}} \
     {{end}}
 }
 
@@ -107,8 +111,10 @@ export default class extends Vue {
     private list:{loading:boolean,total:number,page:number,rows:number,data: IListModel[]} = {loading:false,total:0, page: 1, rows: 10,data:[]};
     /** 定义查询参数 */
     private queryParams = {
-       keyword:"",
-       state:-1
+        keyword:"",
+        state:-1,
+        where:"0=0",
+        order_by:"{{.table.Pk }} DESC"
     };
     /** 根据实际情况调整 */
     private states = {"全部":-1,"正常":1,"停用":0};
@@ -145,6 +151,12 @@ export default class extends Vue {
         rows.map(it=> this.selectedIds.push(it.{{.table.Pk}}));
     }
 
+    // 返回
+    private handleBack(){
+        this.$store.dispatch('delView', this.$route)
+        this.$router.back();
+    }
+
     // 新增数据
     private handleCreate() {
         this.modalForm(null,"新增{{.table.Comment}}");
@@ -152,6 +164,7 @@ export default class extends Vue {
 
     // 编辑数据
     private handleEdit(row:IListModel){
+        //this.$router.push({path:"../{{name_path .table.Name}}/create"});
         this.modalForm(row,"编辑{{.table.Comment}}");
     }
 
@@ -163,17 +176,17 @@ export default class extends Vue {
       this.dialog.title = title;
     }
 
-    // 关闭模态框时重置模态组件
-    private dialogClosed(){
+    // 关闭模态框时重置模态组件的内容
+    private closeModal(){
+        //this.dialog.id = 0;
         this.modal = null;
     }
 
     // 参数state为true时,重置模态框并刷新数据,args接受传入的参数
     private refresh(s:{state:number,args:any}){
-        if(!s.state)return;
-        this.modal = null;
+        //this.modal = null;
         this.dialog.open = false;
-        this.fetchData(s.args);
+        if(s.state)this.fetchData(s.args);
     }
 
     private handleDelete(row:any){
@@ -235,13 +248,5 @@ export default class extends Vue {
 </script>
 
 <style lang="scss" scoped>
-    .edit-input {
-        padding-right: 100px;
-    }
-
-    .cancel-btn {
-        position: absolute;
-        right: 15px;
-        top: 10px;
-    }
+/** 页面内的样式定义在这里 */
 </style>

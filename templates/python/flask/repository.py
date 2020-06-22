@@ -27,25 +27,25 @@ class {{$title}}Repo:
         with session_query(self.sess) as db:
             return db.query({{$Model}}).all()
 
+    # 使用会话进行查询,传入参数为lambda session:
+    def with_session(self, l):
+        with session_query(self.sess) as db:
+            return l(db)
+
     # 获取单个{{$comment}}
     def get(self, pk: {{$pkType}})-> {{$Model}}:
         with session_query(self.sess) as db:
             return db.query({{$title}}Model).get(pk)
 
-    # 查找单个{{$comment}}
-    def find_one(self,*criterion)-> {{$Model}}:
-        with session_query(self.sess) as db:
-            return db.query({{$Model}}).filter(criterion).one()
-
-    # 筛选{{$comment}}
+    # 查找{{$comment}}
     def filter(self,*criterion):
         with session_query(self.sess) as db:
-            return db.query({{$Model}}).filter(criterion)
+            return db.query({{$Model}}).filter(*criterion)
 
     # 根据条件筛选{{$comment}}
     def filter_by(self,**kwargs):
         with session_query(self.sess) as db:
-            return db.query({{$Model}}).filter_by(kwargs)
+            return db.query({{$Model}}).filter_by(**kwargs)
 
     # 删除{{$comment}}
     def delete(self, pk: {{$pkType}}) -> int:

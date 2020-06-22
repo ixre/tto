@@ -29,7 +29,7 @@ class {{$title}}(Resource):
     def delete(self, id):
         r = self.s.delete(int(id))
         if r[0] < 0:
-            return error("删除失败"+r[1])
+            return error(r[1])
         else:
             return ok()
 
@@ -41,7 +41,7 @@ class {{$title}}(Resource):
         d.{{$pkName}} = {{$pkType}}(id)
         r = self.s.save(d)
         if r[0] <= 0:
-            return error("更新失败" + r[1])
+            return error(r[1])
         return ok()
 
 
@@ -59,7 +59,7 @@ class {{$title}}List(Resource):
         d = {{$title}}Model().from_dict(request.get_json())
         r = self.s.save(d)
         if r[0] <= 0:
-            return error("新增失败" + r[1])
+            return error(r[1])
         return ok()
 
     # 批量删除{{$comment}}
@@ -67,7 +67,7 @@ class {{$title}}List(Resource):
         return error("警告：处于安全考虑,未启用批量操作")
         r = self.s.batch_delete(request.get_json())
         if r[0] < 0:
-            return error("删除失败"+r[1])
+            return error(r[1])
         return ok()
 
 

@@ -53,6 +53,10 @@ func parseTable(ordinal int, tb *orm.Table, shortUpper bool, userMeta bool) *Tab
 		if len(c.Comment) == 0 {
 			c.Comment = c.Prop
 		}
+		// 兼容JAVA项目int主键
+		if CompactMode && c.DbType =="int(11)"{
+			c.Type = orm.TypeInt32
+		}
 		n.Columns[i] = c
 	}
 	return loadUserMeta(n, userMeta)

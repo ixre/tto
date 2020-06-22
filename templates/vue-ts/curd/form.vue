@@ -2,13 +2,14 @@
 #!target:ts/feature/{{name_path .table.Name}}/form.vue
 <template>
   <div class="createPost-container">
-    <el-form ref="formData" :model="formData" :rules="rules" size="small" class="form-container mod-form">
+    <el-form ref="formData" class="form-container mod-form" size="small"
+             label-position="right" :model="formData" :rules="rules">
       <div class="createPost-main-container mod-form-container">
         {{range $i,$c := .columns}}\
         {{if not $c.IsPk}}{{$name:= lower_title $c.Prop}}{{$ele:= $c.Render.Element}}\
         <el-row>
           <el-col :span="24">
-            <el-form-item class="mod-form-item" label-width="78px" label="{{$c.Comment}}"　prop="{{$name}}">
+            <el-form-item class="mod-form-item" label-width="78px" label="{{$c.Comment}}"　prop="{{$name}}" required>
             {{if eq $ele "radio"}}\
                 <el-radio-group v-model="formData.{{$name}}">
                   <el-radio :label="1">是</el-radio>
@@ -17,11 +18,13 @@
             {{else if eq $ele "checkbox"}}\
                 <el-checkbox v-model="formData.{{$name}}"></el-checkbox>
             {{else if eq $ele "textarea"}}\
-                <el-input type="textarea" v-model="formData.{{$name}}" class="mod-form-input" :autosize="{ minRows: 2, maxRows: 4}"　placeholder="请输入内容"/>
+                <el-input type="textarea" v-model="formData.{{$name}}" class="mod-form-input" :autosize="{ minRows: 2, maxRows: 4}"　placeholder=""/>
             {{else if eq $ele "select"}}\
                 <el-select v-model="formData.{{$name}}">
                    <el-option v-for="(value,attr) in {"选项1":1,"选项2":2}" :label="attr" :value="value"/>
                 </el-select>
+            {{else if equal_any $c.Type 3 4 5}}\
+                <el-input v-model.number="formData.{{$name}}" class="mod-form-input" autosize　placeholder="请输入数值"/>
             {{else}}\
                 <el-input v-model="formData.{{$name}}" class="mod-form-input" autosize　placeholder="请输入内容"/>
             {{end}}
@@ -30,15 +33,16 @@
         </el-row>
         {{end}}{{end}}
         <sticky :z-index="10" class="mod-form-bar">
-          <el-button v-loading="requesting" style="margin-left: 80px;" type="success" @click="submitForm">
-            提交
-          </el-button>
+            <el-button @click="callback">取消</el-button>
+            <el-button v-loading="requesting" type="primary" @click="submitForm">提交</el-button>
         </sticky>
       </div>
     </el-form>
   </div>
 </template>
 {{$Class := .table.Title}}{{$Comment := .table.Comment}}
+{{$validateColumns := exclude .columns .table.Pk "create_time" "update_time" "state"}}
+
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import { AppModule } from '@/store/modules/app'
@@ -58,24 +62,21 @@ export default class extends Vue {
   private formData :I{{$Class}} = default{{$Class}}();
   private requesting = 0;
 
-  {{$validateColumns := exclude .columns .table.Pk "create_time" "update_time" "state"}}
-  private validate = (rule: any, value: string, callback: Function) => {
-    const label = rule.label || rule.field;\
-  {{range $i,$c := $validateColumns}}\
-    {{if eq (type "ts" $c.Type) "number" }}
-    if(rule.field === "{{lower_title $c.Prop}}" && !/^\d[\d\.]*$/.test(value))return callback(new Error(label+ '不正确'));\
-    {{end}}{{end}}\
-    if (value === '') {
-      callback(new Error(label + '为必填字段'))
-    } else {
-      callback()
-    }
-  }
-
   // 设置验证表单字段的规则,取消验证请注释对应的规则
   private rules = {
+    // 自定义验证规则：
+    // phone: [{label:"phone", validator: this.validate }]
+    // private async validate(rule: any, value: string, callback: Function){
+    //   const label = rule.label || rule.field;
+    //   if (value === '') { callback(new Error(label + '为必填字段'))} else {callback()}
+    // } \
     {{range $i,$c := $validateColumns}}{{if ne $c.IsPk true}}
-    {{lower_title $c.Prop}}: [{label:"{{$c.Comment}}", validator: this.validate }] \
+    {{if equal_any $c.Type 3 4 5}}\
+    {{lower_title $c.Prop}}: [{required: true, message:"{{$c.Comment}}不能为空"}, \
+        {type:"number", message:"{{$c.Comment}}必须为数字值"}] \
+    {{else if $c.NotNull}}\
+    {{lower_title $c.Prop}}: [{required: true, message:"{{$c.Comment}}不能为空"}] \
+    {{end}}\
     {{if not (is_last $i $validateColumns)}},{{end}}{{end}}{{end}}
   };
 
@@ -99,6 +100,9 @@ export default class extends Vue {
     }
   }
 
+  private callback(arg:any={state:0}){
+    this.$emit("callback",arg);
+  }
   private submitForm() {
     (this.$refs.formData as Form).validate(async valid => {
       if (valid) {
@@ -111,14 +115,13 @@ export default class extends Vue {
             message: '操作成功',
             duration:2000
           });
-          this.$emit("refresh",{state:1});
+          this.callback({state:1})
         }else{
           this.$notify.error({
             title: '操作失败',
             message: errMsg,
             duration:2000
           });
-          this.$emit("refresh",{state:0});
         }
       } else {
         return false
@@ -128,24 +131,12 @@ export default class extends Vue {
 }
 </script>
 
-<style lang="scss">
-.article-textarea {
-  textarea {
-    padding-right: 40px;
-    resize: none;
-    border: none;
-    border-radius: 0px;
-    border-bottom: 1px solid #bfcbd9;
-  }
-}
-</style>
-
 <style lang="scss" scoped>
 .createPost-container {
   position: relative;
 
   .createPost-main-container {
-    padding:0 45px 20px 50px;
+    padding:0 15px;
 
     .postInfo-container {
       position: relative;
@@ -156,13 +147,6 @@ export default class extends Vue {
         float: left;
       }
     }
-  }
-
-  .word-counter {
-    width: 40px;
-    position: absolute;
-    right: 10px;
-    top: 0px;
   }
 }
 </style>

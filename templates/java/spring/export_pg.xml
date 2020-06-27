@@ -12,7 +12,7 @@
     <Query>
         <![CDATA[
         SELECT * FROM "{{.table.Name}}"
-        ORDER BY id DESC LIMIT {page_size} OFFSET {page_start}
+        ORDER BY id DESC LIMIT {page_size} OFFSET {page_offset}
      ]]>
     </Query>
     <Import><![CDATA[]]></Import>

@@ -27,6 +27,8 @@ func PySqlTypes(typeId int, len int) string {
 		return "Float"
 	case orm.TypeFloat64:
 		return "Float"
+	case orm.TypeDecimal:
+		return "Decimal"
 	}
 	return "String"
 }

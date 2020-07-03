@@ -29,6 +29,8 @@ func JavaValues(typeId int) string {
 		return "0F"
 	case orm.TypeInt16, orm.TypeInt32:
 		return "0"
+	case orm.TypeDecimal:
+		return "0.0"
 	case orm.TypeString:
 		return "null"
 	}
@@ -41,7 +43,7 @@ func CommonValues(typeId int) string {
 		return "false"
 	case orm.TypeInt64, orm.TypeInt16, orm.TypeInt32:
 		return "0"
-	case orm.TypeFloat32, orm.TypeFloat64:
+	case orm.TypeFloat32, orm.TypeFloat64, orm.TypeDecimal:
 		return "0.0"
 	case orm.TypeString:
 		return "\"\""

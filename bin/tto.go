@@ -15,8 +15,6 @@ import (
 	"time"
 )
 
-
-
 func main() {
 	var genDir string   //输出目录
 	var confPath string //设置目录
@@ -33,11 +31,11 @@ func main() {
 	flag.StringVar(&tplDir, "t", "./templates", "path of code templates directory")
 	flag.StringVar(&confPath, "conf", "./tto.conf", "config path")
 	flag.StringVar(&table, "table", "", "table name or table prefix")
-	flag.StringVar(&excludedTables,"excludes","","exclude tables by prefix")
+	flag.StringVar(&excludedTables, "excludes", "", "exclude tables by prefix")
 	flag.StringVar(&arch, "arch", "", "program language")
-	flag.BoolVar(&cleanLast,"clean",false,"clean last generate files")
+	flag.BoolVar(&cleanLast, "clean", false, "clean last generate files")
 	flag.BoolVar(&debug, "debug", false, "debug mode")
-	flag.BoolVar(&compactMode,"compact",false,"compact mode for old project")
+	flag.BoolVar(&compactMode, "compact", false, "compact mode for old project")
 	flag.BoolVar(&printVer, "v", false, "print version")
 	flag.Parse()
 
@@ -53,7 +51,7 @@ func main() {
 	log.SetFlags(log.Ltime | log.Lshortfile)
 	defer crashRecover(debug)
 	// 兼容模式
-	if compactMode{
+	if compactMode {
 		tto.CompactMode = true
 	}
 	// 获取包名
@@ -91,8 +89,8 @@ func main() {
 	if re.GetBoolean("code.id_upper") {
 		dg.IdUpper = true
 	}
-	list,err := ds.TablesByPrefix(dbName, schema, table)
-	if err != nil{
+	list, err := ds.TablesByPrefix(dbName, schema, table)
+	if err != nil {
 		println("[ app][ info]: ", err.Error())
 		return
 	}
@@ -103,13 +101,13 @@ func main() {
 	}
 	// 获取表格并转换
 	userMeta := re.GetBoolean("code.meta_settings")
-	tables, err := dg.Parses(list,userMeta)
+	tables, err := dg.Parses(list, userMeta)
 	if err != nil {
 		println("[ tto][ error]:", err.Error())
 		return
 	}
 	// 获取排除的文件名
-	excludeFiles := strings.Split(re.GetString("code.exclude_files"),",")
+	excludeFiles := strings.Split(re.GetString("code.exclude_files"), ",")
 	disableAttachCopy := re.GetBoolean("code.disable_attach")
 	// 生成自定义代码
 	opt := &tto.GenerateOptions{
@@ -119,7 +117,7 @@ func main() {
 		ExcludeFiles:    excludeFiles,
 	}
 	// 生成代码
-	if err := genByArch(arch, dg, tables,opt); err != nil {
+	if err := genByArch(arch, dg, tables, opt); err != nil {
 		log.Fatalln("[ tto][ fatal]:", err.Error())
 	}
 	// 生成之后执行操作
@@ -134,18 +132,18 @@ func filterTables(tables []*orm.Table, noTable string) []*orm.Table {
 	if noTable == "" {
 		return tables
 	}
-	excludes := strings.Split(noTable,";")
+	excludes := strings.Split(noTable, ";")
 	arr := make([]*orm.Table, 0)
 	for _, v := range tables {
 		match := false
-		for _,k := range excludes {
-			if k != "" && strings.Index(v.Name,k) != -1{
+		for _, k := range excludes {
+			if k != "" && strings.Index(v.Name, k) != -1 {
 				match = true
 				break
 			}
 		}
-		if !match{
-			arr =append(arr,v)
+		if !match {
+			arr = append(arr, v)
 		}
 	}
 	return arr
@@ -187,7 +185,7 @@ func genByArch(arch string, dg *tto.Session, tables []*tto.Table, opt *tto.Gener
 	if err != nil {
 		println(fmt.Sprintf("[ tto][ Error]: generate go code fail! %s", err.Error()))
 	}
-	return dg.WalkGenerateCode(tables,opt)
+	return dg.WalkGenerateCode(tables, opt)
 }
 
 // 获取数据库连接
@@ -219,7 +217,7 @@ func getDb(driver string, r *tto.Registry) *sql.DB {
 	default:
 		panic("not support driver :" + driver)
 	}
-	conn,err := db.NewConnector(driver, connStr, nil, false)
+	conn, err := db.NewConnector(driver, connStr, nil, false)
 	if err == nil {
 		log.Println("[ tto][ init]: connect to database..")
 		err = conn.Ping()

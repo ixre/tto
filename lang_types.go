@@ -20,7 +20,7 @@ func GoTypes(typeId int) string {
 		return "int64"
 	case orm.TypeFloat32:
 		return "float32"
-	case orm.TypeFloat64:
+	case orm.TypeFloat64, orm.TypeDecimal:
 		return "float64"
 	}
 	return "interface{}"
@@ -60,6 +60,8 @@ func JavaTypes(typeId int) string {
 		return "int"
 	case orm.TypeString:
 		return "String"
+	case orm.TypeDecimal:
+		return "BigDecimal"
 	}
 	return fmt.Sprintf("Unknown type id:%d", typeId)
 }
@@ -78,6 +80,8 @@ func KotlinTypes(typeId int) string {
 		return "Int"
 	case orm.TypeString:
 		return "String"
+	case orm.TypeDecimal:
+		return "BigDecimal"
 	}
 	return fmt.Sprintf("Unknown type id:%d", typeId)
 }
@@ -92,7 +96,7 @@ func TsTypes(typeId int) string {
 		return "number"
 	case orm.TypeFloat64:
 		return "number"
-	case orm.TypeInt16, orm.TypeInt32:
+	case orm.TypeInt16, orm.TypeInt32, orm.TypeDecimal:
 		return "number"
 	case orm.TypeString:
 		return "string"
@@ -104,7 +108,7 @@ func PyTypes(typeId int) string {
 	switch typeId {
 	case orm.TypeBoolean:
 		return "bool"
-	case orm.TypeFloat32,orm.TypeFloat64:
+	case orm.TypeFloat32, orm.TypeFloat64, orm.TypeDecimal:
 		return "float"
 	case orm.TypeInt16, orm.TypeInt32, orm.TypeInt64:
 		return "int"

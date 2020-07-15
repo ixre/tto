@@ -145,7 +145,7 @@ func (t *internalFunc) langDefaultValue(lang string, typeId int) string {
 	case "kotlin":
 		return JavaValues(typeId)
 	case "py":
-		return CommonValues(typeId)
+		return PythonValues(typeId)
 	}
 	return CommonValues(typeId)
 }

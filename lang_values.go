@@ -37,6 +37,21 @@ func JavaValues(typeId int) string {
 	return fmt.Sprintf("Unknown type id:%d", typeId)
 }
 
+func PythonValues(typeId int) string {
+	switch typeId {
+	case orm.TypeBoolean:
+		return "False"
+	case orm.TypeInt64, orm.TypeInt16, orm.TypeInt32:
+		return "0"
+	case orm.TypeFloat32, orm.TypeFloat64, orm.TypeDecimal:
+		return "0.0"
+	case orm.TypeString:
+		return "\"\""
+	}
+	return "None"
+}
+
+
 func CommonValues(typeId int) string {
 	switch typeId {
 	case orm.TypeBoolean:
@@ -50,3 +65,4 @@ func CommonValues(typeId int) string {
 	}
 	return "null"
 }
+

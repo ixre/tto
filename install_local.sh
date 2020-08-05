@@ -1,5 +1,12 @@
 #!/usr/bin/env sh
 
 export GOPROXY=https://goproxy.io
-CGO_ENABLED=0 GOOS=linux ARCH=amd64 go build -v -o tto bin/tto.go
+goods="windows"
+if [[ `uname` == "Darwin" ]];then
+  goods='darwin'
+elif [ `uname` == "Linux" ]; then
+  goods="linux"
+fi
+CGO_ENABLED=0 GOOS=${goods} ARCH=amd64 go build -v -o tto bin/tto.go
+
 sudo mv tto /usr/local/bin

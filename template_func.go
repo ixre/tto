@@ -141,8 +141,7 @@ func (t *internalFunc) langDefaultValue(lang string, typeId int) string {
 	switch lang {
 	case "go", "thrift", "ts":
 		return GoValues(typeId)
-	case "java":
-	case "kotlin":
+	case "java","kotlin":
 		return JavaValues(typeId)
 	case "py":
 		return PythonValues(typeId)

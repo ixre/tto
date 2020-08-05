@@ -32,7 +32,7 @@ func JavaValues(typeId int) string {
 	case orm.TypeDecimal:
 		return "0.0"
 	case orm.TypeString:
-		return "null"
+		return "\"\""
 	}
 	return fmt.Sprintf("Unknown type id:%d", typeId)
 }

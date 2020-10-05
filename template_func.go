@@ -1,7 +1,7 @@
 package tto
 
 import (
-	"github.com/ixre/gof/util"
+	"github.com/ixre/gof/types"
 	"reflect"
 	"strconv"
 	"strings"
@@ -313,7 +313,7 @@ func (t *internalFunc) multi(x, y interface{}) interface{} {
 
 // I32转为字符
 func (t *internalFunc) str(i interface{}) string {
-	return util.Str(i)
+	return types.String(i)
 }
 
 // 是否为空

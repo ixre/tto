@@ -87,7 +87,7 @@ func main() {
 	dg.Var(tto.PKG, pkgName)
 	dg.Var(tto.TIME, time.Now().Format("2006/01/02 15:04:05"))
 	if re.GetBoolean("code.id_upper") {
-		dg.IdUpper = true
+		dg.UseUpperId()
 	}
 	list, err := ds.TablesByPrefix(dbName, schema, table)
 	if err != nil {
@@ -176,7 +176,7 @@ func execCommand(command string, bashExec string) error {
 }
 
 // 根据规则生成代码
-func genByArch(arch string, dg *tto.Session, tables []*tto.Table, opt *tto.GenerateOptions) (err error) {
+func genByArch(arch string, dg tto.Session, tables []*tto.Table, opt *tto.GenerateOptions) (err error) {
 	// 按架构生成GO代码
 	switch arch {
 	case "repo":
@@ -185,7 +185,7 @@ func genByArch(arch string, dg *tto.Session, tables []*tto.Table, opt *tto.Gener
 	if err != nil {
 		println(fmt.Sprintf("[ tto][ Error]: generate go code fail! %s", err.Error()))
 	}
-	return dg.WalkGenerateCode(tables, opt)
+	return dg.WalkGenerateCodes(tables, opt)
 }
 
 // 获取数据库连接
@@ -259,11 +259,14 @@ func crashRecover(debug bool) {
 }
 
 // 生成Go代码
-func genGoRepoCode(dg *tto.Session, tables []*tto.Table,
+func genGoRepoCode(dg tto.Session, tables []*tto.Table,
 	genDir string) error {
-	// 生成GoRepo代码
-	err := dg.GenerateGoRepoCodes(tables, genDir)
-	//格式化代码
-	shell.Run("gofmt -w " + genDir)
-	return err
+	if ig, b := dg.(tto.GoSession); b {
+		// 生成GoRepo代码
+		err := ig.GenerateGoRepoCodes(tables, genDir)
+		//格式化代码
+		shell.Run("gofmt -w " + genDir)
+		return err
+	}
+	return nil
 }

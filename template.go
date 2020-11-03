@@ -44,9 +44,9 @@ func (g *CodeTemplate) resolve(s string) *CodeTemplate {
 	g.template = g.format(s)
 	// 识别类型
 	switch g.predefine["kind"] {
-	case "1":
+	case "1","tables":
 		g.kind = KindTables
-	case "2":
+	case "2","prefix":
 		g.kind = KindTablePrefix
 	default:
 		g.kind = KindNormal

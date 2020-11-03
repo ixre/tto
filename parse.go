@@ -54,7 +54,7 @@ func parseTable(ordinal int, tb *orm.Table, shortUpper bool, userMeta bool) *Tab
 			c.Comment = c.Prop
 		}
 		// 兼容JAVA项目int主键
-		if CompactMode && c.DbType =="int(11)"{
+		if CompactMode && c.DbType == "int(11)" {
 			c.Type = orm.TypeInt32
 		}
 		n.Columns[i] = c
@@ -175,10 +175,10 @@ func smartElement(name string, len int) (string, map[string]string) {
 		strings.HasPrefix(name, "file_") ||
 		strings.HasSuffix(name, "_image") ||
 		strings.HasSuffix(name, "_img") ||
-		strings.HasPrefix(name,"attachment"){
+		strings.HasPrefix(name, "attachment") {
 		return "upload", map[string]string{}
 	}
-	if len > 64  || len == 0{
+	if len > 64 || len == 0 {
 		return "textarea", map[string]string{}
 	}
 	return "input", map[string]string{}

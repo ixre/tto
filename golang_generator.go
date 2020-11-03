@@ -6,24 +6,34 @@ import (
 	"sync"
 )
 
+
+type(
+	GoSession interface{
+		// 生成Go仓储代码
+		GenerateGoRepoCodes(tables []*Table, targetDir string) (err error)
+	}
+)
+
+var _ GoSession = new(sessionImpl)
+
 // 表生成仓储结构,sign:函数后是否带签名，ePrefix:实体是否带前缀
-func (s *Session) tableToGoRepo(table *Table,
+func (s *sessionImpl) tableToGoRepo(table *Table,
 	sign bool, ePrefix string) (string, string) {
 	tpl := GoEntityRepTemplate
-	path, _ := s.PredefineTargetPath(tpl, table)
+	path, _ := s.predefineTargetPath(tpl, table)
 	return s.GenerateCode(table, GoEntityRepTemplate), path
 }
 
 // 表生成仓库仓储接口
-func (s *Session) tableToGoIRepo(table *Table,
+func (s *sessionImpl) tableToGoIRepo(table *Table,
 	sign bool, ePrefix string) (string, string) {
 	tpl := GoEntityRepIfceTemplate
-	path, _ := s.PredefineTargetPath(tpl, table)
+	path, _ := s.predefineTargetPath(tpl, table)
 	return s.GenerateCode(table, tpl), path
 }
 
 // 表生成结构
-func (s *Session) tableToGoStruct(table *Table) (string, string) {
+func (s *sessionImpl) tableToGoStruct(table *Table) (string, string) {
 	goPath := fmt.Sprintf("%s/model/%s.go", s.codeVars[PKG], table.Name)
 	if table == nil {
 		return "", goPath
@@ -36,7 +46,7 @@ func (s *Session) tableToGoStruct(table *Table) (string, string) {
 	buf.WriteString("\n// ")
 	buf.WriteString(table.Comment)
 	buf.WriteString("\ntype ")
-	buf.WriteString(title(table.Name, s.IdUpper))
+	buf.WriteString(title(table.Name, s.useUpperId))
 	buf.WriteString(" struct{\n")
 
 	fn := internalFunc{}
@@ -47,7 +57,7 @@ func (s *Session) tableToGoStruct(table *Table) (string, string) {
 			buf.WriteString("\n")
 		}
 		buf.WriteString("    ")
-		buf.WriteString(title(col.Name, s.IdUpper))
+		buf.WriteString(title(col.Name, s.useUpperId))
 		buf.WriteString(" ")
 		buf.WriteString(fn.langType("go", col.Type))
 		buf.WriteString(" `")
@@ -69,7 +79,7 @@ func (s *Session) tableToGoStruct(table *Table) (string, string) {
 }
 
 // 生成Go仓储代码
-func (s *Session) GenerateGoRepoCodes(tables []*Table, targetDir string) (err error) {
+func (s *sessionImpl) GenerateGoRepoCodes(tables []*Table, targetDir string) (err error) {
 	wg := sync.WaitGroup{}
 	for _, table := range tables {
 		wg.Add(1)
@@ -95,6 +105,6 @@ func (s *Session) GenerateGoRepoCodes(tables []*Table, targetDir string) (err er
 	wg.Wait()
 	// 生成仓储工厂
 	code := s.GenerateCodeByTables(tables, GoRepoFactoryTemplate)
-	path, _ := s.PredefineTargetPath(GoRepoFactoryTemplate, nil)
+	path, _ := s.predefineTargetPath(GoRepoFactoryTemplate, nil)
 	return SaveFile(code, targetDir+"/"+path)
 }

@@ -37,14 +37,13 @@ var {{lower_title $structName}}Mapped = false
 
 // Create new {{.table.Title}}Repo
 func New{{.table.Title}}Repo(o orm.Orm)*{{.table.Title}}Repo{
-	e := &{{.table.Title}}Repo{
-		_orm:o,
-	}
     if !{{$structName}}Mapped{
         _ = o.Mapping(model.{{.table.Title}}{},"{{.table.Name}}")
         {{lower_title $structName}}Mapped = true
     }
-    return e
+	return &{{.table.Title}}Repo{
+		_orm:o,
+	}
 }
 
 // Get {{.table.Comment}}

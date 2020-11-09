@@ -41,7 +41,7 @@ func New{{.table.Title}}Repo(o orm.Orm)*{{.table.Title}}Repo{
 		_orm:o,
 	}
     if !{{$structName}}Mapped{
-        _ = o.Mapping(*e,"{{.table.Name}}")
+        _ = o.Mapping(model.{{.table.Title}}{},"{{.table.Name}}")
         {{lower_title $structName}}Mapped = true
     }
     return e

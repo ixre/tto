@@ -18,88 +18,97 @@ var (
  * generate time: {{.global.time}}*
  */
 #!target:{{.global.pkg}}/repo/{{.table.Name}}_repo.go
+{{$structName := str_join "" .table.Title "RepoImpl"}}
 
-            import(
-                "log"
-                "{{.global.pkg}}/model"
-                "{{.global.pkg}}/ifce"
-                "database/sql"
-                "github.com/ixre/gof/db/orm"
-            )
+import(
+	"log"
+	"{{.global.pkg}}/model"
+	"{{.global.pkg}}/ifce"
+	"database/sql"
+	"github.com/ixre/gof/db/orm"
+)
 
-            // Create new {{.table.Title}}Repo
-            func New{{.table.Title}}Repo(o orm.Orm)*{{.table.Title}}Repo{
-                return &{{.table.Title}}Repo{
-                    _orm:o,
-                }
-            }
-			var _ ifce.I{{.table.Title}}Repo = new({{.table.Title}}RepoImpl)
-            type {{.table.Title}}RepoImpl struct{
-                _orm orm.Orm
-            }
+var _ ifce.I{{.table.Title}}Repo = new({{$structName}})
+type {{$structName}}RepoImpl struct{
+	_orm orm.Orm
+}
 
-            // Get {{.table.Comment}}
-            func (t *{{.table.Title}}RepoImpl) Get(primary interface{})*model.{{.table.Title}}{
-                e := model.{{.table.Title}}{}
-                err := t._orm.Get(primary,&e)
-                if err == nil{
-                    return &e
-                }
-                if err != sql.ErrNoRows{
-                  log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
-                }
-                return nil
-            }
+var {{lower_title $structName}}Mapped = false
 
-            // GetBy {{.table.Comment}}
-            func (t *{{.table.Title}}RepoImpl) GetBy(where string,v ...interface{})*model.{{.table.Title}}{
-                e := model.{{.table.Title}}{}
-                err := t._orm.GetBy(&e,where,v...)
-                if err == nil{
-                    return &e
-                }
-                if err != sql.ErrNoRows{
-                  log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
-                }
-                return nil
-            }
+// Create new {{.table.Title}}Repo
+func New{{.table.Title}}Repo(o orm.Orm)*{{.table.Title}}Repo{
+	e := &{{.table.Title}}Repo{
+		_orm:o,
+	}
+    if !{{$structName}}Mapped{
+        _ = o.Mapping(*e,"{{.table.Name}}")
+        {{lower_title $structName}}Mapped = true
+    }
+    return e
+}
 
-            // Select {{.table.Comment}}
-            func (t *{{.table.Title}}RepoImpl) Select(where string,v ...interface{})[]*model.{{.table.Title}} {
-                list := make([]*model.{{.table.Title}},0)
-                err := t._orm.Select(&list,where,v...)
-                if err != nil && err != sql.ErrNoRows{
-                  log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
-                }
-                return list
-            }
+// Get {{.table.Comment}}
+func (t *{{$structName}}) Get(primary interface{})*model.{{.table.Title}}{
+	e := model.{{.table.Title}}{}
+	err := t._orm.Get(primary,&e)
+	if err == nil{
+		return &e
+	}
+	if err != sql.ErrNoRows{
+	  log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
+	}
+	return nil
+}
 
-            // Save {{.table.Comment}}
-            func (t *{{.table.Title}}RepoImpl) Save(v *model.{{.table.Title}})(int,error){
-                id,err := orm.Save(t._orm,v,int(v.{{title .table.Pk}}))
-                if err != nil && err != sql.ErrNoRows{
-                  log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
-                }
-                return id,err
-            }
+// GetBy {{.table.Comment}}
+func (t *{{$structName}}) GetBy(where string,v ...interface{})*model.{{.table.Title}}{
+	e := model.{{.table.Title}}{}
+	err := t._orm.GetBy(&e,where,v...)
+	if err == nil{
+		return &e
+	}
+	if err != sql.ErrNoRows{
+	  log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
+	}
+	return nil
+}
 
-            // Delete {{.table.Comment}}
-            func (t *{{.table.Title}}RepoImpl) Delete(primary interface{}) error {
-                err := t._orm.DeleteByPk(model.{{.table.Title}}{}, primary)
-                if err != nil && err != sql.ErrNoRows{
-                  log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
-                }
-                return err
-            }
+// Select {{.table.Comment}}
+func (t *{{$structName}}) Select(where string,v ...interface{})[]*model.{{.table.Title}} {
+	list := make([]*model.{{.table.Title}},0)
+	err := t._orm.Select(&list,where,v...)
+	if err != nil && err != sql.ErrNoRows{
+	  log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
+	}
+	return list
+}
 
-            // Batch Delete {{.table.Comment}}
-            func (t *{{.table.Title}}RepoImpl) BatchDelete(where string,v ...interface{})(int64,error) {
-                r,err := t._orm.Delete(model.{{.table.Title}}{},where,v...)
-                if err != nil && err != sql.ErrNoRows{
-                  log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
-                }
-                return r,err
-            }
+// Save {{.table.Comment}}
+func (t *{{$structName}}) Save(v *model.{{.table.Title}})(int,error){
+	id,err := orm.Save(t._orm,v,int(v.{{title .table.Pk}}))
+	if err != nil && err != sql.ErrNoRows{
+	  log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
+	}
+	return id,err
+}
 
-            `
+// Delete {{.table.Comment}}
+func (t *{{$structName}}) Delete(primary interface{}) error {
+	err := t._orm.DeleteByPk(model.{{.table.Title}}{}, primary)
+	if err != nil && err != sql.ErrNoRows{
+	  log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
+	}
+	return err
+}
+
+// Batch Delete {{.table.Comment}}
+func (t *{{$structName}}) BatchDelete(where string,v ...interface{})(int64,error) {
+	r,err := t._orm.Delete(model.{{.table.Title}}{},where,v...)
+	if err != nil && err != sql.ErrNoRows{
+	  log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{.table.Title}}")
+	}
+	return r,err
+}
+
+`
 )

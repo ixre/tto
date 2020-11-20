@@ -10,6 +10,7 @@ package tto
 
 import (
 	"github.com/ixre/tto/utils"
+	"regexp"
 	"sync"
 	"testing"
 	"time"
@@ -59,4 +60,19 @@ func TestGenByTemplate(t *testing.T) {
 	wg.Wait()
 	println("haha")
 	time.Sleep(30 * time.Second)
+}
+
+
+func TestCodeTemplate_String(t *testing.T) {
+	var r = regexp.MustCompile("\\{\\n+(\\s{5,})")
+	var content = `
+message SavePermDeptRequest{
+    
+    /** ID */
+    int64 Id = 1;
+    /** 名称 */
+    string Name = 2;
+`
+	t.Log(r.MatchString(content))
+	t.Log(r.ReplaceAllString(content,"{$1"))
 }

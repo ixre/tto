@@ -229,11 +229,6 @@ var multiLineRegexp = regexp.MustCompile("\\{\\n+(\\s{4}\\s+)")
 
 // 格式化代码
 func (s *sessionImpl) formatCode(tpl *CodeTemplate, code string) string {
-
-	if strings.Contains(tpl.path,"protobuf"){
-		log.Println(multiLineRegexp.MatchString(code))
-		log.Println(multiLineRegexp.ReplaceAllString(code,"{$1"))
-	}
 	// 去除`{`后多余的换行
 	code = multiLineRegexp.ReplaceAllString(code,"{$1")
 	// 不格式化代码

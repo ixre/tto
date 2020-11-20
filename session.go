@@ -378,6 +378,9 @@ func (s *sessionImpl) testName(name string, files []string) bool {
 	if name[0] == '_' {
 		return false
 	}
+	if strings.ToUpper(name) =="README.MD"{
+		return false
+	}
 	if files != nil {
 		for _, v := range files {
 			if v == name {

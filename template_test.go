@@ -29,7 +29,7 @@ func TestSubstrN(t *testing.T) {
 	println(s)
 }
 
-func TestMultiQuota(t *testing.T){
+func TestMultiQuota(t *testing.T) {
 	str := `--, ""
 	haha
 `

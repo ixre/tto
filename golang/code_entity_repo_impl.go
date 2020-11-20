@@ -72,6 +72,11 @@ func (t *{{$structName}}) GetBy(where string,v ...interface{})*model.{{.table.Ti
 	return nil
 }
 
+// Count {{.table.Comment}} by condition
+func (t *{{$structName}}) Count(where string,v ...interface{})(int,error){
+   return t._orm.Count(model.{{.table.Title}}{},where,v...)
+}
+
 // Select {{.table.Comment}}
 func (t *{{$structName}}) Select(where string,v ...interface{})[]*model.{{.table.Title}} {
 	list := make([]*model.{{.table.Title}},0)

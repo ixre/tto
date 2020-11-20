@@ -12,7 +12,8 @@ var (
 )
 
 type TemplateKind int
-const(
+
+const (
 	// 普通模板
 	KindNormal = TemplateKind(0)
 	// 使用所有表生成模板
@@ -25,13 +26,13 @@ type CodeTemplate struct {
 	path      string
 	template  string
 	predefine map[string]string
-	kind  TemplateKind
-	mux *sync.RWMutex
+	kind      TemplateKind
+	mux       *sync.RWMutex
 }
 
 func NewTemplate(s string, path string, attach bool) *CodeTemplate {
-	t := &CodeTemplate{path: path,mux: &sync.RWMutex{}}
-	return t.resolve(t.attach(s,attach))
+	t := &CodeTemplate{path: path, mux: &sync.RWMutex{}}
+	return t.resolve(t.attach(s, attach))
 }
 
 func (g *CodeTemplate) resolve(s string) *CodeTemplate {
@@ -44,9 +45,9 @@ func (g *CodeTemplate) resolve(s string) *CodeTemplate {
 	g.template = g.format(s)
 	// 识别类型
 	switch g.predefine["kind"] {
-	case "1","tables":
+	case "1", "tables":
 		g.kind = KindTables
-	case "2","prefix":
+	case "2", "prefix":
 		g.kind = KindTablePrefix
 	default:
 		g.kind = KindNormal
@@ -60,7 +61,7 @@ func (g *CodeTemplate) format(s string) string {
 	return s
 }
 
-func (g *CodeTemplate) Kind()TemplateKind{
+func (g *CodeTemplate) Kind() TemplateKind {
 	return g.kind
 }
 
@@ -82,10 +83,8 @@ func (g *CodeTemplate) Predefine(key string) (string, bool) {
 	return n, ok
 }
 
-
-
 // attach: attach generator copyright at template file first line
-func (g *CodeTemplate) attach(s string, attach bool)string {
+func (g *CodeTemplate) attach(s string, attach bool) string {
 	if attach {
 		ext := g.path[strings.LastIndex(g.path, ".")+1:]
 		if ext == "py" {

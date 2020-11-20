@@ -16,23 +16,25 @@ var (
  */
 #!target:{{.global.pkg}}/ifce/{{.table.Name}}_repo_ifce.go
 
-        import(
-            "{{.global.pkg}}/model"
-        )
+import(
+	"{{.global.pkg}}/model"
+)
 
-        type I{{.table.Title}}Repo interface{
-            // auto generate by gof
-            // Get {{.table.Comment}}
-            Get(primary interface{})*model.{{.table.Title}}
-            // GetBy {{.table.Comment}}
-            GetBy(where string,v ...interface{})*model.{{.table.Title}}
-            // Select {{.table.Comment}}
-            Select(where string,v ...interface{})[]*model.{{.table.Title}}
-            // Save {{.table.Comment}}
-            Save(v *model.{{.table.Title}})(int,error)
-            // Delete {{.table.Comment}}
-            Delete(primary interface{}) error
-            // Batch Delete {{.table.Comment}}
-            BatchDelete(where string,v ...interface{})(int64,error)
-        }`
+type I{{.table.Title}}Repo interface{
+	// auto generate by gof
+	// Get {{.table.Comment}}
+	Get(primary interface{})*model.{{.table.Title}}
+	// GetBy {{.table.Comment}}
+	GetBy(where string,v ...interface{})*model.{{.table.Title}}
+	// Count {{.table.Comment}} by condition
+	Count(where string,v ...interface{})(int,error)
+	// Select {{.table.Comment}}
+	Select(where string,v ...interface{})[]*model.{{.table.Title}}
+	// Save {{.table.Comment}}
+	Save(v *model.{{.table.Title}})(int,error)
+	// Delete {{.table.Comment}}
+	Delete(primary interface{}) error
+	// Batch Delete {{.table.Comment}}
+	BatchDelete(where string,v ...interface{})(int64,error)
+}`
 )

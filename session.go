@@ -23,7 +23,6 @@ import (
 	"time"
 )
 
-
 const (
 	// 包名
 	PKG = "pkg"
@@ -34,34 +33,35 @@ const (
 )
 
 type (
-   Session interface {
-	   // add or update variable
-	   Var(key string, v interface{})
-	   // set code package
-	   Package(pkg string)
-	   // 使用大写ID,默认为false
-	   UseUpperId()
-	   // 添加函数
-	   AddFunc(fnTag string, fnBody interface{})
-	   // 返回所有的变量
-	   AllVars() map[string]interface{}
-	   // 生成代码
-	   GenerateCode(table *Table, tpl *CodeTemplate) string
-	   // 生成所有表的代码, 可引用的对象为global 和 tables
-	   GenerateCodeByTables(tables []*Table, tpl *CodeTemplate) string
-	   // 遍历模板文件夹, 并生成代码, 如果为源代码目标,文件存在,则自动生成添加 .gen后缀
-	   WalkGenerateCodes(tables []*Table, opt *GenerateOptions) error
-	   // 转换表格,如果meta为true,则读取元数据,如果没有则自动生成元数据
-	   Parses(tables []*orm.Table, meta bool) (arr []*Table, err error)
-   }
+	Session interface {
+		// add or update variable
+		Var(key string, v interface{})
+		// set code package
+		Package(pkg string)
+		// 使用大写ID,默认为false
+		UseUpperId()
+		// 添加函数
+		AddFunc(fnTag string, fnBody interface{})
+		// 返回所有的变量
+		AllVars() map[string]interface{}
+		// 生成代码
+		GenerateCode(table *Table, tpl *CodeTemplate) string
+		// 生成所有表的代码, 可引用的对象为global 和 tables
+		GenerateCodeByTables(tables []*Table, tpl *CodeTemplate) string
+		// 遍历模板文件夹, 并生成代码, 如果为源代码目标,文件存在,则自动生成添加 .gen后缀
+		WalkGenerateCodes(tables []*Table, opt *GenerateOptions) error
+		// 转换表格,如果meta为true,则读取元数据,如果没有则自动生成元数据
+		Parses(tables []*orm.Table, meta bool) (arr []*Table, err error)
+	}
 )
 
 var _ Session = new(sessionImpl)
+
 type sessionImpl struct {
 	// 生成代码变量
 	codeVars map[string]interface{}
 	// 模板函数
-	funcMap    map[string]interface{}
+	funcMap map[string]interface{}
 	// 使用大写ID
 	useUpperId bool
 }

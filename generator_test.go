@@ -49,7 +49,7 @@ func TestStructAssignCode(t *testing.T) {
 func TestGenByTemplate(t *testing.T) {
 	wg := &sync.WaitGroup{}
 	wg.Add(10)
-	for i:=0;i<10;i++ {
+	for i := 0; i < 10; i++ {
 		go func(wg *sync.WaitGroup) {
 			wg.Done()
 			//result := dg.GenerateCode(&Table{Name: "admin_user"}, NewTemplate(str, "", true))
@@ -58,5 +58,5 @@ func TestGenByTemplate(t *testing.T) {
 	}
 	wg.Wait()
 	println("haha")
-	time.Sleep(30*time.Second)
+	time.Sleep(30 * time.Second)
 }

@@ -6,9 +6,8 @@ import (
 	"sync"
 )
 
-
-type(
-	GoSession interface{
+type (
+	GoSession interface {
 		// 生成Go仓储代码
 		GenerateGoRepoCodes(tables []*Table, targetDir string) (err error)
 	}

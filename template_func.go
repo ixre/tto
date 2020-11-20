@@ -2,8 +2,8 @@ package tto
 
 import (
 	"github.com/ixre/gof/types"
+	lang2 "github.com/ixre/tto/lang"
 	"reflect"
-	"strconv"
 	"strings"
 	ht "text/template"
 	"unicode"
@@ -97,21 +97,24 @@ func (t *internalFunc) nameToPath(s string) string {
 }
 
 func (t *internalFunc) langType(lang string, typeId int) string {
-	switch lang {
-	case "go":
-		return GoTypes(typeId)
-	case "java":
-		return JavaTypes(typeId)
-	case "kotlin":
-		return KotlinTypes(typeId)
-	case "thrift":
-		return ThriftTypes(typeId)
-	case "ts":
-		return TsTypes(typeId)
-	case "py":
-		return PyTypes(typeId)
-	}
-	return strconv.Itoa(typeId)
+	return lang2.Get(lang).ParseType(typeId)
+	//switch lang {
+	//case "go":
+	//	return l.GoTypes(typeId)
+	//case "java":
+	//	return l.JavaTypes(typeId)
+	//case "kotlin":
+	//	return l.KotlinTypes(typeId)
+	//case "thrift":
+	//	return l.ThriftTypes(typeId)
+	//case "protobuf":
+	//	return l.ProtobufTypes(typeId)
+	//case "ts":
+	//	return l.TsTypes(typeId)
+	//case "py":
+	//	return l.PyTypes(typeId)
+	//}
+	//return strconv.Itoa(typeId)
 }
 
 // 返回SQL/ORM类型
@@ -124,29 +127,21 @@ func (t *internalFunc) sqlType(lang string, typeId int, len int) string {
 
 // 将包名替换为.分割, 通常C#,JAVA语言使用"."分割包名
 func (t *internalFunc) langPkg(lang string, pkg string) string {
-	switch lang {
-	case "java", "kotlin", "csharp", "thrift", "py":
-		return strings.Replace(pkg, "/", ".", -1)
-	case "go", "rust", "php", "python":
-		i := strings.LastIndexAny(pkg, "/.")
-		if i != -1 {
-			return pkg[i+1:]
-		}
-	}
-	return pkg
+	return lang2.Get(lang).ParsePkg(pkg)
 }
 
 // 返回类型默认值
 func (t *internalFunc) langDefaultValue(lang string, typeId int) string {
-	switch lang {
-	case "go", "thrift", "ts":
-		return GoValues(typeId)
-	case "java","kotlin":
-		return JavaValues(typeId)
-	case "py":
-		return PythonValues(typeId)
-	}
-	return CommonValues(typeId)
+	return lang2.Get(lang).DefaultValue(typeId)
+	//switch lang {
+	//case "go", "thrift","protobuf","ts":
+	//	return l.GoValues(typeId)
+	//case "java","kotlin":
+	//	return l.JavaValues(typeId)
+	//case "py":
+	//	return l.PythonValues(typeId)
+	//}
+	//return l.CommonValues(typeId)
 }
 
 // 是否相等，如：{{equal "go" "rust"}
@@ -155,15 +150,14 @@ func (t *internalFunc) equal(v1, v2 interface{}) bool {
 }
 
 // 是否与任意值相等,　如：{{equal_any 1 2 3 4}}, 1是否与2,3,4相等
-func (t *internalFunc) equalAnyValue(src interface{},args ...interface{})bool{
-	for _,v := range args{
-		if v == src{
+func (t *internalFunc) equalAnyValue(src interface{}, args ...interface{}) bool {
+	for _, v := range args {
+		if v == src {
 			return true
 		}
 	}
 	return false
 }
-
 
 // 替换,如: {{replace "table_name" "_" "-"}}
 func (t *internalFunc) replace(s, oldStr, newStr string) string {
@@ -323,7 +317,6 @@ func (t *internalFunc) isEmpty(s string) bool {
 	}
 	return strings.TrimSpace(s) == ""
 }
-
 
 //求余
 func (t *internalFunc) mathRemain(i int, j int) int {

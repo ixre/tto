@@ -17,6 +17,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 	"text/template"
@@ -224,8 +225,12 @@ func (s *sessionImpl) defaultTargetPath(tplFilePath string, table *Table) string
 	return strings.TrimSpace(tplFilePath + table.Name)
 }
 
+var multiLineRegexp = regexp.MustCompile("\\{(\\n)")
+
 // 格式化代码
 func (s *sessionImpl) formatCode(tpl *CodeTemplate, code string) string {
+	// 去除`{`后多余的换行
+	code = multiLineRegexp.ReplaceAllString(code,"{")
 	// 不格式化代码
 	if k, _ := tpl.Predefine("format"); k == "false" {
 		return code

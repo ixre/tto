@@ -126,8 +126,8 @@ Usage of tto:
 ```
 字符组合,如以下语句将输出:`1,2,3`
 ```
-{{str_join "," "1","2","3"}}
-{{$api := str_join "/" .global.url_prefix (name_path .table.Name)}}
+{{join "," "1","2","3"}}
+{{$api := join "/" .global.url_prefix (name_path .table.Name)}}
 ```
 
 包含函数

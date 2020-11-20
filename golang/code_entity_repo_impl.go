@@ -18,7 +18,7 @@ var (
  * generate time: {{.global.time}}*
  */
 #!target:{{.global.pkg}}/repo/{{.table.Name}}_repo.go
-{{$structName := str_join "" .table.Title "RepoImpl"}}
+{{$structName := join .table.Title "RepoImpl"}}
 
 import(
 	"log"

@@ -1,7 +1,7 @@
 #!target:../../src/repo/{{.table.Name}}_repo.py
 {{$title := .table.Title}}{{$pkName := .table.Pk}}\
 {{$comment := .table.Comment}}\
-{{$Model := str_join "" .table.Title "Model"}}
+{{$Model := join .table.Title "Model"}}
 {{$pkType := type "py" .table.PkType}}
 {{$pkTypeId := $.table.PkType}}
 from sqlalchemy.orm import sessionmaker

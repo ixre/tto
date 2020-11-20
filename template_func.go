@@ -51,7 +51,8 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	fm["substr_n"] = t.substrN
 	// 截取索引为N的元素,如:{{get_n .tables 0}}
 	fm["get_n"] = t.getN
-	// 字符组合,如：{{str_join "," "1","2","3"}}结果为:1,2,3
+	// 字符组合,如：{{str_join "1" "2" "3" ","}}结果为:1,2,3
+	fm["join"] = t.strJoin
 	fm["str_join"] = t.strJoin
 	// 包含函数, 如:{{contain .table.Pk "id"}}
 	fm["contain"] = t.contain
@@ -203,9 +204,17 @@ func (t *internalFunc) getN(args interface{}, n int) interface{} {
 	//return args[n]
 }
 
-// 字符组合,如：{{str_join "," "1","2","3"}}结果为:1,2,3
+// 字符组合,如：{{str_join "1","2","3" ","}}结果为:1,2,3
 func (t *internalFunc) strJoin(s string, args ...string) string {
-	return strings.Join(args, s)
+	l := len(args)
+	if  l== 0{
+		return s
+	}
+	if l == 1{
+		return s +args[0]
+	}
+	n := append([]string{s},args[:len(args)-1]...)
+	return strings.Join(n,args[l-1])
 }
 
 // 是否包含

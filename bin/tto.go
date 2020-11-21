@@ -82,8 +82,9 @@ func main() {
 	driver := re.GetString("database.driver")
 	dbName := re.GetString("database.name")
 	schema := re.GetString("database.schema")
-	ds := orm.DialectSession(getDb(driver, re), getDialect(driver))
-	dg := tto.DBCodeGenerator()
+	dialect,dbDriver := tto.GetDialect(driver)
+	ds := orm.DialectSession(getDb(driver, re), dialect)
+	dg := tto.DBCodeGenerator(dbDriver)
 	dg.Var(tto.PKG, pkgName)
 	dg.Var(tto.TIME, time.Now().Format("2006/01/02 15:04:05"))
 	if re.GetBoolean("code.id_upper") {
@@ -234,15 +235,7 @@ func getDb(driver string, r *tto.Registry) *sql.DB {
 	return d
 }
 
-func getDialect(driver string) orm.Dialect {
-	switch driver {
-	case "mysql":
-		return &orm.MySqlDialect{}
-	case "postgres", "postgresql":
-		return &orm.PostgresqlDialect{}
-	}
-	return nil
-}
+
 
 // 恢复应用
 func crashRecover(debug bool) {

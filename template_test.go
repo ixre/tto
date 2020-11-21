@@ -33,7 +33,7 @@ func TestMultiQuota(t *testing.T) {
 	str := `--, ""
 	haha
 `
-	dg := DBCodeGenerator()
+	dg := DBCodeGenerator("")
 	result := dg.GenerateCode(&Table{Name: "admin_user"}, NewTemplate(str, "", true))
 	t.Log("--", result)
 }

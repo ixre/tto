@@ -18,6 +18,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"sync"
 	"text/template"
@@ -65,6 +66,8 @@ type sessionImpl struct {
 	funcMap map[string]interface{}
 	// 使用大写ID
 	useUpperId bool
+	// 数据库驱动
+	driver     string
 }
 
 func (s *sessionImpl) UseUpperId() {
@@ -72,11 +75,14 @@ func (s *sessionImpl) UseUpperId() {
 }
 
 // 数据库代码生成器
-func DBCodeGenerator() Session {
-	fn := &internalFunc{}
+func DBCodeGenerator(driver string) Session {
+	if sort.SearchStrings([]string{"pgsql","mssql","mysql"},driver) == -1{
+		panic("not support db :"+driver)
+	}
 	return (&sessionImpl{
+		driver: driver,
 		codeVars:   make(map[string]interface{}),
-		funcMap:    fn.funcMap(),
+		funcMap:    (&internalFunc{}).funcMap(),
 		useUpperId: false,
 	}).init()
 }
@@ -91,6 +97,7 @@ func (s *sessionImpl) init() Session {
 	}
 	// put system vars
 	s.Var(PKG, "com/your/pkg")
+	s.Var("db",s.driver)
 	s.Var(TIME, time.Now().Format("2006/01/02 15:04:05"))
 	s.Var(VERSION, BuildVersion)
 	return s

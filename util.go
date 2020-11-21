@@ -1,11 +1,22 @@
 package tto
 
 import (
+	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/util"
 	"os"
 	"strings"
 	"unicode"
 )
+
+func GetDialect(driver string)(dialect orm.Dialect,driverName string) {
+	switch driver {
+	case "mysql","mariadb":
+		return &orm.MySqlDialect{},"mysql"
+	case "postgres", "postgresql","pgsql":
+		return &orm.PostgresqlDialect{},"pgsql"
+	}
+	return nil,"-"
+}
 
 func prefix(str string) string {
 	if i := strings.Index(str, "_"); i != -1 {

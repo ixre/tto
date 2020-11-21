@@ -200,7 +200,12 @@ namespace {{pkg "csharp" .global.pkg}}
 ```
 generate time {{.global.time}}
 ```
-4. 输出自定义变量
+4. 获取数据库驱动
+可选值：pgsql | mysql, 可针对不同数据库生成代码
+```
+{{.global.db}}
+```
+5. 输出自定义变量
 用户可以通过在配置文件的节点`[global]`中进行添加变量,如:
 ```
 [global]

@@ -316,7 +316,7 @@ func (t *internalFunc) multi(x, y interface{}) interface{} {
 
 // I32转为字符
 func (t *internalFunc) str(i interface{}) string {
-	return types.String(i)
+	return types.Stringify(i)
 }
 
 // 是否为空

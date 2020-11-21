@@ -6,10 +6,9 @@ import (
 	"sync"
 )
 
-var (
-	predefineRegexp = regexp.MustCompilePOSIX("#\\!([^\\!-]+):([^#]+?)")
-	lineJoinRegexp  = regexp.MustCompile("\\s*\\\\(\\s+)")
-)
+var predefineRegexp = regexp.MustCompilePOSIX("#\\!([^\\!-]+):([^#]+?)")
+	var lineJoinRegexp  = regexp.MustCompile("\\s*\\\\(\\s+)")
+var tplCommentRegexp = regexp.MustCompile("/\\*+(\\s*)#!(.+?)*/")
 
 type TemplateKind int
 
@@ -42,7 +41,7 @@ func (g *CodeTemplate) resolve(s string) *CodeTemplate {
 		g.predefine[match[1]] = match[2]
 	}
 	g.mux.Unlock()
-	g.template = g.format(s)
+	g.template = g.formatContent(s)
 	// 识别类型
 	switch g.predefine["kind"] {
 	case "1", "tables":
@@ -55,9 +54,13 @@ func (g *CodeTemplate) resolve(s string) *CodeTemplate {
 	return g
 }
 
-func (g *CodeTemplate) format(s string) string {
+// 返回模板内容
+func (g *CodeTemplate) formatContent(s string) string {
 	s = predefineRegexp.ReplaceAllString(s, "")
 	s = lineJoinRegexp.ReplaceAllString(s, "")
+	s = tplCommentRegexp.ReplaceAllString(s,"")
+	// 去掉模板注释
+
 	return s
 }
 

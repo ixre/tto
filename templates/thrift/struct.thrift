@@ -1,7 +1,7 @@
 namespace java {{pkg "thrift" .global.pkg}}.rpc
 namespace netstd {{pkg "thrift" .global.pkg}}.rpc
 
-{{.global.url_prefix}}
+{{.global.base_path}}
 
 /** {{.table.Comment}} */
 struct S{{.table.Title}}{

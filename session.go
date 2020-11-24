@@ -26,6 +26,10 @@ import (
 )
 
 const (
+	// 基础URL
+	BASE_URL = "base_url"
+	// 基础路径
+	BASE_PATH = "base_path"
 	// 包名
 	PKG = "pkg"
 	// 当前时间
@@ -89,14 +93,15 @@ func DBCodeGenerator(driver string) Session {
 
 func (s *sessionImpl) init() Session {
 	// predefine default vars
-	s.Var("url_prefix", "")
+	s.Var(BASE_URL, "")
+	s.Var(BASE_PATH, "")
 	// load global registry
 	rd := GetRegistry()
 	for _, k := range rd.Keys {
 		s.Var(k, rd.Data[k])
 	}
 	// put system vars
-	s.Var(PKG, "com/your/pkg")
+	s.Package("com/your/pkg")
 	s.Var("db",s.driver)
 	s.Var(TIME, time.Now().Format("2006/01/02 15:04:05"))
 	s.Var(VERSION, BuildVersion)
@@ -119,6 +124,9 @@ func (s *sessionImpl) AddFunc(funcName string, f interface{}) {
 
 // 定义变量或修改变量
 func (s *sessionImpl) Var(key string, v interface{}) {
+	if key == "pkg"{
+		panic("please use Package(pkg string)")
+	}
 	if v == nil {
 		delete(s.codeVars, key)
 	} else {
@@ -127,6 +135,7 @@ func (s *sessionImpl) Var(key string, v interface{}) {
 }
 
 func (s sessionImpl) Package(pkg string) {
+	pkg = strings.ReplaceAll(pkg,".","/")
 	s.codeVars[PKG] = pkg
 }
 

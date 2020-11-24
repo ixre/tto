@@ -41,6 +41,10 @@ func PyTypes(typeId int) string {
 		return "int"
 	case orm.TypeString:
 		return "str"
+	case orm.TypeDateTime:
+		return "time"
+	case orm.TypeBytes:
+		return "byte[]"
 	}
 	return "any"
 }

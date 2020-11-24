@@ -50,6 +50,8 @@ func ProtobufTypes(typeId int) string {
 		return "string"
 	case orm.TypeDecimal:
 		return "decimal"
+	case orm.TypeDateTime:
+		return "string"
 	}
 	return fmt.Sprintf("Unknown type id:%d", typeId)
 }

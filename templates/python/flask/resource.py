@@ -87,6 +87,6 @@ class {{$title}}Paging(Resource):
 # please make sure register api in main.py. code likes:
 # {{.table.Name}}_res.reg_api(api)
 def route(api):
-    api.add_resource({{$title}}List, "{{.global.url_prefix}}/{{$path}}")
-    api.add_resource({{$title}}, "{{.global.url_prefix}}/{{$path}}/<id>")
-    api.add_resource({{$title}}Paging, "{{.global.url_prefix}}/{{$path}}/paging")
+    api.add_resource({{$title}}List, "{{.global.base_path}}/{{$path}}")
+    api.add_resource({{$title}}, "{{.global.base_path}}/{{$path}}/<id>")
+    api.add_resource({{$title}}Paging, "{{.global.base_path}}/{{$path}}/paging")

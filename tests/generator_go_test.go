@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package tto
+package tests
 
 import (
 	"github.com/ixre/tto/utils"

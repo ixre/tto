@@ -47,6 +47,10 @@ func JavaTypes(typeId int) string {
 		return "String"
 	case orm.TypeDecimal:
 		return "BigDecimal"
+	case orm.TypeDateTime:
+		return "Date"
+	case orm.TypeBytes:
+		return "Byte[]"
 	}
 	return fmt.Sprintf("Unknown type id:%d", typeId)
 }

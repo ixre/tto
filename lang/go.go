@@ -47,6 +47,10 @@ func GoTypes(typeId int) string {
 		return "float32"
 	case orm.TypeFloat64, orm.TypeDecimal:
 		return "float64"
+	case orm.TypeDateTime:
+		return "time.Time"
+	case orm.TypeBytes:
+		return "[]byte"
 	}
 	return "interface{}"
 }

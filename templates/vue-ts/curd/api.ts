@@ -1,7 +1,7 @@
 #!lang:ts＃!name:API和定义文件
 #!target:ts/feature/{{name_path .table.Name}}/api.ts
 import request from '@/utils/request'
-{{$path := join .global.url_prefix (name_path .table.Name)}}
+{{$path := join .global.base_path (name_path .table.Name)}}
 
 // {{.table.Comment}}对象
 export interface I{{.table.Title}} {

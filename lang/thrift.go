@@ -49,6 +49,8 @@ func ThriftTypes(typeId int) string {
 		return "f64"
 	case orm.TypeDecimal:
 		return "f64"
+	case orm.TypeDateTime:
+		return "string"
 	}
 	return strconv.Itoa(typeId)
 }

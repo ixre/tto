@@ -45,6 +45,10 @@ func TsTypes(typeId int) string {
 		return "number"
 	case orm.TypeString:
 		return "string"
+	case orm.TypeDateTime:
+		return "Date"
+	case orm.TypeBytes:
+		return "any"
 	}
 	return "any"
 }

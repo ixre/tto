@@ -241,12 +241,12 @@ func (s *sessionImpl) defaultTargetPath(tplFilePath string, table *Table) string
 	return strings.TrimSpace(tplFilePath + table.Name)
 }
 
-var multiLineRegexp = regexp.MustCompile("\\{\\n+(\\s{4}\\s+)")
+var multiLineRegexp = regexp.MustCompile("\\{\\n{2,}(\\s{4}\\s+)")
 
 // 格式化代码
 func (s *sessionImpl) formatCode(tpl *CodeTemplate, code string) string {
 	// 去除`{`后多余的换行
-	code = multiLineRegexp.ReplaceAllString(code,"{$1")
+	code = multiLineRegexp.ReplaceAllString(code,"{\n$1")
 	// 不格式化代码
 	if k, _ := tpl.Predefine("format"); k == "false" {
 		return code

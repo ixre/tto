@@ -10,7 +10,7 @@ meta-settings
 # Architecture specific extensions/prefixes
 *.[568vq]
 [568vq].out
-
+tmp
 *.cgo1.go
 *.cgo2.c
 _cgo_defun.c

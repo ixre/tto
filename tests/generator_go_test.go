@@ -64,15 +64,15 @@ func TestGenByTemplate(t *testing.T) {
 
 
 func TestCodeTemplate_String(t *testing.T) {
-	var r = regexp.MustCompile("\\{\\n+(\\s{5,})")
+	var r = regexp.MustCompile("\\{\\n{2,}(\\s{5,})")
 	var content = `
-message SavePermDeptRequest{
-    
-    /** ID */
-    int64 Id = 1;
-    /** 名称 */
-    string Name = 2;
+public int getFiveUnderOneHundred() {
+
+
+
+        return this.five_under_one_hundred;
+    }
 `
 	t.Log(r.MatchString(content))
-	t.Log(r.ReplaceAllString(content,"{$1"))
+	t.Log(r.ReplaceAllString(content,"{\n$1"))
 }

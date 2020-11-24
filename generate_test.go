@@ -12,9 +12,11 @@ import (
 var (
 	driver     = "mysql"
 	dbName     = ""
-	dbPrefix   = ""
+	dbPrefix   = "bz_winLloss_rules"
 	connString = "root:@tcp(127.0.0.1:3306)/baozhang?charset=utf8"
 	genDir     = "generated_code/"
+    tplDir  ="./templates"
+
 )
 
 // 生成数据库所有的代码文件
@@ -46,7 +48,7 @@ func TestGenAll(t *testing.T) {
 	//dg.GenerateGoRepoCodes(tables, genDir)
 	// 生成自定义代码
 	opt := &GenerateOptions{
-		TplDir:          "./templates",
+		TplDir:          tplDir,
 		AttachCopyright: true,
 		OutputDir:       genDir,
 		ExcludeFiles:    []string{"grid_list.html"},

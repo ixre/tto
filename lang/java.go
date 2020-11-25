@@ -1,9 +1,25 @@
 package lang
+/**
+ * Copyright (C) 2007-2020 56X.NET,All rights reserved.
+ *
+ * name : java
+ * author : jarrysix (jarrysix#gmail.com)
+ * date : 2020-11-20 11:11
+ * description :
+ * history :
+ */
+
+/**
+find output/java -name "*.java" | xargs sed -i 's/ int / Integer /g' && \
+find output/java -name "*.java" | xargs sed -i 's/ long / Long /g' && \
+find output/java -name "*.java" | xargs sed -i 's/ float / Float /g'
+ */
 
 import (
 	"fmt"
 	"github.com/ixre/gof/db/orm"
 )
+
 
 type JavaLang struct {
 }
@@ -20,27 +36,19 @@ func (j JavaLang) DefaultValue(typeId int) string {
 	return JavaValues(typeId)
 }
 
-/**
- * Copyright (C) 2007-2020 56X.NET,All rights reserved.
- *
- * name : java
- * author : jarrysix (jarrysix#gmail.com)
- * date : 2020-11-20 11:11
- * description :
- * history :
- */
+
 var _ Lang = new(JavaLang)
 
 func JavaTypes(typeId int) string {
 	switch typeId {
 	case orm.TypeBoolean:
-		return "Boolean"
+		return "boolean"
 	case orm.TypeInt64:
-		return "Long"
+		return "long"
 	case orm.TypeFloat32:
-		return "Float"
+		return "float"
 	case orm.TypeFloat64:
-		return "Double"
+		return "double"
 	case orm.TypeInt16, orm.TypeInt32:
 		return "int"
 	case orm.TypeString:

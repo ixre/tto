@@ -16,6 +16,23 @@ import (
 )
 
 func main() {
+	cmd := "generate"
+	if len(os.Args) > 1{
+		if a:= os.Args[1];!strings.HasPrefix(a,"-"){
+			cmd =a
+		}
+	}
+	doUpdate()
+	return
+	switch cmd {
+	case "update":
+		doUpdate()
+	case "generate":
+		generate()
+	}
+}
+
+func generate() {
 	var genDir string   //输出目录
 	var confPath string //设置目录
 	var tplDir string   //模板目录
@@ -82,7 +99,7 @@ func main() {
 	driver := re.GetString("database.driver")
 	dbName := re.GetString("database.name")
 	schema := re.GetString("database.schema")
-	dialect,dbDriver := tto.GetDialect(driver)
+	dialect, dbDriver := tto.GetDialect(driver)
 	ds := orm.DialectSession(getDb(driver, re), dialect)
 	dg := tto.DBCodeGenerator(dbDriver)
 	dg.Package(pkgName)

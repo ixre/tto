@@ -1,10 +1,10 @@
 #!target:src/main/kotlin/{{.global.pkg}}/resources/{{.table.Title}}Resource.kt
-package {{pkg "java" .global.pkg}}.resources
+package {{pkg "kotlin" .global.pkg}}.resources
 
-import {{pkg "java" .global.pkg}}.pojo.{{.table.Title}}Entity
-import {{pkg "java" .global.pkg}}.service.{{.table.Title}}Service
-import {{pkg "java" .global.pkg}}.component.TinyQueryComponent
-import net.fze.commons.Result
+import {{pkg "kotlin" .global.pkg}}.pojo.{{.table.Title}}Entity
+import {{pkg "kotlin" .global.pkg}}.service.{{.table.Title}}Service
+import {{pkg "kotlin" .global.pkg}}.component.TinyQueryComponent
+import net.fze.common.Result
 import net.fze.extras.report.DataResult
 import javax.inject.Inject
 import javax.ws.rs.*

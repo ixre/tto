@@ -1,5 +1,5 @@
 #!target:src/main/kotlin/{{.global.pkg}}/repo/{{.table.Title}}JpaRepository.kt
-package {{pkg "java" .global.pkg}}.repo;
+package {{pkg "kotlin" .global.pkg}}.repo;
 
 import {{pkg "kotlin" .global.pkg}}.pojo.{{.table.Title}}Entity
 import io.quarkus.hibernate.orm.panache.PanacheRepository

@@ -1,15 +1,13 @@
 #!target:src/main/kotlin/{{.global.pkg}}/service/{{.table.Title}}Service.kt
-package {{pkg "java" .global.pkg}}.service
+package {{pkg "kotlin" .global.pkg}}.service
 
-import {{pkg "java" .global.pkg}}.pojo.{{.table.Title}}Entity
-import {{pkg "java" .global.pkg}}.repo.{{.table.Title}}JpaRepository
+import {{pkg "kotlin" .global.pkg}}.pojo.{{.table.Title}}Entity
+import {{pkg "kotlin" .global.pkg}}.repo.{{.table.Title}}JpaRepository
 import javax.inject.Inject
 import javax.enterprise.inject.Default
 import javax.enterprise.context.ApplicationScoped
-import net.fze.util.catch
-import net.fze.commons.Types
-import net.fze.commons.TypesConv
-import net.fze.util.value
+import net.fze.common.Types
+import net.fze.common.TypesConv
 import javax.transaction.Transactional
 
 {{$tableTitle := .table.Title}}
@@ -26,12 +24,12 @@ class {{.table.Title}}Service {
 
     /** 根据ID查找{{.table.Comment}} */
     fun findByIdOrNull(id:{{$pkType}}):{{$tableTitle}}Entity?{
-        return this.repo.findByIdOptional(this.parseId(id)).value()
+        return this.repo.findByIdOptional(this.parseId(id))?.get()
     }
 
     /** 根据条件查找单个对象 */
     fun findBy(query:String,vararg params:Any):{{$tableTitle}}Entity?{
-        return this.repo.find(query,params).singleResultOptional<{{$tableTitle}}Entity>().value()
+        return this.repo.find(query,params).singleResultOptional<{{$tableTitle}}Entity>()?.get()
     }
 
     /** 根据条件查找并返回列表 */

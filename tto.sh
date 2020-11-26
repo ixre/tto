@@ -43,3 +43,7 @@ if [[ "${tables}" != "" ]]; then
 fi
 
 tto ${params}
+
+echo 'will remove *.gen files automation after 30 seconds' && \
+ sleep 30s && find .. -name "*.gen"|xargs rm -rf
+

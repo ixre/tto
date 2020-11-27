@@ -22,11 +22,10 @@ func main() {
 			cmd =a
 		}
 	}
-	doUpdate()
-	return
 	switch cmd {
 	case "update":
-		doUpdate()
+		forceUpdate := len(os.Args)> 2 && os.Args[2] =="-y"
+		doUpdate(forceUpdate)
 	case "generate":
 		generate()
 	}

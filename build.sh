@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 rm -rf output
-go install bin/tto.go
+go install bin/*.go
 
 CGO_ENABLED=0 GOOS=linux ARCH=amd64 go build -o tto bin/*.go
 CGO_ENABLED=0 GOOS=darwin ARCH=amd64 go build -o mac-tto bin/*.go

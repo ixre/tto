@@ -6,6 +6,7 @@ import (
 	"compress/gzip"
 	"errors"
 	"fmt"
+	"github.com/ixre/tto"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -44,7 +45,7 @@ func doUpdate(force bool)(bool,error){
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
-	if v == nil{
+	if v == nil || !checkNewVersion(v.version,tto.VERSION){
 		fmt.Fprint(os.Stdout,"已经是最新版本\r")
 		return false,nil
 	}
@@ -72,6 +73,10 @@ func doUpdate(force bool)(bool,error){
 	}
 	fmt.Fprint(os.Stdout,"恭喜! 安装完成！\r")
 	return true,nil
+}
+
+func checkNewVersion(v string, v2 string) bool {
+	return IntVersion(v) > IntVersion(v2)
 }
 
 func install(file string) error {
@@ -302,4 +307,18 @@ func down(ur, target string,onProgress func(total int,reads int,seconds int), ti
 		err = writer.Flush()
 	}
 	return err
+}
+
+func IntVersion(s string) int {
+	arr := strings.Split(s, ".")
+	for i, v := range arr {
+		if l := len(v); l < 3 {
+			arr[i] = strings.Repeat("0", 3-l) + v
+		}
+	}
+	intVer, err := strconv.Atoi(strings.Join(arr, ""))
+	if err != nil {
+		panic(err)
+	}
+	return intVer
 }

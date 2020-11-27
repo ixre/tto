@@ -8,9 +8,11 @@ import (
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/shell"
 	"github.com/ixre/tto"
+	"io/ioutil"
 	"log"
 	"os"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -25,10 +27,26 @@ func main() {
 	switch cmd {
 	case "update":
 		forceUpdate := len(os.Args)> 2 && os.Args[2] =="-y"
-		doUpdate(forceUpdate)
+		_, _ = doUpdate(forceUpdate)
 	case "generate":
 		generate()
 	}
+}
+
+func checkEveryDay() bool {
+	timeFile := os.TempDir()+"/tto_check_time"
+	var unix int64
+	lastTime,err := ioutil.ReadFile(timeFile)
+	if err == nil{
+		unix1,_ := strconv.Atoi(string(lastTime))
+		unix = int64(unix1)
+	}
+	if dt:= time.Now().Unix();dt - unix > 3600*24{
+		_ = ioutil.WriteFile(timeFile, []byte(strconv.Itoa(int(dt))), os.ModePerm)
+		b, _ := doUpdate(false)
+		return b
+	}
+	return false
 }
 
 func generate() {
@@ -42,6 +60,7 @@ func generate() {
 	var printVer bool
 	var cleanLast bool
 	var compactMode bool
+	var keepLocal bool
 
 	flag.StringVar(&genDir, "o", "./output", "path of output directory")
 	flag.StringVar(&tplDir, "t", "./templates", "path of code templates directory")
@@ -52,12 +71,16 @@ func generate() {
 	flag.BoolVar(&cleanLast, "clean", false, "clean last generate files")
 	flag.BoolVar(&debug, "debug", false, "debug mode")
 	flag.BoolVar(&compactMode, "compact", false, "compact mode for old project")
+	flag.BoolVar(&keepLocal,"local",false,"don't update any new version")
 	flag.BoolVar(&printVer, "v", false, "print version")
 	flag.Parse()
 
 	if printVer {
 		println("tto Generator v" + tto.BuildVersion)
 		return
+	}
+	if !keepLocal && checkEveryDay() {
+		os.Exit(0)
 	}
 	re, err := tto.LoadRegistry(confPath)
 	if err != nil {

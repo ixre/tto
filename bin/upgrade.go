@@ -6,13 +6,11 @@ import (
 	"compress/gzip"
 	"errors"
 	"fmt"
-	"github.com/ixre/gof/log"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
-	"path"
 	"path/filepath"
 	"regexp"
 	"runtime"
@@ -39,19 +37,20 @@ type version struct{
 	distURL string
 }
 
-func doUpdate(force bool){
+func doUpdate(force bool)(bool,error){
+	fmt.Fprint(os.Stdout,"正在检查版本...\r")
 	v,err := checkVersion()
 	if err != nil{
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
 	if v == nil{
-		fmt.Println("已经是最新版本")
-		return
+		fmt.Fprint(os.Stdout,"已经是最新版本\r")
+		return false,nil
 	}
-	printVersion(v)
+	//printVersion(v)
 	if !force {
-		fmt.Printf("\n是否现在立即更新?[Y/N] ")
+		fmt.Printf("检测到新版本v%s,是否现在更新? [Y/N] ",v.version)
 		input := bufio.NewScanner(os.Stdin) //初始化一个扫表对象
 		input.Scan()
 		if strings.ToLower(input.Text()) != "y"{
@@ -68,35 +67,36 @@ func doUpdate(force bool){
 	err = install(tmpFile)
 	if err != nil{
 		fmt.Fprint(os.Stdout,"安装失败:",err.Error())
+		fmt.Fprint(os.Stdout,"\n您可以重新尝试或参考http://github.com/ixre/tto手工升级")
 		os.Exit(1)
 	}
 	fmt.Fprint(os.Stdout,"恭喜! 安装完成！\r")
+	return true,nil
 }
 
 func install(file string) error {
 	tmpDir := filepath.Dir(file)+"/tto"
 	err := decompressTarFile(file,tmpDir)
-	dstPath := getProgramPath()
+	// 获取当前程序的位置
+	path,_:= os.Executable()
 	switch runtime.GOOS{
 	case "linux":
-		 err = overwriteFile(tmpDir+"/tto",dstPath+"/tto")
+		 err = overwriteFile(tmpDir+"/tto",path)
 	case "windows":
-		err = overwriteFile(tmpDir+"/tto.exe",dstPath+"/tto.exe")
+		err = overwriteFile(tmpDir+"/tto.exe",path)
 	case "darwin":
-		err = overwriteFile(tmpDir+"/tto-mac",dstPath+"/tto")
-	}
-	if err != nil{
-		log.Println(err.Error())
+		err = overwriteFile(tmpDir+"/tto-mac",path)
 	}
 	return err
 }
 
 // 删除原程序,替换为新程序
-func overwriteFile(src string, dst string)error {
+func overwriteFile(src string,dst string)error {
 	sf, _ := os.Open(src)
-	_ = os.Remove(dst)
-	df, err := os.Create(dst)
-	df.Chmod(755)
+	df, err := os.OpenFile(dst,os.O_CREATE|os.O_WRONLY,os.ModePerm)
+	if os.IsPermission(err){
+		return errors.New("没有文件的更改权限")
+	}
 	_, err = io.Copy(df, sf)
 	return err
 }
@@ -151,9 +151,10 @@ func prepareFiles(distURL string,file string)error {
 	//lastLen := 0
 	return down(distURL,file,func(total int,reads int,time int){
 		prg := int(float32(reads)/float32(total)*100)
-		if prg > 0 {
+		bit := reads/time/1000
+		if bit > 0 {
 			line := "已下载 "+strconv.Itoa(prg)+"% 速度："+
-				strconv.Itoa(reads/time/1000)+"kb/s \r"
+				strconv.Itoa(bit)+"kb/s \r"
 			fmt.Fprint(os.Stdout,line)
 		}
 	},-1)
@@ -301,12 +302,4 @@ func down(ur, target string,onProgress func(total int,reads int,seconds int), ti
 		err = writer.Flush()
 	}
 	return err
-}
-
-func getProgramPath()string{
-	_, filename, _, ok := runtime.Caller(1)
-	if ok {
-		return path.Join(path.Dir(filename), "") // the the main function file directory
-	}
-	return "./"
 }

@@ -45,8 +45,8 @@ func doUpdate(force bool)(bool,error){
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
-	if v == nil || !checkNewVersion(v.version,tto.VERSION){
-		fmt.Fprint(os.Stdout,"已经是最新版本\r")
+	if v == nil || !checkNewVersion(v.version,tto.BuildVersion){
+		fmt.Println("很棒,已经是最新版本")
 		return false,nil
 	}
 	//printVersion(v)

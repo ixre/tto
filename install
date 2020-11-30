@@ -2,7 +2,6 @@
 
 mkdir -p ~/.tto
 curl -L https://github.com/ixre/tto/releases/download/v0.3.23/tto-generator-bin.tar.gz | tar xz -C ~/.tto
-#curl -L http://bz.xiangruigd.com:8081/tto-generator-bin.tar.gz|tar xz -C ~/.tto
 GOOS=$(uname)
 if [ "$GOOS" =  'Darwin' ]; then
   sudo mv ~/.tto/mac-tto /usr/local/bin/tto

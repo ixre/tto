@@ -193,7 +193,7 @@ func printVersion(v *version) {
 	lineFill := strings.Repeat("=",len([]rune(line))+8)
 	//fmt.Println(lineFill)
 	fmt.Println(line)
-	fmt.Printf("Release Date: %s\n",tto.ReleaseDate)
+	fmt.Printf("Release Date: %s\n",getReleaseDate())
 	fmt.Printf("HomePage    : %s\n",tto.ReleaseCodeHome)
 
 	fmt.Println(fmt.Sprintf("检测到新版本 v%s!",v.version))
@@ -201,6 +201,15 @@ func printVersion(v *version) {
 	fmt.Println("Update log:")
 	fmt.Println(""+v.remark+"\n")
 	fmt.Println(lineFill)
+}
+
+func getReleaseDate() string {
+	if path, err := os.Executable();err == nil {
+		if fi, err := os.Stat(path);err == nil {
+			return fi.ModTime().Format("2006-01-02 15:04")
+		}
+	}
+	return "-"
 }
 
 func checkVersion()(*version,error){

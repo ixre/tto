@@ -17,6 +17,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -40,24 +41,37 @@ type version struct{
 
 func doUpdate(force bool)(bool,error){
 	fmt.Fprint(os.Stdout,"正在检查版本...\r")
-	v,err := checkVersion()
-	if err != nil{
-		fmt.Println(err.Error())
-		os.Exit(1)
+	var v *version
+	var err error
+	var tryTimes = 0
+	for tryTimes < 5 {
+		if v, err = checkVersion(); v != nil {
+			break
+		}
+		tryTimes++
 	}
-	if v == nil || !checkNewVersion(v.version,tto.BuildVersion){
-		fmt.Println("很棒,已经是最新版本")
+	if v == nil {
+		msg := "获取版本信息失败"
+		if err != nil {
+			msg += "," + err.Error()
+		}
+		fmt.Println(msg)
+		return false,err
+	}
+	if !checkNewVersion(v.version,tto.BuildVersion){
+		fmt.Println("已经是最新版本")
 		return false,nil
 	}
-	//printVersion(v)
+	printVersion(v)
 	if !force {
-		fmt.Printf("检测到新版本v%s,是否现在更新? [Y/N] ",v.version)
+		fmt.Printf("是否现在更新? [Y/N] ")
 		input := bufio.NewScanner(os.Stdin) //初始化一个扫表对象
 		input.Scan()
 		if strings.ToLower(input.Text()) != "y"{
 			os.Exit(0)
 		}
 	}
+	fmt.Fprint(os.Stdout,"下载更新包...\r")
 	tmpFile := fmt.Sprintf("%s/tto-release-%s.tar.gz",os.TempDir(),v.version)
 	err = prepareFiles(v.distURL,tmpFile)
 	if err != nil{
@@ -67,11 +81,12 @@ func doUpdate(force bool)(bool,error){
 	fmt.Fprint(os.Stdout,"安装中...\r")
 	err = install(tmpFile)
 	if err != nil{
-		fmt.Fprint(os.Stdout,"安装失败:",err.Error())
-		fmt.Fprint(os.Stdout,"\n您可以重新尝试或参考http://github.com/ixre/tto手工升级")
+		fmt.Fprint(os.Stdout,err.Error())
+		fmt.Fprint(os.Stdout,"\n\n或参考http://github.com/ixre/tto手工升级")
 		os.Exit(1)
 	}
-	fmt.Fprint(os.Stdout,"恭喜! 安装完成！\r")
+	fmt.Fprint(os.Stdout,"恭喜! 安装完成, Enjoy it!")
+	time.Sleep(time.Second)
 	return true,nil
 }
 
@@ -98,11 +113,18 @@ func install(file string) error {
 // 删除原程序,替换为新程序
 func overwriteFile(src string,dst string)error {
 	sf, _ := os.Open(src)
-	df, err := os.OpenFile(dst,os.O_CREATE|os.O_WRONLY,os.ModePerm)
+	df, err := os.OpenFile(dst+"__",os.O_CREATE|os.O_RDWR,os.ModePerm)
 	if os.IsPermission(err){
-		return errors.New("没有文件的更改权限")
+		if runtime.GOOS == "windows"{
+			return errors.New("安装失败,使用管理员运行此命令")
+		}
+		return errors.New("无法获得权限进行安装, 请尝试使用 `sudo tto update`")
 	}
+	// 先生成临时文件,再替换文件,避免出现BUSY
 	_, err = io.Copy(df, sf)
+	if err == nil{
+		err = syscall.Rename(dst+"__",dst)
+	}
 	return err
 }
 
@@ -158,7 +180,7 @@ func prepareFiles(distURL string,file string)error {
 		prg := int(float32(reads)/float32(total)*100)
 		bit := reads/time/1000
 		if bit > 0 {
-			line := "已下载 "+strconv.Itoa(prg)+"% 速度："+
+			line := "下载更新包 "+strconv.Itoa(prg)+"% 速度："+
 				strconv.Itoa(bit)+"kb/s \r"
 			fmt.Fprint(os.Stdout,line)
 		}
@@ -166,12 +188,18 @@ func prepareFiles(distURL string,file string)error {
 }
 
 func printVersion(v *version) {
-	line := fmt.Sprintf("**  new version v%s  **",v.version)
-	lineFill := strings.Repeat("-",len(line))
-	fmt.Println(lineFill)
+	line := fmt.Sprintf("跨平台代码生成器(tto Generator v%s)",tto.BuildVersion)
+	lineFill := strings.Repeat("=",len([]rune(line))+8)
+	//fmt.Println(lineFill)
 	fmt.Println(line)
+	fmt.Printf("Release Date: %s\n",tto.ReleaseDate)
+	fmt.Printf("HomePage    : %s\n",tto.ReleaseCodeHome)
+
+	fmt.Println(fmt.Sprintf("检测到新版本 v%s!",v.version))
 	fmt.Println(lineFill)
-	fmt.Println(v.remark)
+	fmt.Println("Update log:")
+	fmt.Println(""+v.remark+"\n")
+	fmt.Println(lineFill)
 }
 
 func checkVersion()(*version,error){
@@ -202,6 +230,7 @@ func checkVersion()(*version,error){
 func getReleases()(string,error) {
 	cli := http.Client{}
 	req, _ := http.NewRequest("GET", versionInfoURL, nil)
+	cli.Timeout = time.Second * 6
 	req.Header.Add("User-Agent", "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:82.0) Gecko/20100101 Firefox/82.0")
 	rsp, err := cli.Do(req)
 	if err == nil {

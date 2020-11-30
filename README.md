@@ -16,18 +16,16 @@
 
 _注：您看到的文档有可能已经更新，请参见最新[使用文档](https://github.com/ixre/tto)_
 
-## 安装/升级
-如果您是LINUX或MAC系统使用以下命令安装
+## 安装
+安装命令
 ```
 curl -L https://raw.githubusercontent.com/ixre/tto/master/install|sh
 ```
-
-Windows:
+Windows安装
 ```
-下载解压将tto.exe文件复制到C:\windows\system32下完成安装
+可使用Mingw32或使用git安装附带的`git-bash.exe`运行命令安装；或手动下载解压,将`tto.exe`
+文件复制到`C:\windows\system32`完成安装.
 ```
-下载安装包,将对应平台的二进制文件加入到系统变量中,完成安装.
-
 **升级**
 `tto`内置了升级功能,命令如下:
 ```

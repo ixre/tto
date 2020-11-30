@@ -1,11 +1,14 @@
 #!/usr/bin/env sh
 
+GOOS=$(uname)
 mkdir -p ~/.tto
 #curl -L https://github.com/ixre/tto/releases/download/v0.3.23/tto-generator-bin.tar.gz | tar xvzf -C ~/.tto
 curl -L http://bz.xiangruigd.com:8081/tto-generator-bin.tar.gz|tar xz -C ~/.tto
 if [ $(uname) =  'Darwin' ]; then
   sudo mv ~/.tto/mac-tto /usr/local/bin/tto
-elif [ $(uname) = 'Windows' ]; then
+elif [ "$GOOS" = 'Windows' ] ||  \
+     [ "${GOOS:0:5}" = 'MINGW' ] || \
+     [ "${GOOS:0:6}" = 'Cygwin' ]; then
   mv ~/.tto/tto.exe "$WINDIR\system32"
 else
   sudo mv ~/.tto/tto /usr/local/bin

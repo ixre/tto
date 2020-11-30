@@ -3,34 +3,23 @@
 **TTO是一款使用Go编写的代码生成器,可根据模板定制生成代码.**
 
 特点:
-- 支持mysql和postgresql数据库
-- 支持Go,JAVA,Kotlin,Thrift,Javascript,Html,C#
-- 支持代码模板, 支持模板函数
-
-资源:
-
-- [下载地址](https://github.com/ixre/tto/releases/)
-- [Go模板语法-中](http://www.g-var.com/posts/translation/hugo/hugo-21-go-template-primer/)
-- [Go模板语法-English](https://golang.org/pkg/text/template/)
-
-
-_注：您看到的文档有可能已经更新，请参见最新[使用文档](https://github.com/ixre/tto)_
+- 支持mysql/mariadb和postgresql数据库
+- 支持Go,JAVA,Kotlin,Thrift,Protobuf,Python,TS/JS,Html,C#等多种语言
+- 支持代码模板, 提供模板函数,代码生成完全可控.
 
 ## 安装
 安装命令
 ```
 curl -L https://raw.githubusercontent.com/ixre/tto/master/install|sh
 ```
-Windows安装
-```
-可使用Mingw32或使用git安装附带的`git-bash.exe`运行命令安装；或手动下载解压,将`tto.exe`
-文件复制到`C:\windows\system32`完成安装.
-```
-**升级**
+在Windows下,可使用Mingw32或使用git安装附带的`git-bash.exe`运行命令安装；
+同时也可以[下载](https://github.com/ixre/tto/releases/)安装包,将`tto.exe`文件复制到`C:\windows\system32`下完成手动安装
+
 `tto`内置了升级功能,命令如下:
 ```
-tto update -y
+tto update
 ```
+_注：在windows下升级功能可能无法正常使用,可以重新运行安装命令覆盖安装_
 
 ## 快速开始
 
@@ -42,9 +31,16 @@ tto update -y
 ```
 根据实际需求对模板进行修改, 或创建自己的模板. 模板语法请参考: Go Template
 ```
+
+资源:
+
+- [Go模板语法-中](http://www.g-var.com/posts/translation/hugo/hugo-21-go-template-primer/)
+- [Go模板语法-English](https://golang.org/pkg/text/template/)
+
+
 模板注释,使用`/** #! 注释 */`的语法,使用`#!`与普通的代码注释区分
 ```
-/** #! 这是模板注释,不会出现在代码中 */
+/** #! 这是模板注释,不会出现在生成的代码中 */
 ```
 3. 运行命令生成代码
 ```bash

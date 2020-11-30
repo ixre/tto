@@ -82,6 +82,8 @@ func doUpdate(force bool)(bool,error){
 	err = install(tmpFile)
 	if err != nil{
 		fmt.Fprint(os.Stdout,err.Error())
+		fmt.Fprint(os.Stdout,"\n\n请重新运行以下命令安装最新版本\n")
+		fmt.Fprint(os.Stdout,"curl -L https://raw.githubusercontent.com/ixre/tto/master/install|sh")
 		fmt.Fprint(os.Stdout,"\n\n或参考http://github.com/ixre/tto手工升级")
 		os.Exit(1)
 	}
@@ -175,7 +177,6 @@ func createFile(name string) (*os.File, error) {
 }
 
 func prepareFiles(distURL string,file string)error {
-	//lastLen := 0
 	return down(distURL,file,func(total int,reads int,time int){
 		prg := int(float32(reads)/float32(total)*100)
 		bit := reads/time/1000

@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+mkdir -p ~/.tto
+#curl -L https://github.com/ixre/tto/releases/download/v0.3.23/tto-generator-bin.tar.gz | tar xvzf -C ~/.tto
+curl -L http://bz.xiangruigd.com:8081/tto-generator-bin.tar.gz|tar xz -C ~/.tto
+if [ $(uname) =  'Darwin' ]; then
+  sudo mv ~/.tto/mac-tto /usr/local/bin/tto
+elif [ $(uname) = 'Windows' ]; then
+  mv ~/.tto/tto.exe "$WINDIR\system32"
+else
+  sudo mv ~/.tto/tto /usr/local/bin
+fi
+rm -rf ~/.tto && echo "恭喜,安装成功!"
+
+
+

@@ -17,6 +17,10 @@
 _注：您看到的文档有可能已经更新，请参见最新[使用文档](https://github.com/ixre/tto)_
 
 ## 安装/升级
+如果您是LINUX或MAC系统使用以下命令安装
+```
+curl -L https://raw.githubusercontent.com/ixre/tto/master/install|sh
+```
 
 Windows:
 ```

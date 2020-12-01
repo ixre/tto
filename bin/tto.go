@@ -146,14 +146,17 @@ func generate() {
 		return
 	}
 	// 获取排除的文件名
-	excludeFiles := strings.Split(re.GetString("code.exclude_files"), ",")
+	excludePatterns := strings.Split(re.GetString("code.exclude_patterns"), ",")
+	if len(excludePatterns) == 0{
+		excludePatterns = strings.Split(re.GetString("code.exclude_files"), ",")
+	}
 	disableAttachCopy := re.GetBoolean("code.disable_attach")
 	// 生成自定义代码
 	opt := &tto.GenerateOptions{
 		TplDir:          tplDir,
 		AttachCopyright: !disableAttachCopy,
 		OutputDir:       genDir,
-		ExcludeFiles:    excludeFiles,
+		ExcludePatterns: excludePatterns,
 	}
 	// 生成代码
 	if err := genByArch(arch, dg, tables, opt); err != nil {

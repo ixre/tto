@@ -374,7 +374,7 @@ func (s *sessionImpl) findTemplates(opt *GenerateOptions) (map[string]*CodeTempl
 	}
 	err := filepath.Walk(opt.TplDir, func(path string, info os.FileInfo, err error) error {
 		// 如果模板名称以"_"开头，则忽略
-		if info != nil && !info.IsDir() && s.testName(info.Name(), opt.ExcludeFiles) {
+		if info != nil && !info.IsDir() && s.testFilePath(path, opt.ExcludePatterns) {
 			tp, err := s.parseTemplate(path, opt.AttachCopyright)
 			if err != nil {
 				return errors.New("template:" + info.Name() + "-" + err.Error())
@@ -389,30 +389,35 @@ func (s *sessionImpl) findTemplates(opt *GenerateOptions) (map[string]*CodeTempl
 	return tplMap, err
 }
 
-// 验证文件名, 是否可以生成
-func (s *sessionImpl) testName(name string, files []string) bool {
-	if name[0] == '_' {
+// 验证文件名路径, 是否可以可以被作为模板生成代码
+func (s *sessionImpl) testFilePath(path string, excludePatterns []string) bool {
+	if path[0] == '_' {
 		return false
 	}
-	if strings.ToUpper(name) =="README.MD"{
+	if strings.ToUpper(path) == "README.MD" {
 		return false
 	}
-	if files != nil {
-		for _, v := range files {
-			if v == name {
-				return false
-			}
+	if excludePatterns == nil {
+		return true
+	}
+	for _, v := range excludePatterns {
+		if v == path {
+			return false
 		}
-		/*
-			i := sort.Search(len(files), func(i int) bool {
-				println("---",len(files),files[i],name)
-				return files[i] == name
-			})
-			println("---", i, name, fmt.Sprintf("%#v", files), sort.SearchStrings(files, name))
-			if files != nil && sort.SearchStrings(files, name) != -1 {
+		// 前后匹配
+		if strings.Index(v, "*") != -1 {
+			if v[0] == '*' && strings.HasPrefix(path, v) {
 				return false
 			}
-		*/
+			if v[len(v)-1] == '*' && strings.HasSuffix(path, v) {
+				return false
+			}
+			continue
+		}
+		// 模糊匹配
+		if strings.Index(path, v) != -1 {
+			return false
+		}
 	}
 	return true
 }
@@ -421,12 +426,13 @@ type GenerateOptions struct {
 	TplDir          string
 	AttachCopyright bool
 	OutputDir       string
-	ExcludeFiles    []string
+	// 排除模板文件模式,如：*/tmp,tmp/*或者tmp
+	ExcludePatterns []string
 }
 
 func (g *GenerateOptions) prepare() {
-	if len(g.ExcludeFiles) == 1 && g.ExcludeFiles[0] == "" {
-		g.ExcludeFiles = nil
+	if len(g.ExcludePatterns) == 1 && g.ExcludePatterns[0] == "" {
+		g.ExcludePatterns = nil
 	}
 	if g.TplDir == "" {
 		g.TplDir = "./templates"

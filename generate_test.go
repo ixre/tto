@@ -51,7 +51,7 @@ func TestGenAll(t *testing.T) {
 		TplDir:          tplDir,
 		AttachCopyright: true,
 		OutputDir:       genDir,
-		ExcludeFiles:    []string{"grid_list.html"},
+		ExcludePatterns: []string{"grid_list.html"},
 	}
 	dg.WalkGenerateCodes(tables, opt)
 	//格式化代码

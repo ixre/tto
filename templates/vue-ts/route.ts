@@ -19,8 +19,8 @@ export const {{$first.Prefix}}Routes : RouteConfig = {
     {{$path := substr_n $table.Name "_" 1}}
         {
             path: '{{$path}}/index',
+            name:'{{$path}}/all',
             component: () => import(/* webpackChunkName: "{{$table.Name}}-all" */ './{{$path}}/all.vue'),
-            name: '{{$table.Title}}List',
             meta: {
                 //roles: ["admin"],
                 title: '{{$table.Comment}}',

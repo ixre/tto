@@ -44,22 +44,29 @@ _注：在windows下升级功能可能无法正常使用,可以重新运行安�
 ```
 3. 运行命令生成代码
 ```bash
-tto -conf tto.conf
 Usage of tto:
   -arch string
         program language
   -clean
         clean last generate files
+  -compact
+        compact mode for old project
   -conf string
         config path (default "./tto.conf")
   -debug
         debug mode
+  -excludes string
+        exclude tables by prefix
+  -local
+        don't update any new version
+  -m string
+        major code lang like java or go (default "go")
   -o string
         path of output directory (default "./output")
-  -table string
-        table name or table prefix
   -t string
         path of code templates directory (default "./templates")
+  -table string
+        table name or table prefix
   -v    print version
 ```
 

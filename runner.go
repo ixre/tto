@@ -2,6 +2,7 @@ package tto
 
 import "sync"
 
+// 计数器
 type RunnerCalc struct {
 	TablesRuns bool
 	states     map[string]bool

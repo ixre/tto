@@ -53,6 +53,7 @@ func generate() {
 	var genDir string   //输出目录
 	var confPath string //设置目录
 	var tplDir string   //模板目录
+	var majorLang string //主要语言
 	var table string
 	var excludedTables string
 	var arch string //代码架构
@@ -62,8 +63,10 @@ func generate() {
 	var compactMode bool
 	var keepLocal bool
 
+
 	flag.StringVar(&genDir, "o", "./output", "path of output directory")
 	flag.StringVar(&tplDir, "t", "./templates", "path of code templates directory")
+	flag.StringVar(&majorLang,"m","go","major code lang like java or go")
 	flag.StringVar(&confPath, "conf", "./tto.conf", "config path")
 	flag.StringVar(&table, "table", "", "table name or table prefix")
 	flag.StringVar(&excludedTables, "excludes", "", "exclude tables by prefix")
@@ -123,11 +126,6 @@ func generate() {
 	schema := re.GetString("database.schema")
 	dialect, dbDriver := tto.GetDialect(driver)
 	ds := orm.DialectSession(getDb(driver, re), dialect)
-	dg := tto.DBCodeGenerator(dbDriver)
-	dg.Package(pkgName)
-	if re.GetBoolean("code.id_upper") {
-		dg.UseUpperId()
-	}
 	list, err := ds.TablesByPrefix(dbName, schema, table)
 	if err != nil {
 		println("[ app][ info]: ", err.Error())
@@ -138,13 +136,6 @@ func generate() {
 		println("[ app][ info]: no any tables")
 		return
 	}
-	// 获取表格并转换
-	userMeta := re.GetBoolean("code.meta_settings")
-	tables, err := dg.Parses(list, userMeta)
-	if err != nil {
-		println("[ tto][ error]:", err.Error())
-		return
-	}
 	// 获取排除的文件名
 	excludePatterns := strings.Split(re.GetString("code.exclude_patterns"), ",")
 	if len(excludePatterns) == 0{
@@ -152,12 +143,26 @@ func generate() {
 	}
 	disableAttachCopy := re.GetBoolean("code.disable_attach")
 	// 生成自定义代码
-	opt := &tto.GenerateOptions{
+	opt := &tto.Options{
 		TplDir:          tplDir,
 		AttachCopyright: !disableAttachCopy,
 		OutputDir:       genDir,
 		ExcludePatterns: excludePatterns,
+		MajorLang: majorLang,
 	}
+	dg := tto.DBCodeGenerator(dbDriver,opt)
+	dg.Package(pkgName)
+	if re.GetBoolean("code.id_upper") {
+		dg.UseUpperId()
+	}
+	// 获取表格并转换
+	userMeta := re.GetBoolean("code.meta_settings")
+	tables, err := dg.Parses(list, userMeta)
+	if err != nil {
+		println("[ tto][ error]:", err.Error())
+		return
+	}
+
 	// 生成代码
 	if err := genByArch(arch, dg, tables, opt); err != nil {
 		log.Fatalln("[ tto][ fatal]:", err.Error())
@@ -218,7 +223,7 @@ func execCommand(command string, bashExec string) error {
 }
 
 // 根据规则生成代码
-func genByArch(arch string, dg tto.Session, tables []*tto.Table, opt *tto.GenerateOptions) (err error) {
+func genByArch(arch string, dg tto.Session, tables []*tto.Table, opt *tto.Options) (err error) {
 	// 按架构生成GO代码
 	switch arch {
 	case "repo":
@@ -227,7 +232,7 @@ func genByArch(arch string, dg tto.Session, tables []*tto.Table, opt *tto.Genera
 	if err != nil {
 		println(fmt.Sprintf("[ tto][ Error]: generate go code fail! %s", err.Error()))
 	}
-	return dg.WalkGenerateCodes(tables, opt)
+	return dg.WalkGenerateCodes(tables)
 }
 
 // 获取数据库连接

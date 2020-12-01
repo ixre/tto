@@ -6,7 +6,7 @@
              label-position="right" :model="formData" :rules="rules">
       <div class="createPost-main-container mod-form-container">
         {{range $i,$c := .columns}}\
-        {{if not $c.IsPk}}{{$name:= lower_title $c.Prop}}{{$ele:= $c.Render.Element}}\
+        {{if not $c.IsPk}}{{$name:= $c.Prop}}{{$ele:= $c.Render.Element}}\
         <el-row>
           <el-col :span="24">
             <el-form-item class="mod-form-item" label-width="78px" label="{{$c.Comment}}"　prop="{{$name}}" required>
@@ -72,10 +72,10 @@ export default class extends Vue {
     // } \
     {{range $i,$c := $validateColumns}}{{if ne $c.IsPk true}}
     {{if equal_any $c.Type 3 4 5}}\
-    {{lower_title $c.Prop}}: [{required: true, message:"{{$c.Comment}}不能为空"}, \
+    {{$c.Prop}}: [{required: true, message:"{{$c.Comment}}不能为空"}, \
         {type:"number", message:"{{$c.Comment}}必须为数字值"}] \
     {{else if $c.NotNull}}\
-    {{lower_title $c.Prop}}: [{required: true, message:"{{$c.Comment}}不能为空"}] \
+    {{$c.Prop}}: [{required: true, message:"{{$c.Comment}}不能为空"}] \
     {{end}}\
     {{if not (is_last $i $validateColumns)}},{{end}}{{end}}{{end}}
   };

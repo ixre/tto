@@ -55,11 +55,34 @@ type (
 		// 生成所有表的代码, 可引用的对象为global 和 tables
 		GenerateCodeByTables(tables []*Table, tpl *CodeTemplate) string
 		// 遍历模板文件夹, 并生成代码, 如果为源代码目标,文件存在,则自动生成添加 .gen后缀
-		WalkGenerateCodes(tables []*Table, opt *GenerateOptions) error
+		WalkGenerateCodes(tables []*Table) error
 		// 转换表格,如果meta为true,则读取元数据,如果没有则自动生成元数据
 		Parses(tables []*orm.Table, meta bool) (arr []*Table, err error)
 	}
 )
+
+type Options struct {
+	TplDir          string
+	AttachCopyright bool
+	// 输出目录
+	OutputDir string
+	// 默认语言,当设置为"java",则会启用小写命名
+	MajorLang string
+	// 排除模板文件模式,如：*/tmp,tmp/*或者tmp
+	ExcludePatterns []string
+}
+
+func (g *Options) prepare() {
+	if len(g.ExcludePatterns) == 1 && g.ExcludePatterns[0] == "" {
+		g.ExcludePatterns = nil
+	}
+	if g.TplDir == "" {
+		g.TplDir = "./templates"
+	}
+	if g.OutputDir == "" {
+		g.OutputDir = "./output"
+	}
+}
 
 var _ Session = new(sessionImpl)
 
@@ -71,7 +94,8 @@ type sessionImpl struct {
 	// 使用大写ID
 	useUpperId bool
 	// 数据库驱动
-	driver     string
+	driver string
+	opt    *Options
 }
 
 func (s *sessionImpl) UseUpperId() {
@@ -79,12 +103,17 @@ func (s *sessionImpl) UseUpperId() {
 }
 
 // 数据库代码生成器
-func DBCodeGenerator(driver string) Session {
-	if sort.SearchStrings([]string{"pgsql","mssql","mysql"},driver) == -1{
-		panic("not support db :"+driver)
+func DBCodeGenerator(driver string, opt *Options) Session {
+	if opt == nil {
+		opt = &Options{}
+	}
+	opt.prepare()
+	if sort.SearchStrings([]string{"pgsql", "mssql", "mysql"}, driver) == -1 {
+		panic("not support db :" + driver)
 	}
 	return (&sessionImpl{
-		driver: driver,
+		driver:     driver,
+		opt:        opt,
 		codeVars:   make(map[string]interface{}),
 		funcMap:    (&internalFunc{}).funcMap(),
 		useUpperId: false,
@@ -102,7 +131,7 @@ func (s *sessionImpl) init() Session {
 	}
 	// put system vars
 	s.Package("com/your/pkg")
-	s.Var("db",s.driver)
+	s.Var("db", s.driver)
 	s.Var(TIME, time.Now().Format("2006/01/02 15:04:05"))
 	s.Var(VERSION, BuildVersion)
 	return s
@@ -124,7 +153,7 @@ func (s *sessionImpl) AddFunc(funcName string, f interface{}) {
 
 // 定义变量或修改变量
 func (s *sessionImpl) Var(key string, v interface{}) {
-	if key == "pkg"{
+	if key == "pkg" {
 		panic("please use Package(pkg string)")
 	}
 	if v == nil {
@@ -135,7 +164,7 @@ func (s *sessionImpl) Var(key string, v interface{}) {
 }
 
 func (s sessionImpl) Package(pkg string) {
-	pkg = strings.ReplaceAll(pkg,".","/")
+	pkg = strings.ReplaceAll(pkg, ".", "/")
 	s.codeVars[PKG] = pkg
 }
 
@@ -166,11 +195,12 @@ func (s *sessionImpl) GenerateCode(table *Table, tpl *CodeTemplate) string {
 		log.Println("[ app][ fatal]: " + fmt.Sprintf("file:%s - error:%s", tpl.FilePath(), err.Error()))
 		return ""
 	}
+	tb := s.adapterTable(table,tpl.path)
 	//n := s.title(table.Name)
 	mp := map[string]interface{}{
 		"global":  s.codeVars,    // 全局变量
-		"table":   table,         // 数据表
-		"columns": table.Columns, // 列
+		"table":   tb,         // 数据表
+		"columns": tb.Columns, // 列
 	}
 	buf := bytes.NewBuffer(nil)
 	err = t.Execute(buf, mp)
@@ -242,11 +272,13 @@ func (s *sessionImpl) defaultTargetPath(tplFilePath string, table *Table) string
 }
 
 var multiLineRegexp = regexp.MustCompile("\\{\\n{2,}(\\s{4}\\s+)")
+var multiLineEndRegexp = regexp.MustCompile("(\\s{4}\\s+)\\n{2,}\\}")
 
 // 格式化代码
 func (s *sessionImpl) formatCode(tpl *CodeTemplate, code string) string {
 	// 去除`{`后多余的换行
-	code = multiLineRegexp.ReplaceAllString(code,"{\n$1")
+	code = multiLineRegexp.ReplaceAllString(code, "{\n$1")
+	code = multiLineEndRegexp.ReplaceAllString(code, "$1\n}")
 	// 不格式化代码
 	if k, _ := tpl.Predefine("format"); k == "false" {
 		return code
@@ -262,24 +294,23 @@ func (s *sessionImpl) formatCode(tpl *CodeTemplate, code string) string {
 }
 
 // 遍历模板文件夹, 并生成代码, 如果为源代码目标,文件存在,则自动生成添加 .gen后缀
-func (s *sessionImpl) WalkGenerateCodes(tables []*Table, opt *GenerateOptions) error {
-	opt.prepare()
-	tplMap, err := s.findTemplates(opt)
+func (s *sessionImpl) WalkGenerateCodes(tables []*Table) error {
+	tplMap, err := s.findTemplates(s.opt)
 	if err != nil {
 		return err
 	}
 	rc := NewRunnerCalc()
 	ch := make(chan int, 3)
-	s.generateAllTablesCode(ch, tables, tplMap, opt, &rc)
-	s.generateGroupTablesCode(ch, tables, tplMap, opt, &rc)
-	s.generateTables(ch, tables, opt, tplMap)
+	s.generateAllTablesCode(ch, tables, tplMap, s.opt, &rc)
+	s.generateGroupTablesCode(ch, tables, tplMap, s.opt, &rc)
+	s.generateTables(ch, tables, s.opt, tplMap)
 	<-ch
 	<-ch
 	<-ch
 	return err
 }
 
-func (s *sessionImpl) generateTables(ch chan int, tables []*Table, opt *GenerateOptions, tplMap map[string]*CodeTemplate) {
+func (s *sessionImpl) generateTables(ch chan int, tables []*Table, opt *Options, tplMap map[string]*CodeTemplate) {
 	wg := sync.WaitGroup{}
 	for path, tpl := range tplMap {
 		if tpl.Kind() == KindNormal {
@@ -298,7 +329,7 @@ func (s *sessionImpl) generateTables(ch chan int, tables []*Table, opt *Generate
 }
 
 // 生成所有表的代码
-func (s *sessionImpl) generateAllTablesCode(ch chan int, tables []*Table, tplMap map[string]*CodeTemplate, opt *GenerateOptions, rc *RunnerCalc) {
+func (s *sessionImpl) generateAllTablesCode(ch chan int, tables []*Table, tplMap map[string]*CodeTemplate, opt *Options, rc *RunnerCalc) {
 	wg := sync.WaitGroup{}
 	for path, tpl := range tplMap {
 		if tpl.Kind() != KindTables || rc.State(path) {
@@ -317,7 +348,7 @@ func (s *sessionImpl) generateAllTablesCode(ch chan int, tables []*Table, tplMap
 }
 
 // 按表前缀分组生成代码
-func (s *sessionImpl) generateGroupTablesCode(ch chan int, tables []*Table, tplMap map[string]*CodeTemplate, opt *GenerateOptions, rc *RunnerCalc) {
+func (s *sessionImpl) generateGroupTablesCode(ch chan int, tables []*Table, tplMap map[string]*CodeTemplate, opt *Options, rc *RunnerCalc) {
 	//　分组,无前缀的所有表归类到一组
 	groups := make(map[string][]*Table, 0)
 	for _, t := range tables {
@@ -354,7 +385,7 @@ func (s *sessionImpl) generateGroupTablesCode(ch chan int, tables []*Table, tplM
 	ch <- 1
 }
 
-func (s *sessionImpl) flushToFile(tpl *CodeTemplate, tb *Table, path string, output string, opt *GenerateOptions) {
+func (s *sessionImpl) flushToFile(tpl *CodeTemplate, tb *Table, path string, output string, opt *Options) {
 	dstPath, _ := s.predefineTargetPath(tpl, tb)
 	if dstPath == "" {
 		dstPath = s.defaultTargetPath(path, tb)
@@ -365,7 +396,7 @@ func (s *sessionImpl) flushToFile(tpl *CodeTemplate, tb *Table, path string, out
 	}
 }
 
-func (s *sessionImpl) findTemplates(opt *GenerateOptions) (map[string]*CodeTemplate, error) {
+func (s *sessionImpl) findTemplates(opt *Options) (map[string]*CodeTemplate, error) {
 	tplMap := map[string]*CodeTemplate{}
 	sliceSize := len(opt.TplDir)
 	if opt.TplDir[sliceSize-1] == '/' {
@@ -422,22 +453,59 @@ func (s *sessionImpl) testFilePath(path string, excludePatterns []string) bool {
 	return true
 }
 
-type GenerateOptions struct {
-	TplDir          string
-	AttachCopyright bool
-	OutputDir       string
-	// 排除模板文件模式,如：*/tmp,tmp/*或者tmp
-	ExcludePatterns []string
+// 根据代码文件类型适配table
+func (s *sessionImpl) adapterTable(table *Table, path string)*Table{
+	l := GetLangByPath(path)
+	// 部分语言永远使用大写开头的命名
+	switch l {
+	case L_GO,L_CSharp,L_Thrift,L_Protobuf,L_PHP,L_Shell:
+		return table
+	}
+	if l == L_JAVA || l == L_Kotlin{
+		return s.copyTable(table,true)
+	}
+	if ml:= s.opt.MajorLang;ml == L_JAVA || ml == L_Kotlin{
+		return s.copyTable(table,true)
+	}
+	return table
 }
 
-func (g *GenerateOptions) prepare() {
-	if len(g.ExcludePatterns) == 1 && g.ExcludePatterns[0] == "" {
-		g.ExcludePatterns = nil
+func (s *sessionImpl) copyTable(table *Table,lowerProp bool) *Table {
+	prop := func(s string)string{
+		if lowerProp{
+			return lowerTitle(s)
+		}
+		return s
 	}
-	if g.TplDir == "" {
-		g.TplDir = "./templates"
+	dst := &Table{
+		Ordinal: table.Ordinal,
+		Name:    table.Name,
+		Prefix: table.Prefix,
+		Title:   table.Title,
+		Comment: table.Comment,
+		Engine:  table.Engine,
+		Schema:  table.Schema,
+		Charset: table.Charset,
+		Raw:     table.Raw,
+		Pk:      table.Pk,
+		PkProp:  prop(table.PkProp),
+		PkType:  table.PkType,
+		Columns: make([]*Column,len(table.Columns)),
 	}
-	if g.OutputDir == "" {
-		g.OutputDir = "./output"
+	for i,v := range table.Columns{
+		dst.Columns[i] = &Column{
+			Ordinal: v.Ordinal,
+			Name:    v.Name,
+			Prop:    prop(v.Prop),
+			IsPk:    v.IsPk,
+			IsAuto:  v.IsAuto,
+			NotNull: v.NotNull,
+			DbType:  v.DbType,
+			Comment: v.Comment,
+			Length:  v.Length,
+			Type:    v.Type,
+			Render:  v.Render,
+		}
 	}
+	return dst
 }

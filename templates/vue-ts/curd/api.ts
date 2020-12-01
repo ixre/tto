@@ -6,14 +6,14 @@ import request from '@/utils/request'
 // {{.table.Comment}}对象
 export interface I{{.table.Title}} {
     {{range $i,$c := .columns}}// {{$c.Comment}}
-    {{lower_title $c.Prop}}:{{type "ts" $c.Type}}
+    {{$c.Prop}}:{{type "ts" $c.Type}}
     {{end}}
 }
 
 export const default{{.table.Title}}:()=>I{{.table.Title}}=()=>{
     return {
         {{range $i,$c := .columns}}
-        {{lower_title $c.Prop}}:{{default "ts" $c.Type}},{{end}}
+        {{$c.Prop}}:{{default "ts" $c.Type}},{{end}}
     };
 }
 

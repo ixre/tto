@@ -27,7 +27,15 @@ func TestGenAll(t *testing.T) {
 	// 初始化生成器
 	conn, _ := db.NewConnector(driver, connString, nil, false)
 	ds,_ := orm.NewDialectSession(driver,conn.Raw())
-	dg := DBCodeGenerator(ds.Driver())
+
+	// 生成自定义代码
+	opt := &Options{
+		TplDir:          tplDir,
+		AttachCopyright: true,
+		OutputDir:       genDir,
+		ExcludePatterns: []string{"grid_list.html"},
+	}
+	dg := DBCodeGenerator(ds.Driver(),opt)
 	list, err := ds.TablesByPrefix(dbName, "", dbPrefix)
 	if err != nil {
 		println("[ tto][ error]: not found tables", err.Error())
@@ -46,14 +54,7 @@ func TestGenAll(t *testing.T) {
 	os.RemoveAll(genDir)
 	// 生成GoRepo代码
 	//dg.GenerateGoRepoCodes(tables, genDir)
-	// 生成自定义代码
-	opt := &GenerateOptions{
-		TplDir:          tplDir,
-		AttachCopyright: true,
-		OutputDir:       genDir,
-		ExcludePatterns: []string{"grid_list.html"},
-	}
-	dg.WalkGenerateCodes(tables, opt)
+	dg.WalkGenerateCodes(tables)
 	//格式化代码
 	shell.Run("gofmt -w " + genDir)
 	t.Log("生成成功, 输出目录", genDir)

@@ -6,7 +6,6 @@ import (
 	"reflect"
 	"strings"
 	ht "text/template"
-	"unicode"
 )
 
 type internalFunc struct {
@@ -81,10 +80,7 @@ func (t *internalFunc) upper(s string) string {
 
 // 将首字母小写
 func (t *internalFunc) lowerTitle(s string) string {
-	if rune0 := rune(s[0]); unicode.IsUpper(rune0) {
-		return string(unicode.ToLower(rune0)) + s[1:]
-	}
-	return s
+	return lowerTitle(s)
 }
 
 // 将字符串单词首字母大写

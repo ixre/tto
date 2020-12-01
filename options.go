@@ -4,7 +4,10 @@ import (
 	"github.com/pelletier/go-toml"
 )
 
-var g *RegistryReader // global registry
+
+
+// global registry
+var g *RegistryReader
 
 type Registry struct {
 	tree *toml.Tree

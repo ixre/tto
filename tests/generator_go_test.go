@@ -64,7 +64,7 @@ func TestGenByTemplate(t *testing.T) {
 
 
 func TestCodeTemplate_String(t *testing.T) {
-	var r = regexp.MustCompile("\\{\\n{2,}(\\s{5,})")
+	var r = regexp.MustCompile("\\{\\n*(\\s{5,})")
 	var content = `
 public int getFiveUnderOneHundred() {
 
@@ -72,6 +72,11 @@ public int getFiveUnderOneHundred() {
 
         return this.five_under_one_hundred;
     }
+    return {
+
+        id:0,
+        name:"",
+        pid:0,
 `
 	t.Log(r.MatchString(content))
 	t.Log(r.ReplaceAllString(content,"{\n$1"))

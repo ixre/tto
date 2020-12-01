@@ -42,6 +42,14 @@ func title(str string, shortUpper bool) string {
 	return strings.Join(arr, "")
 }
 
+// 将首字母小写
+func  lowerTitle(s string) string {
+	if rune0 := rune(s[0]); unicode.IsUpper(rune0) {
+		return string(unicode.ToLower(rune0)) + s[1:]
+	}
+	return s
+}
+
 // 保存到文件
 func SaveFile(s string, path string) error {
 	// 将路径转为正确的路径

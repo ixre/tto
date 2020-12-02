@@ -22,7 +22,11 @@ func (k KotlinLang) SqlMapType(typeId int, len int) string {
 	return k.ParseType(typeId)
 }
 
-func (k KotlinLang) ParsePkg(pkg string) string {
+func (k KotlinLang) PkgName(pkg string) string {
+	return k.PkgPath(pkg)
+}
+
+func (k KotlinLang) PkgPath(pkg string) string {
 	return PkgStyleLikeJava(pkg)
 }
 

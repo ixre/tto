@@ -2,6 +2,7 @@ package lang
 
 import (
 	"github.com/ixre/gof/db/orm"
+	"regexp"
 )
 
 /**
@@ -16,6 +17,7 @@ import (
 
 var _ Lang = new(GoLang)
 
+var pkgRegex = regexp.MustCompile("/(com|net|io|cn|org|info)/")
 type GoLang struct {
 }
 
@@ -23,7 +25,11 @@ func (g GoLang) SqlMapType(typeId int, len int) string {
 	return g.ParseType(typeId)
 }
 
-func (g GoLang) ParsePkg(pkg string) string {
+func (g GoLang) PkgPath(pkg string) string {
+	return pkgRegex.ReplaceAllString(pkg,".$1/")
+}
+
+func (g GoLang) PkgName(pkg string) string {
 	return PkgStyleLikeGo(pkg)
 }
 

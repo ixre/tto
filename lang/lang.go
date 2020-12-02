@@ -23,8 +23,10 @@ type Lang interface {
 	SqlMapType(typeId int, len int) string
 	// get default value of lang
 	DefaultValue(typeId int) string
-	// parse package
-	ParsePkg(pkg string) string
+	// parse package path
+	PkgPath(pkg string) string
+	// get package name
+	PkgName(pkg string) string
 }
 
 var langMap = map[string]Lang{
@@ -63,8 +65,12 @@ func (c CommonLang) SqlMapType(typeId int, len int) string {
 	return c.ParseType(typeId)
 }
 
-func (c CommonLang) ParsePkg(pkg string) string {
+func (c CommonLang) PkgName(pkg string) string {
 	return PkgStyleLikeGo(pkg)
+}
+
+func (c CommonLang) PkgPath(pkg string) string {
+	return pkg
 }
 
 func (c CommonLang) ParseType(typeId int) string {

@@ -21,10 +21,12 @@ func (t Typescript) SqlMapType(typeId int, len int) string {
 	return t.ParseType(typeId)
 }
 
-func (t Typescript) ParsePkg(pkg string) string {
+func (t Typescript) PkgName(pkg string) string {
+	return t.PkgPath(pkg)
+}
+func (t Typescript) PkgPath(pkg string) string {
 	return PkgStyleLikeJava(pkg)
 }
-
 func (t Typescript) ParseType(typeId int) string {
 	return TsTypes(typeId)
 }

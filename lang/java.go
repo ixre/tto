@@ -28,7 +28,10 @@ func (j JavaLang) SqlMapType(typeId int, len int) string {
 	return j.ParseType(typeId)
 }
 
-func (j JavaLang) ParsePkg(pkg string) string {
+func (j JavaLang) PkgName(pkg string) string {
+	return j.PkgPath(pkg)
+}
+func (j JavaLang) PkgPath(pkg string) string {
 	return PkgStyleLikeJava(pkg)
 }
 

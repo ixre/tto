@@ -34,8 +34,10 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	fm["type"] = t.langType
 	// 返回SQL/ORM类型, 如：{{sql_type "py" .columns[0].Type}}
 	fm["sql_type"] = t.ormType
-	// 包名: {{pkg "go" "com/tto/pkg"}}
+	// 包: {{pkg "go" "com/tto/pkg"}}
 	fm["pkg"] = t.langPkg
+	// 包名: {{pkg "go" "github/com/ixre"}} => github.com/ixre
+	fm["pkg_name"] = t.langPkgName
 	// 默认值, 如:{{default "go" .columns[0].Type}}
 	fm["default"] = t.langDefaultValue
 	// 是否相等，如：{{equal "go" "rust"}
@@ -121,7 +123,11 @@ func (t *internalFunc) ormType(lang string, typeId int, len int) string {
 
 // 将包名替换为.分割, 通常C#,JAVA语言使用"."分割包名
 func (t *internalFunc) langPkg(lang string, pkg string) string {
-	return lang2.Get(lang).ParsePkg(pkg)
+	return lang2.Get(lang).PkgPath(pkg)
+}
+
+func (t *internalFunc) langPkgName(lang string,pkg string)string{
+	return lang2.Get(lang).PkgName(pkg)
 }
 
 // 返回类型默认值

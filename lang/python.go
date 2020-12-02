@@ -47,8 +47,12 @@ func (p PythonLang) SqlMapType(typeId int, len int) string {
 	return "String"
 }
 
-func (p PythonLang) ParsePkg(pkg string) string {
+func (p PythonLang) PkgName(pkg string) string {
 	return PkgStyleLikeGo(pkg)
+}
+
+func (p PythonLang) PkgPath(pkg string) string {
+	return pkg
 }
 
 func (p PythonLang) ParseType(typeId int) string {

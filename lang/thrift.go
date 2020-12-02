@@ -11,8 +11,10 @@ type Thrift struct {
 func (t Thrift) SqlMapType(typeId int, len int) string {
 	return t.ParseType(typeId)
 }
-
-func (t Thrift) ParsePkg(pkg string) string {
+func (t Thrift) PkgName(pkg string) string {
+	return t.PkgPath(pkg)
+}
+func (t Thrift) PkgPath(pkg string) string {
 	return PkgStyleLikeJava(pkg)
 }
 

@@ -22,7 +22,10 @@ func (p Protobuf) SqlMapType(typeId int, len int) string {
 	return p.ParseType(typeId)
 }
 
-func (p Protobuf) ParsePkg(pkg string) string {
+func (p Protobuf) PkgName(pkg string) string {
+	return p.PkgPath(pkg)
+}
+func (p Protobuf) PkgPath(pkg string) string {
 	return PkgStyleLikeJava(pkg)
 }
 

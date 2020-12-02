@@ -115,10 +115,16 @@ Usage of tto:
 ```
 {{sql_type "py" .columns[0].Type .columns[0].Length}}
 ```
-包名函数: pkg
+包函数: pkg, 用于获取包的路径
 ```
-{{pkg "go" .global.pkg}}
+{{pkg "go" .global.pkg}} # github.com/ixre
 ```
+包名函数:
+```
+{{pkg_name "go" "github/com/ixre"}} # ixre
+```
+
+
 默认值函数: default
 ```
 {{default "go" .columns[0].TypeId}}

@@ -8,6 +8,10 @@ import (
 type Thrift struct {
 }
 
+func (t Thrift) SqlMapType(typeId int, len int) string {
+	return t.ParseType(typeId)
+}
+
 func (t Thrift) ParsePkg(pkg string) string {
 	return PkgStyleLikeJava(pkg)
 }

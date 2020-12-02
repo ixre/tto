@@ -165,7 +165,9 @@ func smartElement(name string, len int) (string, map[string]string) {
 	if strings.HasSuffix(name, "_time") {
 		return "time", map[string]string{}
 	}
-	if strings.HasSuffix(name, "state") || strings.HasSuffix(name, "status") {
+	if strings.HasSuffix(name, "state") ||
+		strings.HasSuffix(name, "status") ||
+		strings.HasSuffix(name,"enabled"){
 		return "radio", map[string]string{}
 	}
 	if strings.HasSuffix(name, "_date") {

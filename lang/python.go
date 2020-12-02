@@ -1,6 +1,7 @@
 package lang
 
 import (
+	"fmt"
 	"github.com/ixre/gof/db/orm"
 )
 
@@ -15,6 +16,35 @@ import (
  */
 
 type PythonLang struct {
+}
+
+// python SQL ORM 类型与python类型不一样,需单独处理
+func (p PythonLang) SqlMapType(typeId int, len int) string {
+	switch typeId {
+	case orm.TypeString:
+		if len > 0 {
+			if len > 2048 {
+				return "Text"
+			}
+			return fmt.Sprintf("String(%d)", len)
+		}
+		return "String"
+	case orm.TypeBoolean:
+		return "Boolean"
+	case orm.TypeInt16:
+		return "SmallInteger"
+	case orm.TypeInt32:
+		return "Integer"
+	case orm.TypeInt64:
+		return "BigInteger"
+	case orm.TypeFloat32:
+		return "Float"
+	case orm.TypeFloat64:
+		return "Float"
+	case orm.TypeDecimal:
+		return "Decimal"
+	}
+	return "String"
 }
 
 func (p PythonLang) ParsePkg(pkg string) string {

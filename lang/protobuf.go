@@ -18,6 +18,10 @@ import (
 type Protobuf struct {
 }
 
+func (p Protobuf) SqlMapType(typeId int, len int) string {
+	return p.ParseType(typeId)
+}
+
 func (p Protobuf) ParsePkg(pkg string) string {
 	return PkgStyleLikeJava(pkg)
 }

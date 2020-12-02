@@ -18,6 +18,10 @@ import (
 type KotlinLang struct {
 }
 
+func (k KotlinLang) SqlMapType(typeId int, len int) string {
+	return k.ParseType(typeId)
+}
+
 func (k KotlinLang) ParsePkg(pkg string) string {
 	return PkgStyleLikeJava(pkg)
 }

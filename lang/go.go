@@ -19,6 +19,10 @@ var _ Lang = new(GoLang)
 type GoLang struct {
 }
 
+func (g GoLang) SqlMapType(typeId int, len int) string {
+	return g.ParseType(typeId)
+}
+
 func (g GoLang) ParsePkg(pkg string) string {
 	return PkgStyleLikeGo(pkg)
 }

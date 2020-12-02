@@ -33,7 +33,7 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	// 类型: 如:{{type "go" .columns[0].Type}}
 	fm["type"] = t.langType
 	// 返回SQL/ORM类型, 如：{{sql_type "py" .columns[0].Type}}
-	fm["sql_type"] = t.sqlType
+	fm["sql_type"] = t.ormType
 	// 包名: {{pkg "go" "com/tto/pkg"}}
 	fm["pkg"] = t.langPkg
 	// 默认值, 如:{{default "go" .columns[0].Type}}
@@ -115,11 +115,8 @@ func (t *internalFunc) langType(lang string, typeId int) string {
 }
 
 // 返回SQL/ORM类型
-func (t *internalFunc) sqlType(lang string, typeId int, len int) string {
-	if lang == "py" {
-		return PySqlTypes(typeId, len)
-	}
-	panic("not support language except for py")
+func (t *internalFunc) ormType(lang string, typeId int, len int) string {
+	return lang2.Get(lang).SqlMapType(typeId,len)
 }
 
 // 将包名替换为.分割, 通常C#,JAVA语言使用"."分割包名

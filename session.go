@@ -76,6 +76,7 @@ func (g *Options) prepare() {
 	if len(g.ExcludePatterns) == 1 && g.ExcludePatterns[0] == "" {
 		g.ExcludePatterns = nil
 	}
+	g.MajorLang = strings.ToLower(strings.TrimSpace(g.MajorLang))
 	if g.TplDir == "" {
 		g.TplDir = "./templates"
 	}
@@ -223,8 +224,12 @@ func (s *sessionImpl) GenerateCodeByTables(tables []*Table, tpl *CodeTemplate) s
 		log.Println("[ app][ fatal]: " + fmt.Sprintf("file:%s - error:%s", tpl.FilePath(), err.Error()))
 		return ""
 	}
+	tbs := make([]*Table,len(tables))
+	for i,v := range tables{
+		tbs[i] = s.adapterTable(v,tpl.path)
+	}
 	mp := map[string]interface{}{
-		"tables": tables,
+		"tables": tbs,
 		"global": s.codeVars,
 	}
 	buf := bytes.NewBuffer(nil)
@@ -272,13 +277,13 @@ func (s *sessionImpl) defaultTargetPath(tplFilePath string, table *Table) string
 }
 
 var multiLineRegexp = regexp.MustCompile("\\{\\n{2,}(\\s{4}\\s+)")
-var multiLineEndRegexp = regexp.MustCompile("(\\s{4}\\s+)\\n{2,}\\}")
+//var multiLineEndRegexp = regexp.MustCompile("(\\s{4}\\s+)\\n{2,}\\}")
 
 // 格式化代码
 func (s *sessionImpl) formatCode(tpl *CodeTemplate, code string) string {
 	// 去除`{`后多余的换行
 	code = multiLineRegexp.ReplaceAllString(code, "{\n$1")
-	code = multiLineEndRegexp.ReplaceAllString(code, "$1\n}")
+	//code = multiLineEndRegexp.ReplaceAllString(code, "$1\n}")
 	// 不格式化代码
 	if k, _ := tpl.Predefine("format"); k == "false" {
 		return code
@@ -425,7 +430,7 @@ func (s *sessionImpl) testFilePath(path string, excludePatterns []string) bool {
 	if path[0] == '_' {
 		return false
 	}
-	if strings.ToUpper(path) == "README.MD" {
+	if strings.HasSuffix(strings.ToUpper(path),"README.MD") {
 		return false
 	}
 	if excludePatterns == nil {

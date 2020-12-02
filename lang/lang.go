@@ -19,6 +19,8 @@ import (
 type Lang interface {
 	// parse to lang type
 	ParseType(typeId int) string
+	// the type of orm mapping
+	SqlMapType(typeId int, len int) string
 	// get default value of lang
 	DefaultValue(typeId int) string
 	// parse package
@@ -55,6 +57,10 @@ func Get(n string) Lang {
 var _ Lang = new(CommonLang)
 
 type CommonLang struct {
+}
+
+func (c CommonLang) SqlMapType(typeId int, len int) string {
+	return c.ParseType(typeId)
 }
 
 func (c CommonLang) ParsePkg(pkg string) string {

@@ -17,6 +17,10 @@ import (
 type Typescript struct {
 }
 
+func (t Typescript) SqlMapType(typeId int, len int) string {
+	return t.ParseType(typeId)
+}
+
 func (t Typescript) ParsePkg(pkg string) string {
 	return PkgStyleLikeJava(pkg)
 }

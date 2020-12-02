@@ -24,6 +24,10 @@ import (
 type JavaLang struct {
 }
 
+func (j JavaLang) SqlMapType(typeId int, len int) string {
+	return j.ParseType(typeId)
+}
+
 func (j JavaLang) ParsePkg(pkg string) string {
 	return PkgStyleLikeJava(pkg)
 }

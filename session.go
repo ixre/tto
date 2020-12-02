@@ -442,10 +442,11 @@ func (s *sessionImpl) testFilePath(path string, excludePatterns []string) bool {
 		}
 		// 前后匹配
 		if strings.Index(v, "*") != -1 {
-			if v[0] == '*' && strings.HasPrefix(path, v) {
+			c := strings.Replace(v,"*","",-1)
+			if v[0] == '*' && strings.HasSuffix(path, c) {
 				return false
 			}
-			if v[len(v)-1] == '*' && strings.HasSuffix(path, v) {
+			if v[len(v)-1] == '*' && strings.HasPrefix(path, c) {
 				return false
 			}
 			continue

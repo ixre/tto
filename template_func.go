@@ -1,6 +1,7 @@
 package tto
 
 import (
+	"fmt"
 	"github.com/ixre/gof/types"
 	lang2 "github.com/ixre/tto/lang"
 	"reflect"
@@ -48,6 +49,8 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	fm["replace"] = t.replace
 	// 替换N次,如: {{replace_n "table_name" "_" "-" 1}}
 	fm["replace_n"] = t.replaceN
+	// 截取字符串
+	fm["substr"] = t.substr
 	// 截取第N个字符位置后的字符串,如:{{substr_n "sys_user_list" "_" 1}}得到:user_list
 	fm["substr_n"] = t.substrN
 	// 截取索引为N的元素,如:{{get_n .tables 0}}
@@ -168,6 +171,25 @@ func (t *internalFunc) replace(s, oldStr, newStr string) string {
 func (t *internalFunc) replaceN(s, oldStr, newStr string, n int) string {
 	return strings.Replace(s, oldStr, newStr, n)
 }
+
+// 截取字符串,如:{{substr "sys_user_list" 0 3}}结果:sys
+// 如:{{substr "sys_user_list" 4 }} 结果:sys_list
+func (t *internalFunc) substr(s string, n ...int) string {
+	l := len(s)
+	for v := range n {
+		if v >= l {
+			return fmt.Sprintf("超出索引%d/%d", v, l)
+		}
+	}
+	switch len(n) {
+	case 1:
+		return s[n[0]:]
+	case 2:
+		return s[n[0]:n[1]]
+	}
+	return s
+}
+
 
 // 截取第N个字符位置后的字符串,如:{{substr_n "sys_user_list" "_" 1}}得到:user_list
 func (t *internalFunc) substrN(s, char string, n int) string {

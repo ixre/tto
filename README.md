@@ -145,6 +145,12 @@ Usage of tto:
 ```
 {{replace_n "table_name" "_" "-" 1}}
 ```
+截取字符串函数：substr
+```
+{{substr "sys_user_list" 0 3 }} # 结果：sys
+{{substr "sys_user_list" 4 }} 结果:sys_list
+```
+
 截取第N个字符位置后的字符串,如以下语句将输出:user_list
 ```
 {{substr_n "sys_user_list" "_" 1}}

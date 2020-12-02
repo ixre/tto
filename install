@@ -1,7 +1,13 @@
 #!/usr/bin/env sh
 
-mkdir -p ~/.tto
-curl -L https://github.com/ixre/tto/releases/download/v0.3.23/tto-generator-bin.tar.gz | tar xz -C ~/.tto
+set -e && mkdir -p ~/.tto
+curl -L https://github.com/ixre/tto/releases/download/v0.4.0/tto-generator-bin.tar.gz | tar xz -C ~/.tto
+
+echo '============================'
+echo 'check access..'
+sudo -i
+echo 'installing...'
+
 GOOS=$(uname)
 if [ "$GOOS" =  'Darwin' ]; then
   sudo mv ~/.tto/mac-tto /usr/local/bin/tto
@@ -12,7 +18,8 @@ elif [ "$GOOS" = 'Windows' ] ||  \
 else
   sudo mv ~/.tto/tto /usr/local/bin
 fi
-rm -rf ~/.tto && echo "恭喜,安装成功!"
+
+rm -rf ~/.tto && echo "install finished!"
 
 
 

@@ -196,10 +196,10 @@ func (s *sessionImpl) GenerateCode(table *Table, tpl *CodeTemplate) string {
 		log.Println("[ app][ fatal]: " + fmt.Sprintf("file:%s - error:%s", tpl.FilePath(), err.Error()))
 		return ""
 	}
-	tb := s.adapterTable(table,tpl.path)
+	tb := s.adapterTable(table, tpl.path)
 	//n := s.title(table.Name)
 	mp := map[string]interface{}{
-		"global":  s.codeVars,    // 全局变量
+		"global":  s.codeVars, // 全局变量
 		"table":   tb,         // 数据表
 		"columns": tb.Columns, // 列
 	}
@@ -224,9 +224,9 @@ func (s *sessionImpl) GenerateCodeByTables(tables []*Table, tpl *CodeTemplate) s
 		log.Println("[ app][ fatal]: " + fmt.Sprintf("file:%s - error:%s", tpl.FilePath(), err.Error()))
 		return ""
 	}
-	tbs := make([]*Table,len(tables))
-	for i,v := range tables{
-		tbs[i] = s.adapterTable(v,tpl.path)
+	tbs := make([]*Table, len(tables))
+	for i, v := range tables {
+		tbs[i] = s.adapterTable(v, tpl.path)
 	}
 	mp := map[string]interface{}{
 		"tables": tbs,
@@ -276,13 +276,16 @@ func (s *sessionImpl) defaultTargetPath(tplFilePath string, table *Table) string
 	return strings.TrimSpace(tplFilePath + table.Name)
 }
 
-var multiLineRegexp = regexp.MustCompile("\\{\\n{2,}(\\s{4}\\s+)")
-//var multiLineEndRegexp = regexp.MustCompile("(\\s{4}\\s+)\\n{2,}\\}")
+var multiLineRegexp = regexp.MustCompile("\\{[\\n\\r]+?\\s*\\n+")
+var multiLineRevertRegexp = regexp.MustCompile("\\n+\\s*[\\n\\r]+?\\}")
 
 // 格式化代码
 func (s *sessionImpl) formatCode(tpl *CodeTemplate, code string) string {
+
 	// 去除`{`后多余的换行
-	code = multiLineRegexp.ReplaceAllString(code, "{\n$1")
+	code = multiLineRegexp.ReplaceAllString(code, "{\n")
+	// 去除`}`前多余的换行
+	code = multiLineRevertRegexp.ReplaceAllString(code, "\n}")
 	//code = multiLineEndRegexp.ReplaceAllString(code, "$1\n}")
 	// 不格式化代码
 	if k, _ := tpl.Predefine("format"); k == "false" {
@@ -430,7 +433,7 @@ func (s *sessionImpl) testFilePath(path string, excludePatterns []string) bool {
 	if path[0] == '_' {
 		return false
 	}
-	if strings.HasSuffix(strings.ToUpper(path),"README.MD") {
+	if strings.HasSuffix(strings.ToUpper(path), "README.MD") {
 		return false
 	}
 	if excludePatterns == nil {
@@ -442,7 +445,7 @@ func (s *sessionImpl) testFilePath(path string, excludePatterns []string) bool {
 		}
 		// 前后匹配
 		if strings.Index(v, "*") != -1 {
-			c := strings.Replace(v,"*","",-1)
+			c := strings.Replace(v, "*", "", -1)
 			if v[0] == '*' && strings.HasSuffix(path, c) {
 				return false
 			}
@@ -460,25 +463,25 @@ func (s *sessionImpl) testFilePath(path string, excludePatterns []string) bool {
 }
 
 // 根据代码文件类型适配table
-func (s *sessionImpl) adapterTable(table *Table, path string)*Table{
+func (s *sessionImpl) adapterTable(table *Table, path string) *Table {
 	l := GetLangByPath(path)
 	// 部分语言永远使用大写开头的命名
 	switch l {
-	case L_GO,L_CSharp,L_Thrift,L_Protobuf,L_PHP,L_Shell:
+	case L_GO, L_CSharp, L_Thrift, L_Protobuf, L_PHP, L_Shell:
 		return table
 	}
-	if l == L_JAVA || l == L_Kotlin{
-		return s.copyTable(table,true)
+	if l == L_JAVA || l == L_Kotlin {
+		return s.copyTable(table, true)
 	}
-	if ml:= s.opt.MajorLang;ml == L_JAVA || ml == L_Kotlin{
-		return s.copyTable(table,true)
+	if ml := s.opt.MajorLang; ml == L_JAVA || ml == L_Kotlin {
+		return s.copyTable(table, true)
 	}
 	return table
 }
 
-func (s *sessionImpl) copyTable(table *Table,lowerProp bool) *Table {
-	prop := func(s string)string{
-		if lowerProp{
+func (s *sessionImpl) copyTable(table *Table, lowerProp bool) *Table {
+	prop := func(s string) string {
+		if lowerProp {
 			return lowerTitle(s)
 		}
 		return s
@@ -486,7 +489,7 @@ func (s *sessionImpl) copyTable(table *Table,lowerProp bool) *Table {
 	dst := &Table{
 		Ordinal: table.Ordinal,
 		Name:    table.Name,
-		Prefix: table.Prefix,
+		Prefix:  table.Prefix,
 		Title:   table.Title,
 		Comment: table.Comment,
 		Engine:  table.Engine,
@@ -496,9 +499,9 @@ func (s *sessionImpl) copyTable(table *Table,lowerProp bool) *Table {
 		Pk:      table.Pk,
 		PkProp:  prop(table.PkProp),
 		PkType:  table.PkType,
-		Columns: make([]*Column,len(table.Columns)),
+		Columns: make([]*Column, len(table.Columns)),
 	}
-	for i,v := range table.Columns{
+	for i, v := range table.Columns {
 		dst.Columns[i] = &Column{
 			Ordinal: v.Ordinal,
 			Name:    v.Name,

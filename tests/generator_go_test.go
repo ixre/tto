@@ -64,20 +64,27 @@ func TestGenByTemplate(t *testing.T) {
 
 
 func TestCodeTemplate_String(t *testing.T) {
-	var r = regexp.MustCompile("\\{\\n*(\\s{5,})")
+	//var r2 = regexp.MustCompile("\\{\\n*(\\s{5,})")
+	var r = regexp.MustCompile("\\{[\\n\\r]+?\\s*\\n+")
+
 	var content = `
-public int getFiveUnderOneHundred() {
+return &proto.SPermDict{
+		 
+		 Id : v.Id,
+ret.Value[i] = &proto.PagingPermDept{
 
+			Id:         int64(typeconv.MustInt(v["id"])),
 
-
-        return this.five_under_one_hundred;
-    }
     return {
 
         id:0,
         name:"",
         pid:0,
+
+}
 `
+	//content = strings.Replace(content,"\t","",-1)
 	t.Log(r.MatchString(content))
-	t.Log(r.ReplaceAllString(content,"{\n$1"))
+	t.Log(r.FindAllStringSubmatch(content,-1))
+	t.Log(r.ReplaceAllString(content,"{\n"))
 }

@@ -276,14 +276,14 @@ func (s *sessionImpl) defaultTargetPath(tplFilePath string, table *Table) string
 	return strings.TrimSpace(tplFilePath + table.Name)
 }
 
-var multiLineRegexp = regexp.MustCompile("\\{[\\n\\r]+?\\s*\\n+")
+var multiLineRegexp = regexp.MustCompile("(\\{|,)[\\n\\r]+?\\s*\\n+")
 var multiLineRevertRegexp = regexp.MustCompile("\\n+\\s*[\\n\\r]+?\\}")
 
 // 格式化代码
 func (s *sessionImpl) formatCode(tpl *CodeTemplate, code string) string {
 
 	// 去除`{`后多余的换行
-	code = multiLineRegexp.ReplaceAllString(code, "{\n")
+	code = multiLineRegexp.ReplaceAllString(code, "$1\n")
 	// 去除`}`前多余的换行
 	code = multiLineRevertRegexp.ReplaceAllString(code, "\n}")
 	//code = multiLineEndRegexp.ReplaceAllString(code, "$1\n}")

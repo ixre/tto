@@ -1,7 +1,7 @@
 #!lang:ts＃!name:API和定义文件
 #!target:ts/feature/{{name_path .table.Name}}/api.ts
 import request from '@/utils/request'
-{{$path := join .global.base_path (name_path .table.Name)}}
+{{$path := join .global.base_path (name_path .table.Name) "/"}}
 
 // {{.table.Comment}}对象
 export interface I{{.table.Title}} {
@@ -13,7 +13,9 @@ export interface I{{.table.Title}} {
 export const default{{.table.Title}}:()=>I{{.table.Title}}=()=>{
     return {
         {{range $i,$c := .columns}}
-        {{$c.Prop}}:{{default "ts" $c.Type}},{{end}}
+        {{if eq $c.Render.Element "radio"}}{{$c.Prop}}:{{default "ts" $c.Type}} + 1,
+        {{else}}{{$c.Prop}}:{{default "ts" $c.Type}},
+        {{end}}{{end}}
     };
 }
 

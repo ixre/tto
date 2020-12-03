@@ -5,10 +5,10 @@
     <el-form ref="formData" class="form-container mod-form" size="small"
              label-position="right" :model="formData" :rules="rules">
       <div class="createPost-main-container mod-form-container">
-        {{range $i,$c := .columns}}\
+        <el-row :gutter="15">
+        {{range $i,$c := exclude .columns "create_time" "update_time"}}\
         {{if not $c.IsPk}}{{$name:= $c.Prop}}{{$ele:= $c.Render.Element}}\
-        <el-row>
-          <el-col :span="24">
+          <el-col :md="12" :xs="24">
             <el-form-item class="mod-form-item" label-width="78px" label="{{$c.Comment}}"　prop="{{$name}}" required>
             {{if eq $ele "radio"}}\
                 <el-radio-group v-model="formData.{{$name}}">
@@ -30,8 +30,8 @@
             {{end}}
             </el-form-item>
           </el-col>
-        </el-row>
         {{end}}{{end}}
+        </el-row>
         <sticky :z-index="10" class="mod-form-bar">
             <el-button @click="callback">取消</el-button>
             <el-button v-loading="requesting" type="primary" @click="submitForm">提交</el-button>
@@ -49,6 +49,7 @@ import { AppModule } from '@/store/modules/app'
 import Sticky from '@/components/Sticky/index.vue'
 import { Form } from 'element-ui'
 import {I{{$Class}}, default{{$Class}},get{{$Class}},create{{$Class}},update{{$Class}} } from './api'
+import {parseResult} from "@/fx";
 
 @Component({
   name: '{{$Class}}Form',
@@ -108,7 +109,7 @@ export default class extends Vue {
       if (valid) {
         if(this.requesting === 1)return;this.requesting = 1;
         let ret = await (this.id?update{{$Class}}(this.id,this.formData):create{{$Class}}(this.formData)).finally(()=>this.requesting = 0);
-        const {errCode,errMsg} = ret.data;
+        const {errCode,errMsg} = parseResult(ret.data);
         if(errCode === 0){
           this.$notify.success({
             title: '操作成功',

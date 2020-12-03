@@ -2,7 +2,7 @@ package tto
 
 import (
 	"fmt"
-	"github.com/ixre/gof/types"
+	"github.com/ixre/gof/types/typeconv"
 	lang2 "github.com/ixre/tto/lang"
 	"reflect"
 	"strings"
@@ -337,7 +337,7 @@ func (t *internalFunc) multi(x, y interface{}) interface{} {
 
 // I32转为字符
 func (t *internalFunc) str(i interface{}) string {
-	return types.Stringify(i)
+	return typeconv.Stringify(i)
 }
 
 // 是否为空

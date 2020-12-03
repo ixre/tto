@@ -276,7 +276,7 @@ func (s *sessionImpl) defaultTargetPath(tplFilePath string, table *Table) string
 	return strings.TrimSpace(tplFilePath + table.Name)
 }
 
-var multiLineRegexp = regexp.MustCompile("(\\{|,)[\\n\\r]+?\\s*\\n+")
+var multiLineRegexp = regexp.MustCompile("(\\{|,|>)[\\n\\r]+?\\s*\\n+")
 var multiLineRevertRegexp = regexp.MustCompile("\\n+\\s*[\\n\\r]+?\\}")
 
 // 格式化代码

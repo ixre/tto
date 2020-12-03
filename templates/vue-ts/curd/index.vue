@@ -1,5 +1,8 @@
 #!lang:ts＃!name:全功能界面
-#!lang:ts#!target:ts/feature/{{name_path .table.Name}}/all.vue
+#!lang:ts#!target:ts/feature/{{name_path .table.Name}}/index.vue
+{{$Class := .table.Title}}
+{{$PkType := .table.PkType}}
+{{$Pk := .table.Pk}}
 <template>
 <div class="app-container mod-grid-container">
     <!-- 查询和其他操作 -->
@@ -31,7 +34,7 @@
     </div>
     <!-- 表单数据　-->
     <el-table ref="table" v-loading="list.loading" :data="list.data" :height="tableHeight"
-              fit :highlight-current-row="false"
+              fit :highlight-current-row="false" row-key="{{$Pk}}"
               @selection-change="handleSelectionChange" class="mod-grid-table">
         <el-table-column align="center" type="selection" width="45" />
         {{range $i,$c := .columns}} \
@@ -73,23 +76,21 @@
                 :limit.sync="list.rows" @pagination="fetchData"/>
 
     <!-- 弹出操作框 -->
-    <el-dialog class="mod-dialog" :title="dialog.title" :visible.sync="dialog.open" width="40%" @close="closeModal">
+    <el-dialog class="mod-dialog" :title="dialog.title" :visible.sync="dialog.open" width="35%" @close="closeModal">
         <component v-bind:is="modal" :id="dialog.id" @callback="refresh"></component>
     </el-dialog>
 
 </div>
 </template>
-{{$Class := .table.Title}}
-{{$PkType := .table.PkType}}
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import Pagination from '@/components/Pagination/index.vue';
 import {getPaging{{$Class}},delete{{$Class}},batchDelete{{$Class}} } from './api';
 import {{$Class}}Form from './form.vue';
-
+import {parseResult} from "@/fx";
 
 // {{.table.Comment}}数据库映射类
-interface IListModel {  {{range $i,$c := .columns}}
+interface ListModel {  {{range $i,$c := .columns}}
     {{$c.Name}}:{{type "ts" $c.Type}} // {{$c.Comment}} \
     {{end}}
 }
@@ -107,14 +108,14 @@ export default class extends Vue {
     private requesting = 0;
     private tableHeight = 0;
     private selectedIds :{{type "ts" $PkType}}[]= [];
-    private selectedRows:IListModel[] = [];
-    private list:{loading:boolean,total:number,page:number,rows:number,data: IListModel[]} = {loading:false,total:0, page: 1, rows: 10,data:[]};
+    private selectedRows:ListModel[] = [];
+    private list:{loading:boolean,total:number,page:number,rows:number,data: ListModel[]} = {loading:false,total:0, page: 1, rows: 10,data:[]};
     /** 定义查询参数 */
     private queryParams = {
         keyword:"",
         state:-1,
         where:"0=0",
-        order_by:"{{.table.Pk }} DESC"
+        order_by:"{{.table.Pk}} DESC"
     };
     /** 根据实际情况调整 */
     private states = {"全部":-1,"正常":1,"停用":0};
@@ -145,7 +146,7 @@ export default class extends Vue {
         this.fetchData();
     }
 
-    private handleSelectionChange(rows:IListModel[]) {
+    private handleSelectionChange(rows:ListModel[]) {
         this.selectedRows = rows;
         this.selectedIds = [];
         rows.map(it=> this.selectedIds.push(it.{{.table.Pk}}));
@@ -163,13 +164,13 @@ export default class extends Vue {
     }
 
     // 编辑数据
-    private handleEdit(row:IListModel){
+    private handleEdit(row:ListModel){
         //this.$router.push({path:"../{{name_path .table.Name}}/create"});
         this.modalForm(row,"编辑{{.table.Comment}}");
     }
 
     // 打开模态表单
-    private modalForm(row:IListModel|null,title:string){
+    private modalForm(row:ListModel|null,title:string){
       this.dialog.open = true;
       this.dialog.id = row?row.{{.table.Pk}}:0;
       this.modal = {{$Class}}Form;
@@ -197,7 +198,7 @@ export default class extends Vue {
         }).then(async () => {
             if(this.requesting === 1)return;this.requesting = 1;
             let ret = await delete{{$Class}}(row.{{.table.Pk}}).finally(()=>this.requesting = 0);
-            const {errCode,errMsg} = ret.data;
+            const {errCode,errMsg} = parseResult(ret.data);
             if(errCode === 0){
                 this.$notify.success({
                     title: '操作成功',
@@ -225,7 +226,7 @@ export default class extends Vue {
         }).then(async () => {
             if(this.requesting === 1)return;this.requesting = 1;
             let ret = await batchDelete{{$Class}}(this.selectedIds).finally(()=>this.requesting = 0);
-            const {errCode,errMsg} = ret.data;
+            const {errCode,errMsg} = parseResult(ret.data);
             if(errCode === 0){
                 this.$notify.success({
                     title: '操作成功',

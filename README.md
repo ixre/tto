@@ -10,7 +10,7 @@
 ## 安装
 安装命令
 ```
-curl -L https://raw.githubusercontent.com/ixre/tto/master/install|sh
+curl -L https://raw.githubusercontent.com/ixre/tto/master/install | sh
 ```
 在Windows下,可使用Mingw32或使用git安装附带的`git-bash.exe`运行命令安装；
 同时也可以[下载](https://github.com/ixre/tto/releases/)安装包,将`tto.exe`文件复制到`C:\windows\system32`下完成手动安装

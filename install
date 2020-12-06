@@ -15,7 +15,7 @@ elif [ "$GOOS" = 'Windows' ] ||  \
      [ "${GOOS:0:6}" = 'Cygwin' ]; then
   mv "${TMP_DIR}/tto.exe" "$WINDIR\system32"
 else
-  sudo mv "${TMP_DIR}/tto" /usr/local/bin
+  mv "${TMP_DIR}/tto" /usr/local/bin
 fi
 
 rm -rf "${TMP_DIR}" && echo "install finished!"

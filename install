@@ -4,14 +4,12 @@ TMP_DIR="$HOME/.tto"
 set -e && mkdir -p "${TMP_DIR}"
 curl -L https://github.com/ixre/tto/releases/download/v0.4.0/tto-generator-bin.tar.gz | tar xz -C "${TMP_DIR}"
 
-echo '============================'
-echo 'check access..'
-sudo -i
+echo '=============================================================================='
 echo 'installing...'
 
 GOOS=$(uname)
 if [ "$GOOS" =  'Darwin' ]; then
-  sudo mv "${TMP_DIR}/mac-tto" /usr/local/bin/tto
+  mv "${TMP_DIR}/mac-tto" /usr/local/bin/tto
 elif [ "$GOOS" = 'Windows' ] ||  \
      [ "${GOOS:0:5}" = 'MINGW' ] || \
      [ "${GOOS:0:6}" = 'Cygwin' ]; then

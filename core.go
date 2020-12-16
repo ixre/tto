@@ -71,20 +71,22 @@ type Column struct {
 	Render *config.PropRenderOptions
 }
 
+type LANG = string
+
 const (
-	L_Unknown    = ""
-	L_GO         = "go"
-	L_JAVA       = "java"
-	L_CSharp     = "csharp"
-	L_TypeScript = "typescript"
-	L_Kotlin     = "kotlin"
-	L_Python     = "python"
-	L_Thrift     = "thrift"
-	L_Protobuf   = "protobuf"
-	L_PHP        = "php"
-	L_Rust       = "rust"
-	L_Dart       = "dart"
-	L_Shell      = "shell"
+	L_Unknown    LANG = ""
+	L_GO         LANG = "go"
+	L_JAVA       LANG = "java"
+	L_CSharp     LANG = "csharp"
+	L_TypeScript LANG = "typescript"
+	L_Kotlin     LANG = "kotlin"
+	L_Python     LANG = "python"
+	L_Thrift     LANG = "thrift"
+	L_Protobuf   LANG = "protobuf"
+	L_PHP        LANG = "php"
+	L_Rust       LANG = "rust"
+	L_Dart       LANG = "dart"
+	L_Shell      LANG = "shell"
 )
 
 var codeFileExtensions = map[string]string{
@@ -96,12 +98,23 @@ var codeFileExtensions = map[string]string{
 	"python":     ".py",
 	"thrift":     ".thrift",
 	"protobuf":   ".proto",
-	"rust":       "*.rs",
-	"dart":       "*.dart",
+	"rust":       ".rs",
+	"dart":       ".dart",
+}
+
+func IsCodeFile(ext string) bool {
+	i := "." + ext
+	for _, v := range codeFileExtensions {
+		if i == v {
+			return true
+		}
+	}
+	return ext == "h" || ext == "vb" || ext == "py" || ext == "rb" || ext == "cpp" ||
+		ext == "c" || ext == "lua" || ext == "pl"
 }
 
 // 根据文件路径判断语言类型
-func GetLangByPath(path string) string {
+func GetLangByPath(path string) LANG {
 	i := strings.LastIndex(path, ".")
 	if i != -1 {
 		switch path[i:] {

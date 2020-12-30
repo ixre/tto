@@ -19,14 +19,14 @@ import (
 
 func main() {
 	cmd := "generate"
-	if len(os.Args) > 1{
-		if a:= os.Args[1];!strings.HasPrefix(a,"-"){
-			cmd =a
+	if len(os.Args) > 1 {
+		if a := os.Args[1]; !strings.HasPrefix(a, "-") {
+			cmd = a
 		}
 	}
 	switch cmd {
 	case "update":
-		forceUpdate := len(os.Args)> 2 && os.Args[2] =="-y"
+		forceUpdate := len(os.Args) > 2 && os.Args[2] == "-y"
 		_, _ = doUpdate(forceUpdate)
 	case "generate":
 		generate()
@@ -34,14 +34,14 @@ func main() {
 }
 
 func checkEveryDay() bool {
-	timeFile := os.TempDir()+"/tto_check_time"
+	timeFile := os.TempDir() + "/tto_check_time"
 	var unix int64
-	lastTime,err := ioutil.ReadFile(timeFile)
-	if err == nil{
-		unix1,_ := strconv.Atoi(string(lastTime))
+	lastTime, err := ioutil.ReadFile(timeFile)
+	if err == nil {
+		unix1, _ := strconv.Atoi(string(lastTime))
 		unix = int64(unix1)
 	}
-	if dt:= time.Now().Unix();dt - unix > 3600*24{
+	if dt := time.Now().Unix(); dt-unix > 3600*24 {
 		_ = ioutil.WriteFile(timeFile, []byte(strconv.Itoa(int(dt))), os.ModePerm)
 		b, _ := doUpdate(false)
 		return b
@@ -50,9 +50,9 @@ func checkEveryDay() bool {
 }
 
 func generate() {
-	var genDir string   //输出目录
-	var confPath string //设置目录
-	var tplDir string   //模板目录
+	var genDir string    //输出目录
+	var confPath string  //设置目录
+	var tplDir string    //模板目录
 	var majorLang string //主要语言
 	var table string
 	var excludedTables string
@@ -63,10 +63,9 @@ func generate() {
 	var compactMode bool
 	var keepLocal bool
 
-
 	flag.StringVar(&genDir, "o", "./output", "path of output directory")
 	flag.StringVar(&tplDir, "t", "./templates", "path of code templates directory")
-	flag.StringVar(&majorLang,"m","go","major code lang like java or go")
+	flag.StringVar(&majorLang, "m", "go", "major code lang like java or go")
 	flag.StringVar(&confPath, "conf", "./tto.conf", "config path")
 	flag.StringVar(&table, "table", "", "table name or table prefix")
 	flag.StringVar(&excludedTables, "excludes", "", "exclude tables by prefix")
@@ -74,7 +73,7 @@ func generate() {
 	flag.BoolVar(&cleanLast, "clean", false, "clean last generate files")
 	flag.BoolVar(&debug, "debug", false, "debug mode")
 	flag.BoolVar(&compactMode, "compact", false, "compact mode for old project")
-	flag.BoolVar(&keepLocal,"local",false,"don't update any new version")
+	flag.BoolVar(&keepLocal, "local", false, "don't update any new version")
 	flag.BoolVar(&printVer, "v", false, "print version")
 	flag.Parse()
 
@@ -137,9 +136,15 @@ func generate() {
 		return
 	}
 	// 获取排除的文件名
-	excludePatterns := strings.Split(re.GetString("code.exclude_patterns"), ",")
-	if len(excludePatterns) == 0{
-		excludePatterns = strings.Split(re.GetString("code.exclude_files"), ",")
+	excludePatterns := []string{}
+	excludePatternParam := re.GetString("code.exclude_patterns")
+	if len(excludePatternParam) == 0 {
+		excludePatternParam = re.GetString("code.exclude_files")
+	}
+	if strings.Contains(excludePatternParam, ",") {
+		excludePatterns = strings.Split(excludePatternParam, ",")
+	} else {
+		excludePatterns = strings.Split(excludePatternParam, ";")
 	}
 	disableAttachCopy := re.GetBoolean("code.disable_attach")
 	// 生成自定义代码
@@ -148,9 +153,9 @@ func generate() {
 		AttachCopyright: !disableAttachCopy,
 		OutputDir:       genDir,
 		ExcludePatterns: excludePatterns,
-		MajorLang: majorLang,
+		MajorLang:       majorLang,
 	}
-	dg := tto.DBCodeGenerator(dbDriver,opt)
+	dg := tto.DBCodeGenerator(dbDriver, opt)
 	dg.Package(pkgName)
 	if re.GetBoolean("code.id_upper") {
 		dg.UseUpperId()
@@ -280,8 +285,6 @@ func getDb(driver string, r *tto.Registry) *sql.DB {
 	d.SetConnMaxLifetime(time.Second * 10)
 	return d
 }
-
-
 
 // 恢复应用
 func crashRecover(debug bool) {

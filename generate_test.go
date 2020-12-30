@@ -12,10 +12,10 @@ import (
 var (
 	driver     = "mysql"
 	dbName     = ""
-	dbPrefix   = "bz_winLloss_rules"
+	dbPrefix   = "bz_"
 	connString = "root:@tcp(127.0.0.1:3306)/baozhang?charset=utf8"
 	genDir     = "generated_code/"
-    tplDir  ="./templates"
+    tplDir  ="./templates/java/spring"
 
 )
 
@@ -33,7 +33,7 @@ func TestGenAll(t *testing.T) {
 		TplDir:          tplDir,
 		AttachCopyright: true,
 		OutputDir:       genDir,
-		ExcludePatterns: []string{"grid_list.html"},
+		ExcludePatterns: []string{"*.kt;*.ftl;grid_list.html"},
 	}
 	dg := DBCodeGenerator(ds.Driver(),opt)
 	list, err := ds.TablesByPrefix(dbName, "", dbPrefix)

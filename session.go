@@ -197,7 +197,6 @@ func (s *sessionImpl) GenerateCode(table *Table, tpl *CodeTemplate) string {
 		return ""
 	}
 	tb := s.adapterTable(table, tpl.path)
-	//n := s.title(table.Name)
 	mp := map[string]interface{}{
 		"global":  s.codeVars, // 全局变量
 		"table":   tb,         // 数据表
@@ -469,8 +468,9 @@ func (s *sessionImpl) adapterTable(table *Table, path string) *Table {
 	switch l {
 	case L_GO, L_CSharp, L_Thrift, L_Protobuf, L_PHP, L_Shell:
 		return table
-	}
-	if l == L_JAVA || l == L_Kotlin {
+	case L_JAVA: // 需要生成getter和setter,故大写
+		return table
+	case L_Kotlin:
 		return s.copyTable(table, true)
 	}
 	if ml := s.opt.MajorLang; ml == L_JAVA || ml == L_Kotlin {

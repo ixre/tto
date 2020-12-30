@@ -124,6 +124,8 @@ func GetLangByPath(path string) LANG {
 			return L_CSharp
 		case ".ts":
 			return L_TypeScript
+		case ".java":
+			return L_JAVA
 		case ".kt":
 			return L_Kotlin
 		case ".py":

@@ -1,7 +1,7 @@
 #!target:spring/src/main/java/{{.global.pkg}}/service/{{.table.Title}}Service.java
 package {{pkg "java" .global.pkg}}.service
 
-import {{pkg "java" .global.pkg}}.pojo.{{.table.Title}}Entity
+import {{pkg "java" .global.pkg}}.entity.{{.table.Title}}Entity
 import {{pkg "java" .global.pkg}}.repo.{{.table.Title}}JpaRepository
 import org.springframework.stereotype.Service
 import org.springframework.data.repository.findByIdOrNull

@@ -1,7 +1,7 @@
 #!target:src/main/kotlin/{{.global.pkg}}/resources/{{.table.Title}}Resource.kt
 package {{pkg "kotlin" .global.pkg}}.resources
 
-import {{pkg "kotlin" .global.pkg}}.pojo.{{.table.Title}}Entity
+import {{pkg "kotlin" .global.pkg}}.pojo.{{.table.Title}}{{.global.entity_suffix}}
 import {{pkg "kotlin" .global.pkg}}.service.{{.table.Title}}Service
 import {{pkg "kotlin" .global.pkg}}.component.TinyQueryComponent
 import net.fze.common.Result
@@ -27,14 +27,14 @@ class {{.table.Title}}Resource {
     /** 获取{{.table.Comment}} */
     @GET@Path("/{id}")
     @PermitAll
-    fun get(@PathParam("id") id:{{$pkType}}): {{.table.Title}}Entity? {
+    fun get(@PathParam("id") id:{{$pkType}}): {{.table.Title}}{{.global.entity_suffix}}? {
         return service.findByIdOrNull(id)
     }
 
     /** 创建{{.table.Comment}} */
     @POST
     @PermitAll
-    fun create(entity: {{.table.Title}}Entity):Result {
+    fun create(entity: {{.table.Title}}{{.global.entity_suffix}}):Result {
         val err = this.service.save{{.table.Title}}(entity)
         if(err != null)return Result.create(1,err.message)
         return Result.OK
@@ -43,7 +43,7 @@ class {{.table.Title}}Resource {
     /** 更新{{.table.Comment}} */
     @PUT@Path("/{id}")
     @PermitAll
-    fun save(@PathParam("id") id:{{$pkType}},entity: {{.table.Title}}Entity):Result {
+    fun save(@PathParam("id") id:{{$pkType}},entity: {{.table.Title}}{{.global.entity_suffix}}):Result {
         entity.{{lower_title .table.PkProp}} = id
         val err = this.service.save{{.table.Title}}(entity)
         if(err != null)return Result.create(1,err.message)
@@ -63,7 +63,7 @@ class {{.table.Title}}Resource {
     /** {{.table.Comment}}列表 */
     @GET
     @PermitAll
-    fun list(): List<{{.table.Title}}Entity> {
+    fun list(): List<{{.table.Title}}{{.global.entity_suffix}}> {
         return mutableListOf()
     }
 

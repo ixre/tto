@@ -1,4 +1,4 @@
-#!target:spring/src/main/java/{{.global.pkg}}/entity/{{.table.Title}}Entity.java
+#!target:spring/src/main/java/{{.global.pkg}}/entity/{{.table.Title}}{{.global.entity_suffix}}.java
 package {{pkg "java" .global.pkg}}.entity;
 
 import net.fze.util.TypeConv;
@@ -17,7 +17,7 @@ import java.util.Map;
 /** {{.table.Comment}} */
 @Entity
 @Table(name = "{{.table.Name}}", schema = "{{.table.Schema}}")
-public class {{.table.Title}}Entity {
+public class {{.table.Title}}{{.global.entity_suffix}} {
     {{range $i,$c := .columns}}{{$type := type "java" $c.Type}}
     private {{$type}} {{$c.Name}};
     public void set{{$c.Prop}}({{$type}} {{$c.Name}}){
@@ -35,8 +35,8 @@ public class {{.table.Title}}Entity {
     {{end}}
 
     /** 拷贝数据  */
-    public {{.table.Title}}Entity copy({{.table.Title}}Entity src){
-        {{.table.Title}}Entity dst = new {{.table.Title}}Entity();
+    public {{.table.Title}}{{.global.entity_suffix}} copy({{.table.Title}}{{.global.entity_suffix}} src){
+        {{.table.Title}}{{.global.entity_suffix}} dst = new {{.table.Title}}{{.global.entity_suffix}}();
         {{range $i,$c := .columns}}
         dst.set{{$c.Prop}}(src.get{{$c.Prop}}());{{end}}
         return dst;
@@ -49,8 +49,8 @@ public class {{.table.Title}}Entity {
         return mp;
     }
 
-    public static {{.table.Title}}Entity fromMap(Map<String,Object> data){
-        {{.table.Title}}Entity dst = new {{.table.Title}}Entity();\
+    public static {{.table.Title}}{{.global.entity_suffix}} fromMap(Map<String,Object> data){
+        {{.table.Title}}{{.global.entity_suffix}} dst = new {{.table.Title}}{{.global.entity_suffix}}();\
         {{range $i,$c := .columns}}
         {{ $goType := type "go" $c.Type}}\
         {{if eq $goType "int"}}dst.set{{$c.Prop}}(TypeConv.toInt(data.get("{{$c.Prop}}")));\

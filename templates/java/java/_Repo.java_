@@ -15,30 +15,30 @@ public class {{.table.Title}}RepoImpl implements I{{.table.Title}}Repo {
     /** 注入上下文 */
     @Inject XContext ctx;
     /** 获取{{.table.Comment}} */
-    public {{.table.Title}}Entity get(Serializable id){
+    public {{.table.Title}}{{.global.entity_suffix}} get(Serializable id){
         TinySession s = this.ctx.hibernate();
-        {{.table.Title}}Entity e = s.get({{.table.Title}}Entity.class,id);
+        {{.table.Title}}{{.global.entity_suffix}} e = s.get({{.table.Title}}{{.global.entity_suffix}}.class,id);
         return e;
     }
     /** 根据条件获取单条{{.table.Comment}} */
-    public {{.table.Title}}Entity get{{.table.Title}}By(String where,Map<String,Object> params){
+    public {{.table.Title}}{{.global.entity_suffix}} get{{.table.Title}}By(String where,Map<String,Object> params){
         TinySession s = this.ctx.hibernate();
-        {{.table.Title}}Entity e = s.get({{.table.Title}}Entity.class,where, params);
+        {{.table.Title}}{{.global.entity_suffix}} e = s.get({{.table.Title}}{{.global.entity_suffix}}.class,where, params);
         s.close();
         return e;
     }
 
     /** 根据条件获取多条{{.table.Comment}} */
-    public List<{{.table.Title}}Entity> select{{.table.Title}}(String where,Map<String,Object> params){
+    public List<{{.table.Title}}{{.global.entity_suffix}}> select{{.table.Title}}(String where,Map<String,Object> params){
         TinySession s = this.ctx.hibernate();
-        List<{{.table.Title}}Entity> list = s.select({{.table.Title}}Entity.class,
+        List<{{.table.Title}}{{.global.entity_suffix}}> list = s.select({{.table.Title}}{{.global.entity_suffix}}.class,
         "SELECT * FROM {{.table.Name}} WHERE "+where, params);
         s.close();
         return list;
     }
 
     /** 保存{{.table.Comment}} */
-    public int save{{.table.Title}}({{.table.Title}}Entity v){
+    public int save{{.table.Title}}({{.table.Title}}{{.global.entity_suffix}} v){
         TinySession s = this.ctx.hibernate();
         s.save(v);
         s.close();

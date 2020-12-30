@@ -1,7 +1,7 @@
 #!target:spring/src/main/java/{{.global.pkg}}/service/{{.table.Title}}Service.java
 package {{pkg "java" .global.pkg}}.service
 
-import {{pkg "java" .global.pkg}}.entity.{{.table.Title}}Entity
+import {{pkg "java" .global.pkg}}.entity.{{.table.Title}}{{.global.entity_suffix}}
 import {{pkg "java" .global.pkg}}.repo.{{.table.Title}}JpaRepository
 import org.springframework.stereotype.Service
 import org.springframework.data.repository.findByIdOrNull
@@ -17,18 +17,18 @@ public class {{.table.Title}}Service {
 
 
     /** 查找{{.table.Comment}} */
-    public {{$tableTitle}}Entity findByIdOrNull({{$pkType}} id){
+    public {{$tableTitle}}{{.global.entity_suffix}} findByIdOrNull({{$pkType}} id){
         return this.repo.findByIdOrNull(id);
     }
 
     /** 保存{{.table.Comment}} */
-    public {{$tableTitle}}Entity save{{$tableTitle}}({{$tableTitle}}Entity {{.table.Name}}){
+    public {{$tableTitle}}{{.global.entity_suffix}} save{{$tableTitle}}({{$tableTitle}}{{.global.entity_suffix}} {{.table.Name}}){
         return this.repo.save({{.table.Name}})
     }
 
 
     /** 批量保存{{.table.Comment}} */
-    public Iterable<{{$tableTitle}}Entity> saveAll{{$tableTitle}}(Iterable<{{$tableTitle}}Entity> entities){
+    public Iterable<{{$tableTitle}}{{.global.entity_suffix}}> saveAll{{$tableTitle}}(Iterable<{{$tableTitle}}{{.global.entity_suffix}}> entities){
         return this.repo.saveAll(entities);
     }
 

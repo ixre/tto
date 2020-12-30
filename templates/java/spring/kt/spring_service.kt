@@ -1,7 +1,7 @@
 #!target:spring/src/main/kotlin/{{.global.pkg}}/service/{{.table.Title}}Service.kt
 package {{pkg "java" .global.pkg}}.service
 
-import {{pkg "java" .global.pkg}}.entity.{{.table.Title}}Entity
+import {{pkg "java" .global.pkg}}.entity.{{.table.Title}}{{.global.entity_suffix}}
 import {{pkg "java" .global.pkg}}.repo.{{.table.Title}}JpaRepository
 import org.springframework.stereotype.Service
 import org.springframework.data.repository.findByIdOrNull
@@ -18,14 +18,14 @@ class {{.table.Title}}Service {
     lateinit var repo: {{$tableTitle}}JpaRepository
 
     // 根据ID查找{{.table.Comment}}
-    fun findByIdOrNull(id:{{$pkType}}):{{$tableTitle}}Entity?{
+    fun findByIdOrNull(id:{{$pkType}}):{{$tableTitle}}{{.global.entity_suffix}}?{
         return this.repo.findByIdOrNull(id)
     }
 
     // 保存{{.table.Comment}}
-    fun save{{$tableTitle}}(e: {{$tableTitle}}Entity):Error? {
+    fun save{{$tableTitle}}(e: {{$tableTitle}}{{.global.entity_suffix}}):Error? {
         return catch {
-            val dst: {{$tableTitle}}Entity
+            val dst: {{$tableTitle}}{{.global.entity_suffix}}
             {{if equal_any .table.PkType 3 4 5}}\
             if (e.{{$pkProp}} > 0) {
             {{else}}
@@ -33,7 +33,7 @@ class {{.table.Title}}Service {
             {{end}}
                 dst = this.repo.findByIdOrNull(e.{{$pkProp}})!!
             } else {
-                dst = {{$tableTitle}}Entity()
+                dst = {{$tableTitle}}{{.global.entity_suffix}}()
             }
             {{range $i,$c := .columns}}
             dst.{{lower_title $c.Prop}} = e.{{lower_title $c.Prop}}{{end}}
@@ -43,7 +43,7 @@ class {{.table.Title}}Service {
     }
 
     // 批量保存{{.table.Comment}}
-    fun saveAll{{$tableTitle}}(entities:Iterable<{{$tableTitle}}Entity>): Iterable<{{$tableTitle}}Entity>{
+    fun saveAll{{$tableTitle}}(entities:Iterable<{{$tableTitle}}{{.global.entity_suffix}}>): Iterable<{{$tableTitle}}{{.global.entity_suffix}}>{
         return this.repo.saveAll(entities)
     }
 

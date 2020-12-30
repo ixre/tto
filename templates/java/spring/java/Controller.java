@@ -13,7 +13,7 @@ package com.tto.qkto.controllers;
 import org.springframework.stereotype.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import {{pkg "java" .global.pkg}}.service.{{.table.Title}}Service;
-import {{pkg "java" .global.pkg}}.entity.{{.table.Title}}Entity;
+import {{pkg "java" .global.pkg}}.entity.{{.table.Title}}{{.global.entity_suffix}};
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,7 +42,7 @@ public class {{.table.Title}}Controller {
     /** 修改{{.table.Comment}} */
     @GetMapping("/edit{{.table.Title}}")
     public String edit{{.table.Title}}({{$pkType}} {{.table.Pk}}, Model m){
-        {{.table.Title}}Entity entity = this.service.findByIdOrNull(id);
+        {{.table.Title}}{{.global.entity_suffix}} entity = this.service.findByIdOrNull(id);
         if(entity == null)return "admin/nodata";
         m.addAttribute("ID",id);
         m.addAttribute("Entity",entity);
@@ -54,7 +54,7 @@ public class {{.table.Title}}Controller {
     @PostMapping("/save{{.table.Title}}")
     @ResponseBody
     public Result save{{.table.Title}}(HttpServletRequest req) {
-        {{.table.Title}}Entity entity = HttpUtils.mapEntity(req, {{.table.Title}}Entity.class);
+        {{.table.Title}}{{.global.entity_suffix}} entity = HttpUtils.mapEntity(req, {{.table.Title}}{{.global.entity_suffix}}.class);
         Error err = Typed.std.tryCatch(() -> {
             {{range $i,$c := .columns}}entity.set{{$c.Prop}}(TypeConv.to{{title (type "java" $c.Type)}}(req.getParameter("{{$c.Name}}")));
             {{end}}
@@ -71,7 +71,7 @@ public class {{.table.Title}}Controller {
     @GetMapping("/{{lower_title .table.Title}}Details")
     public String orderDetails(HttpServletRequest req, HttpServletResponse rsp,Model m){
         {{$pkType}} {{$pkField}} = TypeConv.to{{title (type "java" .table.PkType)}}(req.getParameter("{{$pkField}}"));
-        {{.table.Title}}Entity entity = this.service.findByIdOrNull({{$pkField}});
+        {{.table.Title}}{{.global.entity_suffix}} entity = this.service.findByIdOrNull({{$pkField}});
         if(entity == null) {
             rsp.setStatus(404);
             return "";

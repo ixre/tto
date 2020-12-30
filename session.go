@@ -32,6 +32,8 @@ const (
 	BASE_PATH = "base_path"
 	// 包名
 	PKG = "pkg"
+	// 实体后缀,默认：Entity
+	ENTITY_SUFFIX = "entity_suffix"
 	// 当前时间
 	TIME = "time"
 	// 版本
@@ -125,6 +127,7 @@ func (s *sessionImpl) init() Session {
 	// predefine default vars
 	s.Var(BASE_URL, "")
 	s.Var(BASE_PATH, "")
+	s.Var(ENTITY_SUFFIX,"Entity")
 	// load global registry
 	rd := GetRegistry()
 	for _, k := range rd.Keys {

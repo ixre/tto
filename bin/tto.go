@@ -160,6 +160,10 @@ func generate() {
 	if re.GetBoolean("code.id_upper") {
 		dg.UseUpperId()
 	}
+	// 实体后缀
+	if suffix := re.GetString("code.entity_suffix");suffix != ""{
+		dg.Var(tto.ENTITY_SUFFIX,suffix)
+	}
 	// 获取表格并转换
 	userMeta := re.GetBoolean("code.meta_settings")
 	tables, err := dg.Parses(list, userMeta)

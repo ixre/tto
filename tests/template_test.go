@@ -14,7 +14,7 @@ func TestTemplate(t *testing.T) {
  * guide please see https://github.com/ixre/tto
  *
  */
-!filename:{{.table.Title}}Entity.java
+!filename:{{.table.Title}}{{.global.entity_suffix}}.java
 package {{.global.pkg}}.pojo;
 
  {{range $i,$c := $validateColumns}}\

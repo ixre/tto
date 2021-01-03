@@ -262,6 +262,7 @@ base_path="/api"
 - PkType: 主键类型编号
 - Title: 表名单词首字大写,通常用来表示类型,
   如:user_info对应的Title为UserInfo
+- ShortTitle: 同title, 但不包含前缀
 - Comment: 表注释
 - Engine: 数据库引擎
 - Schema: 架构

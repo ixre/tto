@@ -25,6 +25,8 @@ type Table struct {
 	Prefix string
 	// 表名单词首字大写
 	Title string
+	// 简短的标题,通常去掉前缀
+	ShortTitle string
 	// 表注释
 	Comment string
 	// 数据库引擎

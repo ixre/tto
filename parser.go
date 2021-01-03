@@ -19,6 +19,7 @@ func parseTable(ordinal int, tb *orm.Table, shortUpper bool, userMeta bool) *Tab
 		Name:    tb.Name,
 		Prefix:  prefix(tb.Name),
 		Title:   title(tb.Name, shortUpper),
+		ShortTitle: shortTitle(tb.Name),
 		Comment: tb.Comment,
 		Engine:  tb.Engine,
 		Schema:  tb.Schema,

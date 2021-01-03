@@ -494,6 +494,7 @@ func (s *sessionImpl) copyTable(table *Table, lowerProp bool) *Table {
 		Name:    table.Name,
 		Prefix:  table.Prefix,
 		Title:   table.Title,
+		ShortTitle: shortTitle(table.Name),
 		Comment: table.Comment,
 		Engine:  table.Engine,
 		Schema:  table.Schema,

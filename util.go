@@ -42,6 +42,20 @@ func title(str string, shortUpper bool) string {
 	return strings.Join(arr, "")
 }
 
+// 不包含前缀的较短的Title
+func shortTitle(str string) string {
+	arr := strings.Split(str, "_")
+	if len(arr) == 1 {
+		return strings.Title(str)
+	}
+	n := make([]string, len(arr)-1)
+	for i, v := range arr[1:] {
+		n[i] = strings.Title(v)
+	}
+	return strings.Join(n, "")
+}
+
+
 // 将首字母小写
 func  lowerTitle(s string) string {
 	if rune0 := rune(s[0]); unicode.IsUpper(rune0) {

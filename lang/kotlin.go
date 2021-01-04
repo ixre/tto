@@ -35,7 +35,7 @@ func (k KotlinLang) ParseType(typeId int) string {
 }
 
 func (k KotlinLang) DefaultValue(typeId int) string {
-	return JavaValues(typeId)
+	return KotlinValues(typeId)
 }
 
 var _ Lang = new(KotlinLang)
@@ -60,6 +60,26 @@ func KotlinTypes(typeId int) string {
 		return "Date"
 	case orm.TypeBytes:
 		return "ByteArray"
+	}
+	return fmt.Sprintf("Unknown type id:%d", typeId)
+}
+
+func KotlinValues(typeId int) string {
+	switch typeId {
+	case orm.TypeBoolean:
+		return "false"
+	case orm.TypeInt64:
+		return "0L"
+	case orm.TypeFloat32, orm.TypeFloat64:
+		return "0F"
+	case orm.TypeInt16, orm.TypeInt32:
+		return "0"
+	case orm.TypeDecimal:
+		return "BigDecimal(0.0)"
+	case orm.TypeString:
+		return "\"\""
+	case orm.TypeDateTime:
+		return "Date()"
 	}
 	return fmt.Sprintf("Unknown type id:%d", typeId)
 }

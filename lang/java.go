@@ -81,9 +81,11 @@ func JavaValues(typeId int) string {
 	case orm.TypeInt16, orm.TypeInt32:
 		return "0"
 	case orm.TypeDecimal:
-		return "0.0"
+		return "new BigDecimal(0.0)"
 	case orm.TypeString:
 		return "\"\""
+	case orm.TypeDateTime:
+		return "new Date()"
 	}
 	return fmt.Sprintf("Unknown type id:%d", typeId)
 }

@@ -1,5 +1,5 @@
 #!target:spring/src/main/kotlin/{{.global.pkg}}/repo/{{.table.Title}}JpaRepository.kt
-package {{pkg "java" .global.pkg}}.repo;
+package {{pkg "java" .global.pkg}}.repo
 
 import {{pkg "kotlin" .global.pkg}}.entity.{{.table.Title}}{{.global.entity_suffix}}
 import org.springframework.data.jpa.repository.JpaRepository

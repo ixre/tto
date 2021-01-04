@@ -8,22 +8,22 @@ import org.springframework.data.repository.findByIdOrNull
 import net.fze.common.catch
 import javax.annotation.Resource
 {{$tableTitle := .table.Title}}
+{{$shortTitle := .table.ShortTitle}}
 {{$pkProp :=  .table.PkProp}}
 {{$pkType := type "kotlin" .table.PkType}}
 /** {{.table.Comment}}服务  */
 @Service
 class {{.table.Title}}Service {
-
     @Resource
     lateinit var repo: {{$tableTitle}}JpaRepository
 
     // 根据ID查找{{.table.Comment}}
-    fun findByIdOrNull(id:{{$pkType}}):{{$tableTitle}}{{.global.entity_suffix}}?{
+    fun find{{$shortTitle}}ById(id:{{$pkType}}):{{$tableTitle}}{{.global.entity_suffix}}?{
         return this.repo.findByIdOrNull(id)
     }
 
     // 保存{{.table.Comment}}
-    fun save{{$tableTitle}}(e: {{$tableTitle}}{{.global.entity_suffix}}):Error? {
+    fun save{{$shortTitle}}(e: {{$tableTitle}}{{.global.entity_suffix}}):Error? {
         return catch {
             val dst: {{$tableTitle}}{{.global.entity_suffix}}
             {{if equal_any .table.PkType 3 4 5}}\
@@ -33,7 +33,7 @@ class {{.table.Title}}Service {
             {{end}}
                 dst = this.repo.findByIdOrNull(e.{{$pkProp}})!!
             } else {
-                dst = {{$tableTitle}}{{.global.entity_suffix}}()
+                dst = {{$tableTitle}}{{.global.entity_suffix}}.createDefault()
             }
             {{range $i,$c := .columns}}
             dst.{{lower_title $c.Prop}} = e.{{lower_title $c.Prop}}{{end}}
@@ -43,12 +43,12 @@ class {{.table.Title}}Service {
     }
 
     // 批量保存{{.table.Comment}}
-    fun saveAll{{$tableTitle}}(entities:Iterable<{{$tableTitle}}{{.global.entity_suffix}}>): Iterable<{{$tableTitle}}{{.global.entity_suffix}}>{
+    fun saveAll{{$shortTitle}}(entities:Iterable<{{$tableTitle}}{{.global.entity_suffix}}>): Iterable<{{$tableTitle}}{{.global.entity_suffix}}>{
         return this.repo.saveAll(entities)
     }
 
     // 删除{{.table.Comment}}
-    fun deleteById(id:{{$pkType}}) {
+    fun delete{{$shortTitle}}ById(id:{{$pkType}}) {
          this.repo.deleteById(id)
     }
 

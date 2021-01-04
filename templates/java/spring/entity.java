@@ -63,4 +63,11 @@ public class {{.table.Title}}{{.global.entity_suffix}} {
         {{else}}dst.set{{$c.Prop}}(TypeConv.toString(data.get("{{$c.Name}}")));{{end}}{{end}}
         return dst;
     }
+
+    public static {{.table.Title}}{{.global.entity_suffix}} createDefault(){
+        {{.table.Title}}{{.global.entity_suffix}} dst = new {{.table.Title}}{{.global.entity_suffix}}();\
+        {{range $i,$c := .columns}}
+        dst.set{{$c.Prop}}({{default "java" $c.Type}});{{end}}
+        return dst;
+    }
 }

@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package com.tto.qkto.controllers;
+package {{pkg "java" .global.pkg}}.controllers;
 #!target:spring/src/main/java/{{.global.pkg}}/controllers/{{.table.Title}}Controller.java
 {{$pkField := lower_title .table.Pk}}
 {{$pkType := type "java" .table.PkType}}
@@ -42,7 +42,7 @@ public class {{.table.Title}}Controller {
     /** 修改{{.table.Comment}} */
     @GetMapping("/edit{{.table.Title}}")
     public String edit{{.table.Title}}({{$pkType}} {{.table.Pk}}, Model m){
-        {{.table.Title}}{{.global.entity_suffix}} entity = this.service.findByIdOrNull(id);
+        {{.table.Title}}{{.global.entity_suffix}} entity = this.service.findByIdOrNull({{.table.Pk}});
         if(entity == null)return "admin/nodata";
         m.addAttribute("ID",id);
         m.addAttribute("Entity",entity);

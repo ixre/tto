@@ -48,8 +48,10 @@ class {{.table.Title}}Service {
     }
 
     // 删除{{.table.Comment}}
-    fun delete{{$shortTitle}}ById(id:{{$pkType}}) {
-         this.repo.deleteById(id)
+    fun delete{{$shortTitle}}ById(id:{{$pkType}}):Error? {
+        return catch {
+            this.repo.deleteById(id)
+            null
+        }.error()
     }
-
 }

@@ -71,7 +71,7 @@ class {{.table.Title}}Resource {
     /** {{.table.Comment}}分页数据 */
     @GetMapping("/paging")
     @Resource("{{$resPrefix}}:paging",name="查询{{.table.Comment}}分页数据")
-    fun paging(@RequestParam("params") params:String,
+    fun paging(@RequestParam("params",required = false) params:String="{}"
                @RequestParam("page") page:String,
                @RequestParam("rows") rows:String
     ): DataResult {

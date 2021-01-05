@@ -149,7 +149,7 @@ export default class extends Vue {
     private handleSelectionChange(rows:ListModel[]) {
         this.selectedRows = rows;
         this.selectedIds = [];
-        rows.map(it=> this.selectedIds.push(it.{{.table.Pk}}));
+        rows.map(row=> this.selectedIds.push(row.{{.table.Pk}}));
     }
 
     // 返回

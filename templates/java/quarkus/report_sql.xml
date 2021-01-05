@@ -7,7 +7,8 @@
     <Query>
         <![CDATA[
         SELECT * FROM {{.table.Name}}
-        ORDER BY {{.table.Pk }} DESC LIMIT {page_offset},{page_size}
+        ORDER BY {{.table.Pk }} DESC
+        LIMIT {{if eq .global.db "pgsql"}}{page_size} OFFSET {page_offset}{{else}}{page_offset},{page_size}{{end}}
      ]]>
     </Query>
     <Import><![CDATA[]]></Import>

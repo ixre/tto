@@ -9,7 +9,7 @@
         {{range $i,$c := exclude .columns "create_time" "update_time"}}\
         {{if not $c.IsPk}}{{$name:= $c.Prop}}{{$ele:= $c.Render.Element}}\
           <el-col :md="12" :xs="24">
-            <el-form-item class="mod-form-item" label-width="78px" label="{{$c.Comment}}"　prop="{{$name}}" required>
+            <el-form-item class="mod-form-item" label-width="78px" label="{{$c.Comment}}"　prop="{{$name}}">
             {{if eq $ele "radio"}}\
                 <el-radio-group v-model="formData.{{$name}}">
                   <el-radio :label="1">是</el-radio>
@@ -24,9 +24,9 @@
                    <el-option v-for="(value,attr) in {"选项1":1,"选项2":2}" :label="attr" :value="value"/>
                 </el-select>
             {{else if equal_any $c.Type 3 4 5}}\
-                <el-input v-model.number="formData.{{$name}}" class="mod-form-input" autosize　placeholder="请输入数值"/>
+                <el-input v-model.number="formData.{{$name}}" class="mod-form-input" autosize　placeholder="请输入{{$c.Comment}}"/>
             {{else}}\
-                <el-input v-model="formData.{{$name}}" class="mod-form-input" autosize　placeholder="请输入内容"/>
+                <el-input v-model="formData.{{$name}}" class="mod-form-input" autosize　placeholder="请输入{{$c.Comment}}"/>
             {{end}}
             </el-form-item>
           </el-col>
@@ -64,6 +64,7 @@ export default class extends Vue {
   private requesting = 0;
 
   // 设置验证表单字段的规则,取消验证请注释对应的规则
+  /** #! 验证规则会反应到组件,比如required,所以不用在组件上再加required */
   private rules = {
     // 自定义验证规则：
     // phone: [{label:"phone", validator: this.validate }]

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ixre/gof/types/typeconv"
 	lang2 "github.com/ixre/tto/lang"
+	"os"
 	"reflect"
 	"strings"
 	ht "text/template"
@@ -15,6 +16,7 @@ type internalFunc struct {
 // 返回模板函数
 func (t *internalFunc) funcMap() ht.FuncMap {
 	fm := make(map[string]interface{})
+	fm["env"] = t.getEnv
 	fm["boolInt"] = t.boolInt
 	fm["isEmpty"] = t.isEmpty
 	fm["add"] = t.plus
@@ -303,6 +305,11 @@ func (t *internalFunc) tryGet(columns []*Column, name string) *Column {
 		}
 	}
 	return nil
+}
+
+// 获取用户环境变量
+func (t *internalFunc) getEnv(key string)string{
+	return os.Getenv(key)
 }
 
 // 判断是否为true

@@ -93,7 +93,10 @@ Usage of tto:
 ```
 
 ## 函数
-
+获取用户环境变量
+```
+{{env "PROJECT_MEMBERS"}}
+```
 大/小写函数: lower和upper
 ```
 {{lower .table.Name}}

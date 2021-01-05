@@ -230,7 +230,9 @@ func (s *sessionImpl) GenerateCodeByTables(tables []*Table, tpl *CodeTemplate) s
 	for i, v := range tables {
 		tbs[i] = s.adapterTable(v, tpl.path)
 	}
+	groups := s.reduceGroup(tbs)
 	mp := map[string]interface{}{
+		"groups":groups,
 		"tables": tbs,
 		"global": s.codeVars,
 	}
@@ -270,6 +272,9 @@ func (s *sessionImpl) predefineTargetPath(tpl *CodeTemplate, table *Table) (stri
 
 // 连接文件路径
 func (s *sessionImpl) defaultTargetPath(tplFilePath string, table *Table) string {
+	if table == nil{
+		return tplFilePath
+	}
 	i := strings.Index(tplFilePath, ".")
 	if i != -1 {
 		return strings.Join([]string{tplFilePath[:i], "_",
@@ -359,16 +364,7 @@ func (s *sessionImpl) generateAllTablesCode(ch chan int, tables []*Table, tplMap
 
 // 按表前缀分组生成代码
 func (s *sessionImpl) generateGroupTablesCode(ch chan int, tables []*Table, tplMap map[string]*CodeTemplate, opt *Options, rc *RunnerCalc) {
-	//　分组,无前缀的所有表归类到一组
-	groups := make(map[string][]*Table, 0)
-	for _, t := range tables {
-		prefix := t.Prefix
-		if arr, ok := groups[prefix]; ok {
-			groups[prefix] = append(arr, t)
-		} else {
-			groups[prefix] = []*Table{t}
-		}
-	}
+	groups := s.reduceGroup(tables)
 	wg := sync.WaitGroup{}
 	for path, tpl := range tplMap {
 		// 文件类型不匹配则跳过
@@ -393,6 +389,20 @@ func (s *sessionImpl) generateGroupTablesCode(ch chan int, tables []*Table, tplM
 	}
 	wg.Wait()
 	ch <- 1
+}
+
+//　分组,无前缀的所有表归类到一组
+func (s *sessionImpl) reduceGroup(tables []*Table) map[string][]*Table {
+	groups := make(map[string][]*Table, 0)
+	for _, t := range tables {
+		prefix := t.Prefix
+		if arr, ok := groups[prefix]; ok {
+			groups[prefix] = append(arr, t)
+		} else {
+			groups[prefix] = []*Table{t}
+		}
+	}
+	return groups
 }
 
 func (s *sessionImpl) flushToFile(tpl *CodeTemplate, tb *Table, path string, output string, opt *Options) {

@@ -96,7 +96,7 @@ interface ListModel {  {{range $i,$c := .columns}}
 }
 
 @Component({
-    name: '{{$Class}}List',
+    name: '{{$Class}}Index',
     components: {
         Pagination,
         {{$Class}}Form

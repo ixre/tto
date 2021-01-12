@@ -19,7 +19,7 @@ export const {{$first.Prefix}}Routes : RouteConfig = {
     {{$path := substr_n $table.Name "_" 1}}
         {
             path: '{{$path}}/index',
-            name:'{{$path}}/index',
+            name:'{{$table.Title}}Index',
             component: () => import(/* webpackChunkName: "{{$table.Name}}-index" */ './{{$path}}/index.vue'),
             meta: {
                 //roles: ["admin"],

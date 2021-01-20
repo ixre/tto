@@ -49,10 +49,14 @@ func (d dart) DefaultValue(typeId int) string {
 		return "\"\""
 	case orm.TypeBoolean:
 		return "false"
-	case orm.TypeInt16,orm.TypeInt32,orm.TypeInt64:
+	case orm.TypeInt16,orm.TypeInt32:
 		return "0"
+	case orm.TypeInt64:
+		return "BigInt.from(0)"
 	case orm.TypeFloat32,orm.TypeFloat64, orm.TypeDecimal:
 		return "0.0"
+	case orm.TypeDateTime:
+		return "DateTime.now()"
 	}
 	return "{}"
 }

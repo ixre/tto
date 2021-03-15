@@ -148,7 +148,7 @@ func defaultMetaInfo(t *Table) *config.TableConfig {
 
 // 返回自动生成的字段
 func smartField(c *Column) *config.ColumnMeta {
-	ele, options := smartElement(c.Name, c.Length)
+	ele, options := smartElement(c)
 	fd := &config.ColumnMeta{
 		Render: &config.PropRenderOptions{
 			Visible: true,
@@ -159,11 +159,13 @@ func smartField(c *Column) *config.ColumnMeta {
 	return fd
 }
 
-func smartElement(name string, len int) (string, map[string]string) {
-	if strings.HasPrefix(name, "is_") {
+func smartElement(c *Column) (string, map[string]string) {
+	name := c.Name
+	len := c.Length
+	if strings.HasPrefix(name, "is_"){
 		return "checkbox", map[string]string{"是": "1", "否": "0"}
 	}
-	if strings.HasSuffix(name, "_time") {
+	if strings.HasSuffix(name, "_time"){
 		return "time", map[string]string{}
 	}
 	if strings.HasSuffix(name, "state") ||

@@ -11,19 +11,29 @@
             <el-button class="filter-item" @click="handleBack">返回</el-button>
         </div>
         <div class="it mod-grid-bar-filter">
-            <el-form :inline="true">
-                <el-form-item label="状态">
-                    <el-select v-model="queryParams.state" clearable style="width: 200px" class="filter-item" @change="fetchData" >
-                        <el-option v-for="(value,attr) in states" :key="value" :label="attr" :value="value" />
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="关键词">
-                    <el-input v-model="queryParams.keyword" clearable class="filter-item" style="width: 200px;" placeholder="输入关键词" />
-                </el-form-item>
-                <el-form-item>
-                    <el-button v-permission="['admin']" class="filter-item" type="primary" @click="handleFilter">查找</el-button>
-                </el-form-item>
-            </el-form>
+          <el-form :inline="true">
+            <el-form-item label="会员等级:" class="filter-item">
+              <member-level-select class="filter-select" all-label="=不限=" v-model:number="queryParams.level_value"/>
+            </el-form-item>
+            <el-form-item label="状态:" class="filter-item">
+              <el-select v-model="queryParams.state" class="filter-select"
+                         @change="fetchData">
+                <el-option v-for="(it,i) in stateOptions" :key="i" :label="it.key" :value="it.value"/>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="关键词:" class="filter-item">
+              <el-input v-model="queryParams.keyword" clearable
+                        placeholder="姓名/用户名/手机"/>
+            </el-form-item>
+            <el-form-item label="排序方式:" class="filter-item">
+              <el-select v-model="queryParams.order_by" class="filter-select">
+                <el-option v-for="(it,i) in sortOptions" :key="i" :value="it.value" :label="it.key"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item class="filter-item">
+              <el-button v-permission="['admin']" class="filter-item" type="primary" @click="handleFilter">查找</el-button>
+            </el-form-item>
+          </el-form>
         </div>
         <div class="it mod-grid-bar-create">
             <el-button v-permission="['admin']" class="filter-item" @click="handleCreate">新增</el-button>
@@ -53,7 +63,8 @@
         {{else if starts_with $c.Name "is_"}} \
         <el-table-column width="140" align="left" label="{{$c.Comment}}">
              <template slot-scope="scope">
-                <span v-for="(it,i) in ['否','是']" v-if="i===scope.row.{{$c.Name}}-1">{{`{{it}}`}}</span>
+                <span v-if="scope.row.{{$c.Name}}===1" class="green">是</span>
+                <span v-else class="red">否</span>
              </template>
         </el-table-column>
         {{else if $c.IsPk }} \
@@ -110,16 +121,28 @@ export default class extends Vue {
     private selectedIds :{{type "ts" $PkType}}[]= [];
     private selectedRows:ListModel[] = [];
     private list:{loading:boolean,total:number,page:number,rows:number,data: ListModel[]} = {loading:false,total:0, page: 1, rows: 10,data:[]};
+
+    /** 定义排序条件 */
+    private sortOptions = [
+      {key: "默认排序", value: "{{.table.Pk}} DESC"},
+      {key: "按创建时间先后顺序", value: "{{.table.Pk}} ASC"},
+    ];
+
+    /** 定义状态条件(自定义条件) */
+    private stateOptions = [
+      {key: "全部", value: -1},
+      {key: "正常", value: 1},
+      {key: "停用", value: 0}
+    ];
+
     /** 定义查询参数 */
     private queryParams = {
-        keyword:"",
-        state:-1,
-        where:"0=0",
-        order_by:"{{.table.Pk}} DESC"
+      keyword: "",
+      where: "0=0",
+      state: this.stateOptions[0].value,
+      order_by: this.sortOptions[0].value,
     };
-    /** 根据实际情况调整 */
-    private states = {"全部":-1,"正常":1,"停用":0};
-
+    
     created() {
         this.fetchData();
     }
@@ -142,7 +165,7 @@ export default class extends Vue {
     }
 
     private handleFilter() {
-        this.list.page = 1
+        this.list.page = 1;
         this.fetchData();
     }
 
@@ -165,7 +188,7 @@ export default class extends Vue {
 
     // 编辑数据
     private handleEdit(row:ListModel){
-        //this.$router.push({path:"../{{name_path .table.Name}}/create"});
+        //this.$router.push({path:"edit",query:{"id":row.{{.table.Pk}}.toString()});
         this.modalForm(row,"编辑{{.table.Comment}}");
     }
 
@@ -201,14 +224,14 @@ export default class extends Vue {
             const {errCode,errMsg} = parseResult(ret.data);
             if(errCode === 0){
                 this.$notify.success({
-                    title: '操作成功',
+                    title: '提示',
                     message: '操作成功',
                     duration:2000
                 });
                 await this.fetchData();
             }else{
                 this.$notify.error({
-                    title: '操作失败',
+                    title: '失败',
                     message: errMsg,
                     duration:2000
                 });
@@ -229,14 +252,14 @@ export default class extends Vue {
             const {errCode,errMsg} = parseResult(ret.data);
             if(errCode === 0){
                 this.$notify.success({
-                    title: '操作成功',
+                    title: '提示',
                     message: '操作成功',
                     duration:2000
                 });
                 await this.fetchData();
             }else{
                 this.$notify.error({
-                    title: '删除失败',
+                    title: '失败',
                     message: errMsg,
                     duration:2000
                 });

@@ -21,41 +21,41 @@ export const default{{.table.Title}}:()=>I{{.table.Title}}=()=>{
 
 export const get{{.table.Title}} = (id: any, params: any = {}) => request({
     url: `{{$path}}/${id}`,
-    method: 'get',
+    method: 'GET',
     params:{...params}
 });
 
 export const query{{.table.Title}}List = (params: any = {}) => request({
     url: '{{$path}}',
-    method: 'get',
+    method: 'GET',
     params:{...params}
 });
 
 export const create{{.table.Title}} = (data: any) => request({
     url: '{{$path}}',
-    method: 'post',
+    method: 'POST',
     data
 });
 
 export const update{{.table.Title}} = (id: any, data: any) => request({
     url: `{{$path}}/${id}`,
-    method: 'put',
+    method: 'PUT',
     data
 });
 
 export const delete{{.table.Title}} = (id: any) => request({
     url: `{{$path}}/${id}`,
-    method: 'delete'
+    method: 'DELETE'
 });
 
 export const batchDelete{{.table.Title}} = (arr: any[]) => request({
     url: '{{$path}}',
-    method: 'delete',
+    method: 'DELETE',
     data:arr
 });
 
 export const getPaging{{.table.Title}} = (page:number,rows:number,params: any) => request({
     url: '{{$path}}/paging',
-    method: 'get',
+    method: 'GET',
     params:{page,rows,params}
 });

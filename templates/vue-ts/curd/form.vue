@@ -88,7 +88,7 @@ export default class extends Vue {
   }
 
   created() {
-    if(!this.id && this.$route.params)this.id = this.$route.params.id;
+    if(!this.id && this.$route.params)this.id = this.$route.query.id as string;
     if (this.id)this.fetchData(this.id);
   }
 

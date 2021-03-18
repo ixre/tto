@@ -12,9 +12,6 @@
         </div>
         <div class="it mod-grid-bar-filter">
           <el-form :inline="true">
-            <el-form-item label="会员等级:" class="filter-item">
-              <member-level-select class="filter-select" all-label="=不限=" v-model:number="queryParams.level_value"/>
-            </el-form-item>
             <el-form-item label="状态:" class="filter-item">
               <el-select v-model="queryParams.state" class="filter-select"
                          @change="fetchData">
@@ -22,8 +19,8 @@
               </el-select>
             </el-form-item>
             <el-form-item label="关键词:" class="filter-item">
-              <el-input v-model="queryParams.keyword" clearable
-                        placeholder="姓名/用户名/手机"/>
+              <el-input v-model="queryParams.keyword" clearable class="filter-input"
+                        placeholder="请输入关键词"/>
             </el-form-item>
             <el-form-item label="排序方式:" class="filter-item">
               <el-select v-model="queryParams.order_by" class="filter-select">
@@ -31,12 +28,12 @@
               </el-select>
             </el-form-item>
             <el-form-item class="filter-item">
-              <el-button v-permission="['admin']" class="filter-item" type="primary" @click="handleFilter">查找</el-button>
+              <el-button v-permission="['admin']" class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
             </el-form-item>
           </el-form>
         </div>
         <div class="it mod-grid-bar-create">
-            <el-button v-permission="['admin']" class="filter-item" @click="handleCreate">新增</el-button>
+            <el-button v-permission="['admin']" class="filter-item" icon="el-icon-plus" @click="handleCreate">新增</el-button>
         </div>
         <div class="it mod-grid-bar-del">
             <el-button v-show="selectedRows.length > 0" v-permission="['admin']" class="filter-item" type="danger" @click="batchDelete">删除</el-button>
@@ -87,8 +84,8 @@
                 :limit.sync="list.rows" @pagination="fetchData"/>
 
     <!-- 弹出操作框 -->
-    <el-dialog class="mod-dialog" :title="dialog.title" :visible.sync="dialog.open" width="35%" @close="closeModal">
-        <component v-bind:is="modal" :id="dialog.id" @callback="refresh"></component>
+    <el-dialog width="35%" class="mod-dialog" :title="dialog.title" :visible.sync="dialog.open" @close="()=>dialog.modal=null">
+        <component v-bind:is="dialog.modal" v-model="dialog.params" @callback="refresh"></component>
     </el-dialog>
 
 </div>
@@ -100,7 +97,7 @@ import {getPaging{{$Class}},delete{{$Class}},batchDelete{{$Class}} } from './api
 import {{$Class}}Form from './form.vue';
 import {parseResult} from "@/fx";
 
-// {{.table.Comment}}数据库映射类
+// {{.table.Comment}}数据映射类
 interface ListModel {  {{range $i,$c := .columns}}
     {{$c.Name}}:{{type "ts" $c.Type}} // {{$c.Comment}} \
     {{end}}
@@ -114,8 +111,7 @@ interface ListModel {  {{range $i,$c := .columns}}
     }
 })
 export default class extends Vue {
-    private dialog:{title:string,open:boolean,id:number|string}= {title:"Form",open:false,id:0};
-    private modal :any = null;
+    private dialog:{title:string,open:boolean,params:any,modal:any}= {title:"Form",open:false,params:0,modal: null};
     private requesting = 0;
     private tableHeight = 0;
     private selectedIds :{{type "ts" $PkType}}[]= [];
@@ -188,29 +184,40 @@ export default class extends Vue {
 
     // 编辑数据
     private handleEdit(row:ListModel){
-        //this.$router.push({path:"edit",query:{"id":row.{{.table.Pk}}.toString()});
+        /** // 在新的tab页上打开临时页面
+        const id = row.{{.table.Pk}}.toString();
+        const path = addTempRoute(this.$router,
+          `{{name_path .table.Name}}/details$${id}`,
+          "{{.table.Comment}}详情:"+row.name,
+          {{$Class}}Form);
+        this.$router.push({path,query:{id}});
+        */
         this.modalForm(row,"编辑{{.table.Comment}}");
     }
 
     // 打开模态表单
     private modalForm(row:ListModel|null,title:string){
-      this.dialog.open = true;
-      this.dialog.id = row?row.{{.table.Pk}}:0;
-      this.modal = {{$Class}}Form;
-      this.dialog.title = title;
-    }
-
-    // 关闭模态框时重置模态组件的内容
-    private closeModal(){
-        //this.dialog.id = 0;
-        this.modal = null;
+      /** 关闭模态框时需要重置模态组件的内容 */
+      this.dialog = {
+        open:true,
+        title:title,
+        params:row?row.{{.table.Pk}}:0,
+        modal:{{$Class}}Form
+      };
     }
 
     // 参数state为true时,重置模态框并刷新数据,args接受传入的参数
     private refresh(s:{state:number,args:any}){
-        //this.modal = null;
         this.dialog.open = false;
         if(s.state)this.fetchData(s.args);
+    }
+
+    private notifyResult({errCode, errMsg}) {
+      if (errCode === 0) {
+        this.$notify.success({title: '提示', message:errMsg || '操作失败', duration: 2000});
+      } else {
+        this.$notify.error({title: '失败', message: errMsg || "操作失败", duration: 2000});
+      }
     }
 
     private handleDelete(row:any){
@@ -221,20 +228,10 @@ export default class extends Vue {
         }).then(async () => {
             if(this.requesting === 1)return;this.requesting = 1;
             let ret = await delete{{$Class}}(row.{{.table.Pk}}).finally(()=>this.requesting = 0);
-            const {errCode,errMsg} = parseResult(ret.data);
-            if(errCode === 0){
-                this.$notify.success({
-                    title: '提示',
-                    message: '操作成功',
-                    duration:2000
-                });
-                await this.fetchData();
-            }else{
-                this.$notify.error({
-                    title: '失败',
-                    message: errMsg,
-                    duration:2000
-                });
+            let result = parseResult(ret.data);
+            this.notifyResult(result);
+            if (result.errCode === 0) {
+              await this.fetchData();
             }
         }).catch(() => {
             return false
@@ -249,20 +246,10 @@ export default class extends Vue {
         }).then(async () => {
             if(this.requesting === 1)return;this.requesting = 1;
             let ret = await batchDelete{{$Class}}(this.selectedIds).finally(()=>this.requesting = 0);
-            const {errCode,errMsg} = parseResult(ret.data);
-            if(errCode === 0){
-                this.$notify.success({
-                    title: '提示',
-                    message: '操作成功',
-                    duration:2000
-                });
-                await this.fetchData();
-            }else{
-                this.$notify.error({
-                    title: '失败',
-                    message: errMsg,
-                    duration:2000
-                });
+            let result = parseResult(ret.data);
+            this.notifyResult(result);
+            if (result.errCode === 0) {
+              await this.fetchData();
             }
         }).catch(() => {
             return false

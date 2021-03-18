@@ -1,4 +1,4 @@
-#!target:query/{{.table.Prefix}}/{{.table.Title}}List.xml
+#!target:xml/mysql/{{.table.Prefix}}/{{substr_n .table.Name "_" 1}}_list.xml
 <?xml version="1.0" encoding="utf-8" ?>
 <ExportItemConfig>
     <ColumnMapping>
@@ -6,14 +6,15 @@
     </ColumnMapping>
     <Query>
         <![CDATA[
-        SELECT * FROM "{{.table.Name}}"
-        ORDER BY {{.table.Pk }} DESC LIMIT {page_size} OFFSET {page_offset}
+        SELECT * FROM {{.table.Name}}
+        WHERE {where}
+        ORDER BY {order_by} LIMIT {page_offset},{page_size}
      ]]>
     </Query>
     <Import><![CDATA[]]></Import>
     <Total>
         <![CDATA[
-            SELECT COUNT(0) FROM "{{.table.Name}}"
+            SELECT COUNT(0) FROM {{.table.Name}} WHERE {where}
         ]]>
     </Total>
 </ExportItemConfig>

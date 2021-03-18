@@ -58,7 +58,7 @@ import {parseResult} from "@/fx";
   }
 })
 export default class extends Vue {
-  @Prop({ default: 0 }) private id!: number|string; /* 如果id有值,则为更新.　反之为新增.　如：:disabled="id" */
+  @Prop({ default: 0 }) private value!: number|string; /* 如果id有值,则为更新.　反之为新增.　如：:disabled="id" */
 
   private formData :I{{$Class}} = default{{$Class}}();
   private requesting = 0;
@@ -88,8 +88,10 @@ export default class extends Vue {
   }
 
   created() {
-    if(!this.id && this.$route.params)this.id = this.$route.query.id as string;
-    if (this.id)this.fetchData(this.id);
+    if(!this.value && this.$route.params){
+      this.value = this.$route.query.id as string;
+    }
+    if (this.value)this.fetchData(this.value);
   }
 
   private async fetchData(id: any) {
@@ -109,18 +111,18 @@ export default class extends Vue {
     (this.$refs.formData as Form).validate(async valid => {
       if (valid) {
         if(this.requesting === 1)return;this.requesting = 1;
-        let ret = await (this.id?update{{$Class}}(this.id,this.formData):create{{$Class}}(this.formData)).finally(()=>this.requesting = 0);
+        let ret = await (this.value?update{{$Class}}(this.value,this.formData):create{{$Class}}(this.formData)).finally(()=>this.requesting = 0);
         const {errCode,errMsg} = parseResult(ret.data);
         if(errCode === 0){
           this.$notify.success({
-            title: '操作成功',
+            title: '提示',
             message: '操作成功',
             duration:2000
           });
           this.callback({state:1})
         }else{
           this.$notify.error({
-            title: '操作失败',
+            title: '提示',
             message: errMsg,
             duration:2000
           });

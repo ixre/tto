@@ -75,11 +75,11 @@ export default class extends Vue {
     {{range $i,$c := $validateColumns}}{{if ne $c.IsPk true}}
     {{if equal_any $c.Type 3 4 5}}\
     {{$c.Prop}}: [{required: true, message:"{{$c.Comment}}不能为空"}, \
-        {type:"number", message:"{{$c.Comment}}必须为数字值"}] \
+        {type:"number", message:"{{$c.Comment}}必须为数字值"}], \
     {{else if $c.NotNull}}\
-    {{$c.Prop}}: [{required: true, message:"{{$c.Comment}}不能为空"}] \
+    {{$c.Prop}}: [{required: true, message:"{{$c.Comment}}不能为空"}], \
     {{end}}\
-    {{if not (is_last $i $validateColumns)}},{{end}}{{end}}{{end}}
+    {{end}}{{end}}
   };
 
 
@@ -117,15 +117,11 @@ export default class extends Vue {
           this.$notify.success({
             title: '提示',
             message: '操作成功',
-            duration:2000
+            duration:2000,
           });
           this.callback({state:1})
         }else{
-          this.$notify.error({
-            title: '提示',
-            message: errMsg,
-            duration:2000
-          });
+          await this.$alert(errMsg,"提示");
         }
       } else {
         return false

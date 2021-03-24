@@ -73,8 +73,8 @@
 
         <el-table-column align="center" width="160" label="操作">
             <template slot-scope="scope">
-                <el-button type="text" size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-                <el-button type="text" size="mini" v-loading="requesting" @click="handleDelete(scope.row)">删除</el-button>
+              <el-button type="text" icon="el-icon-edit-outline" title="编辑" @click="handleEdit(scope.row)">编辑</el-button>
+              <el-button type="text" icon="el-icon-delete" title="删除" v-loading="requesting" @click="handleDelete(scope.row)">删除</el-button>
             </template>
         </el-table-column>
     </el-table>
@@ -212,11 +212,11 @@ export default class extends Vue {
         if(s.state)this.fetchData(s.args);
     }
 
-    private notifyResult({errCode, errMsg}) {
+    private async notifyResult({errCode, errMsg}) {
       if (errCode === 0) {
-        this.$notify.success({title: '提示', message:errMsg || '操作失败', duration: 2000});
+        this.$notify.success({title: '提示', message: errMsg || '操作成功', duration: 2000});
       } else {
-        this.$notify.error({title: '失败', message: errMsg || "操作失败", duration: 2000});
+        await this.$alert(errMsg || "操作失败", "提示");
       }
     }
 
@@ -229,7 +229,7 @@ export default class extends Vue {
             if(this.requesting === 1)return;this.requesting = 1;
             let ret = await delete{{$Class}}(row.{{.table.Pk}}).finally(()=>this.requesting = 0);
             let result = parseResult(ret.data);
-            this.notifyResult(result);
+            await this.notifyResult(result);
             if (result.errCode === 0) {
               await this.fetchData();
             }
@@ -247,7 +247,7 @@ export default class extends Vue {
             if(this.requesting === 1)return;this.requesting = 1;
             let ret = await batchDelete{{$Class}}(this.selectedIds).finally(()=>this.requesting = 0);
             let result = parseResult(ret.data);
-            this.notifyResult(result);
+            await this.notifyResult(result);
             if (result.errCode === 0) {
               await this.fetchData();
             }

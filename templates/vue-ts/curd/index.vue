@@ -84,7 +84,7 @@
                 :limit.sync="list.rows" @pagination="fetchData"/>
 
     <!-- 弹出操作框 -->
-    <el-dialog width="35%" class="mod-dialog" :title="dialog.title" :visible.sync="dialog.open" @close="()=>dialog.modal=null">
+    <el-dialog width="35%" class="mod-dialog" :title="dialog.title" :visible.sync="dialog.open"  :close-on-click-modal="false" @close="()=>dialog.modal=null">
         <component v-bind:is="dialog.modal" v-model="dialog.params" @callback="refresh"></component>
     </el-dialog>
 

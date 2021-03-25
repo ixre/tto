@@ -9,7 +9,7 @@
         {{range $i,$c := exclude .columns "create_time" "update_time"}}\
         {{if not $c.IsPk}}{{$name:= $c.Prop}}{{$ele:= $c.Render.Element}}\
           <el-col :md="12" :xs="24">
-            <el-form-item class="mod-form-item" label-width="78px" label="{{$c.Comment}}"　prop="{{$name}}">
+            <el-form-item class="mod-form-item" label-width="78px" label="{{$c.Comment}}" prop="{{$name}}">
             {{if eq $ele "radio"}}\
                 <el-radio-group v-model="formData.{{$name}}">
                   <el-radio :label="1">是</el-radio>

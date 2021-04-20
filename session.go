@@ -272,13 +272,15 @@ func (s *sessionImpl) predefineTargetPath(tpl *CodeTemplate, table *Table) (stri
 
 // 连接文件路径
 func (s *sessionImpl) defaultTargetPath(tplFilePath string, table *Table) string {
-	if table == nil{
+	if table == nil {
 		return tplFilePath
 	}
 	i := strings.Index(tplFilePath, ".")
 	if i != -1 {
-		return strings.Join([]string{tplFilePath[:i], "_",
-			table.Name, ".", tplFilePath[i+1:]}, "")
+		p1 := tplFilePath[:i]
+		// 去掉模板文件名的".tpl"后缀
+		p2 := strings.Replace(tplFilePath[i+1:], ".tpl", "", -1)
+		return strings.Join([]string{p1, "_", table.Name, ".", p2}, "")
 	}
 	return strings.TrimSpace(tplFilePath + table.Name)
 }

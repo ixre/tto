@@ -52,14 +52,14 @@ public class {{.table.Title}}{{.global.entity_suffix}} {
     public static {{.table.Title}}{{.global.entity_suffix}} fromMap(Map<String,Object> data){
         {{.table.Title}}{{.global.entity_suffix}} dst = new {{.table.Title}}{{.global.entity_suffix}}();\
         {{range $i,$c := .columns}}
-        {{ $goType := type "go" $c.Type}}\
+        {{ $goType := type "java" $c.Type}}\
         {{if eq $goType "int"}}dst.set{{$c.Prop}}(TypeConv.toInt(data.get("{{$c.Prop}}")));\
-        {{else if eq $goType "int16"}}dst.set{{$c.Prop}}(TypeConv.toInt(data.get("{{$c.Prop}}")));\
-        {{else if eq $goType "int64"}}dst.set{{$c.Prop}}(TypeConv.toLong(data.get("{{$c.Prop}}")));\
-        {{else if eq $goType "bool"}}dst.set{{$c.Prop}}(TypeConv.toBool(data.get("{{$c.Prop}}")));\
-        {{else if eq $goType "float32"}}dst.set{{$c.Prop}}(TypeConv.toFloat(data.get("{{$c.Prop}}")));\
-        {{else if eq $goType "float64"}}dst.set{{$c.Prop}}(TypeConv.toBigDecimal(data.get("{{$c.Prop}}")));\
-        {{else if eq $goType "time.Time"}}dst.set{{$c.Prop}}(TypeConv.toDateTime(data.get("{{$c.Prop}}")));\
+        {{else if eq $goType "long"}}dst.set{{$c.Prop}}(TypeConv.toLong(data.get("{{$c.Prop}}")));\
+        {{else if eq $goType "boolean"}}dst.set{{$c.Prop}}(TypeConv.toBool(data.get("{{$c.Prop}}")));\
+        {{else if eq $goType "float"}}dst.set{{$c.Prop}}(TypeConv.toFloat(data.get("{{$c.Prop}}")));\
+        {{else if eq $goType "double"}}dst.set{{$c.Prop}}(TypeConv.toDouble(data.get("{{$c.Prop}}")));\
+        {{else if eq $goType "BigDecimal"}}dst.set{{$c.Prop}}(TypeConv.toBigDecimal(data.get("{{$c.Prop}}")));\
+        {{else if eq $goType "Date"}}dst.set{{$c.Prop}}(TypeConv.toDateTime(data.get("{{$c.Prop}}")));\
         {{else}}dst.set{{$c.Prop}}(TypeConv.toString(data.get("{{$c.Name}}")));{{end}}{{end}}
         return dst;
     }

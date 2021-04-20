@@ -39,7 +39,7 @@
             <el-button v-show="selectedRows.length > 0" v-permission="['admin']" class="filter-item" type="danger" @click="batchDelete">删除</el-button>
         </div>
     </div>
-    <!-- 表单数据　-->
+    <!-- 表单数据 -->
     <el-table ref="table" v-loading="list.loading" :data="list.data" :height="tableHeight"
               fit :highlight-current-row="false" row-key="{{$Pk}}"
               @selection-change="handleSelectionChange" class="mod-grid-table">
@@ -79,7 +79,7 @@
         </el-table-column>
     </el-table>
 
-    <!-- 分页　-->
+    <!-- 分页 -->
     <pagination class="mod-grid-pagination" v-show="list.total>0" :total="list.total" :page.sync="list.page"
                 :limit.sync="list.rows" @pagination="fetchData"/>
 
@@ -154,7 +154,7 @@ export default class extends Vue {
 
     // 读取分页数据
     private async fetchData(args:any|null = null) {
-        const { data } = await getPaging{{$Class}}(this.list.page,this.list.rows,this.queryParams)
+        const { data } = await getPaging{{$Class}}(this.list.page,this.list.rows,this.queryParams);
         this.list.data = data.rows;
         this.list.total = data.total;
         setTimeout(()=>this.list.loading = false,300);
@@ -233,9 +233,7 @@ export default class extends Vue {
             if (result.errCode === 0) {
               await this.fetchData();
             }
-        }).catch(() => {
-            return false
-        });
+        }).catch(() => { });
     }
 
     private batchDelete(){
@@ -251,9 +249,7 @@ export default class extends Vue {
             if (result.errCode === 0) {
               await this.fetchData();
             }
-        }).catch(() => {
-            return false
-        });
+        }).catch(() => { });
     }
 }
 </script>

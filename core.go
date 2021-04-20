@@ -39,7 +39,7 @@ type Table struct {
 	Raw *orm.Table
 	// 主键
 	Pk string
-	//　主键属性
+	// 主键属性
 	PkProp string
 	// 主键类型编号
 	PkType int

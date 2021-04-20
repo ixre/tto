@@ -13,7 +13,7 @@ VUE_PREFIX: 如:bz/
 {{$prefix := env "VUE_PREFIX"}}
 {{$parent := "autogen"}}
 
-/** 三级菜单才会用到这个层级　*/
+/** 三级菜单才会用到这个层级 */
 INSERT INTO public.perm_res (name, res_type, pid, key, path, icon, permission, sort_num, is_external, is_hidden, create_time, component_name, cache_)
 VALUES ('{{$parent}}', 0, 0, '', '{{$parent}}', 'menu', '', 0, 0, 0, 1607214871, '', '');
 

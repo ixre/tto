@@ -18,15 +18,15 @@
             {{else if eq $ele "checkbox"}}\
                 <el-checkbox v-model="formData.{{$name}}"></el-checkbox>
             {{else if eq $ele "textarea"}}\
-                <el-input type="textarea" v-model="formData.{{$name}}" class="mod-form-input" :autosize="{ minRows: 2, maxRows: 4}"　placeholder=""/>
+                <el-input type="textarea" v-model="formData.{{$name}}" class="mod-form-input" :autosize="{ minRows: 2, maxRows: 4}" placeholder=""/>
             {{else if eq $ele "select"}}\
                 <el-select v-model="formData.{{$name}}">
                    <el-option v-for="(value,attr) in {"选项1":1,"选项2":2}" :label="attr" :value="value"/>
                 </el-select>
             {{else if equal_any $c.Type 3 4 5}}\
-                <el-input v-model.number="formData.{{$name}}" class="mod-form-input" autosize　placeholder="请输入{{$c.Comment}}"/>
+                <el-input v-model.number="formData.{{$name}}" class="mod-form-input" autosize placeholder="请输入{{$c.Comment}}"/>
             {{else}}\
-                <el-input v-model="formData.{{$name}}" class="mod-form-input" autosize　placeholder="请输入{{$c.Comment}}"/>
+                <el-input v-model="formData.{{$name}}" class="mod-form-input" autosize placeholder="请输入{{$c.Comment}}"/>
             {{end}}
             </el-form-item>
           </el-col>
@@ -44,10 +44,10 @@
 {{$validateColumns := exclude .columns .table.Pk "create_time" "update_time" "state"}}
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
-import { AppModule } from '@/store/modules/app'
-import Sticky from '@/components/Sticky/index.vue'
-import { Form } from 'element-ui'
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { AppModule } from '@/store/modules/app';
+import Sticky from '@/components/Sticky/index.vue';
+import { Form } from 'element-ui';
 import {I{{$Class}}, default{{$Class}},get{{$Class}},create{{$Class}},update{{$Class}} } from './api'
 import {parseResult} from "@/fx";
 
@@ -58,7 +58,7 @@ import {parseResult} from "@/fx";
   }
 })
 export default class extends Vue {
-  @Prop({ default: 0 }) private value!: number|string; /* 如果id有值,则为更新.　反之为新增.　如：:disabled="id" */
+  @Prop({ default: 0 }) private value!: number|string; /* 如果id有值,则为更新. 反之为新增. 如：:disabled="id" */
 
   private formData :I{{$Class}} = default{{$Class}}();
   private requesting = 0;

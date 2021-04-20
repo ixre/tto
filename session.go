@@ -391,7 +391,7 @@ func (s *sessionImpl) generateGroupTablesCode(ch chan int, tables []*Table, tplM
 	ch <- 1
 }
 
-//　分组,无前缀的所有表归类到一组
+// 分组,无前缀的所有表归类到一组
 func (s *sessionImpl) reduceGroup(tables []*Table) map[string][]*Table {
 	groups := make(map[string][]*Table, 0)
 	for _, t := range tables {

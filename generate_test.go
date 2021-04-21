@@ -12,17 +12,17 @@ import (
 var (
 	driver     = "mysql"
 	dbName     = ""
-	dbPrefix   = "bz_"
+	dbPrefix   = "mm_"
 	connString = "root:@tcp(127.0.0.1:3306)/baozhang?charset=utf8"
 	genDir     = "generated_code/"
-    tplDir  ="./templates/java/spring"
+    tplDir  ="./templates/java/spring/kt"
 
 )
 
 // 生成数据库所有的代码文件
 func TestGenAll(t *testing.T) {
-	//driver = "postgresql"
-	//connString = "postgres://postgres:123456@127.0.0.1:5432/go2o?sslmode=disable"
+	driver = "postgresql"
+	connString = "postgres://postgres:123456@127.0.0.1:5432/go2o?sslmode=disable"
 
 	// 初始化生成器
 	conn, _ := db.NewConnector(driver, connString, nil, false)
@@ -33,7 +33,7 @@ func TestGenAll(t *testing.T) {
 		TplDir:          tplDir,
 		AttachCopyright: true,
 		OutputDir:       genDir,
-		ExcludePatterns: []string{"*.kt;*.ftl;grid_list.html"},
+		ExcludePatterns: []string{"grid_list.html"},
 	}
 	dg := DBCodeGenerator(ds.Driver(),opt)
 	list, err := ds.TablesByPrefix(dbName, "", dbPrefix)

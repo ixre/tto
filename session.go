@@ -478,7 +478,7 @@ func (s *sessionImpl) testFilePath(path string, excludePatterns []string) bool {
 
 // 根据代码文件类型适配table
 func (s *sessionImpl) adapterTable(table *Table, path string) *Table {
-	l := GetLangByPath(path)
+	l := getLangByPath(path)
 	// 部分语言永远使用大写开头的命名
 	switch l {
 	case L_GO, L_CSharp, L_Thrift, L_Protobuf, L_PHP, L_Shell:

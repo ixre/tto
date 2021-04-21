@@ -89,7 +89,7 @@ func (g *CodeTemplate) Predefine(key string) (string, bool) {
 // attach: attach generator copyright at template file first line
 func (g *CodeTemplate) attach(s string, attach bool) string {
 	if attach {
-		l := GetLangByPath(g.path)
+		l := getLangByPath(g.path)
 		if l == L_Python{
 			return g.python(s)
 		}

@@ -1,4 +1,4 @@
-#!target:spring/src/main/kotlin/{{.global.pkg}}/service/{{.table.Title}}Service.kt
+#!target:spring/src/main/kotlin/{{.global.pkg}}/service/{{.table.Prefix}}/{{.table.Title}}Service.kt
 package {{pkg "java" .global.pkg}}.service
 
 import {{pkg "java" .global.pkg}}.entity.{{.table.Title}}{{.global.entity_suffix}}

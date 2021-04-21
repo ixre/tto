@@ -17,15 +17,15 @@ import (
  */
 
 type Lang interface {
-	// parse to lang type
+	// ParseType parse to lang type
 	ParseType(typeId int) string
-	// the type of orm mapping
+	// SqlMapType the type of orm mapping
 	SqlMapType(typeId int, len int) string
-	// get default value of lang
+	// DefaultValue get default value of lang
 	DefaultValue(typeId int) string
-	// parse package path
+	// PkgPath parse package path
 	PkgPath(pkg string) string
-	// get package name
+	// PkgName get package name
 	PkgName(pkg string) string
 }
 
@@ -62,7 +62,7 @@ var _ Lang = new(CommonLang)
 type CommonLang struct {
 }
 
-func (c CommonLang) SqlMapType(typeId int, len int) string {
+func (c CommonLang) SqlMapType(typeId int, _ int) string {
 	return c.ParseType(typeId)
 }
 
@@ -96,12 +96,12 @@ func CommonValues(typeId int) string {
 	return "null"
 }
 
-// case "java", "kotlin", "csharp", "py", "thrift", "protobuf":
+// PkgStyleLikeJava case "java", "kotlin", "csharp", "py", "thrift", "protobuf":
 func PkgStyleLikeJava(pkg string) string {
 	return strings.Replace(pkg, "/", ".", -1)
 }
 
-// "go", "rust", "php", "python"
+// PkgStyleLikeGo "go", "rust", "php", "python"
 func PkgStyleLikeGo(pkg string) string {
 	i := strings.LastIndexAny(pkg, "/.")
 	if i != -1 {

@@ -6,16 +6,16 @@ import (
 	"strings"
 )
 
-// 版本号
-const BuildVersion = "0.4.1"
+// BuildVersion 版本号
+const BuildVersion = "0.4.2"
 
-// 代码页
+// ReleaseCodeHome 代码页
 const ReleaseCodeHome = "https://github.com/ixre/tto"
 
-// 兼容模式
+// CompactMode 兼容模式
 var CompactMode = false
 
-// 表
+// Table 表
 type Table struct {
 	// 顺序
 	Ordinal int
@@ -47,7 +47,7 @@ type Table struct {
 	Columns []*Column
 }
 
-// 列
+// Column 列
 type Column struct {
 	// 顺序
 	Ordinal int
@@ -116,7 +116,10 @@ func IsCodeFile(ext string) bool {
 }
 
 // 根据文件路径判断语言类型
-func GetLangByPath(path string) LANG {
+func getLangByPath(path string) LANG {
+	if strings.HasSuffix(path, ".tpl") {
+		path = path[:len(path)-4]
+	}
 	i := strings.LastIndex(path, ".")
 	if i != -1 {
 		switch path[i:] {

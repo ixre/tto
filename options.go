@@ -13,7 +13,7 @@ type Registry struct {
 	tree *toml.Tree
 }
 
-// custom registry
+// RegistryReader custom registry
 type RegistryReader struct {
 	Data map[string]interface{}
 	Keys []string

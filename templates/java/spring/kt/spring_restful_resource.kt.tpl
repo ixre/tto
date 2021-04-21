@@ -1,4 +1,4 @@
-#!target:spring/src/main/kotlin/{{.global.pkg}}/restful/{{.table.Title}}Resource.kt
+#!target:spring/src/main/kotlin/{{.global.pkg}}/restful/{{.table.Prefix}}/{{.table.Title}}Resource.kt
 package {{pkg "kotlin" .global.pkg}}.restful
 
 import {{pkg "kotlin" .global.pkg}}.pojo.{{.table.Title}}{{.global.entity_suffix}}

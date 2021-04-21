@@ -158,7 +158,7 @@ func decompressTarFile(file string,dstDir string) error {
 			return err
 		}
 		if file != nil{
-			io.Copy(file, tr)
+			_, _ = io.Copy(file, tr)
 		}
 	}
 	return nil

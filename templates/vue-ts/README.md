@@ -1,3 +1,14 @@
+# 说明
+模板设置接口前缀,在配置文件中设置`base_path`
+```
+[global]
+base_path ="/qkto/admin"
+```
+生成适用于Java程序的代码,指定参数:`-m java`
+```
+tto -m java -conf app.conf
+```
+
 # 依赖文件
 文件: fx/index.ts
 ```

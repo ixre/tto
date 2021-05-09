@@ -54,7 +54,7 @@
         {{else if ends_with $c.Name "state"}} \
         <el-table-column width="140" align="left" label="{{$c.Comment}}">
             <template slot-scope="scope">
-                <span v-for="(value,attr) in states" v-if="value === scope.row.state">{{`{{attr}}`}}</span>
+              <span v-for="(it,i) in stateOptions" v-if="it.value === scope.row.state">{{"{{ it.key }}"}}</span>
             </template>
         </el-table-column>
         {{else if starts_with $c.Name "is_"}} \
@@ -207,8 +207,8 @@ export default class extends Vue {
     }
 
     // 参数state为true时,重置模态框并刷新数据,args接受传入的参数
-    private refresh(s:{state:number,args:any}){
-        this.dialog.open = false;
+    private refresh(s:{state:number,close:boolean,args:any}){
+        if(s.close)this.dialog.open = false;
         if(s.state)this.fetchData(s.args);
     }
 

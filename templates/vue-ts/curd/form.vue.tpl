@@ -9,12 +9,14 @@
         {{range $i,$c := exclude .columns "create_time" "update_time"}}\
         {{if not $c.IsPk}}{{$name:= $c.Prop}}{{$ele:= $c.Render.Element}}\
           <el-col :md="12" :xs="24">
-            <el-form-item class="mod-form-item" label-width="78px" label="{{$c.Comment}}" prop="{{$name}}">
+            <el-form-item class="mod-form-item" label-width="85px" label="{{$c.Comment}}:" prop="{{$name}}">
             {{if eq $ele "radio"}}\
-                <el-radio-group v-model="formData.{{$name}}">
-                  <el-radio :label="1">是</el-radio>
-                  <el-radio :label="0">否</el-radio>
-                </el-radio-group>
+              <el-switch v-model="formData.{{$name}}"
+                         active-text=""
+                         inactive-text=""
+                         :active-value="1"
+                         :inactive-value="0">
+              </el-switch>
             {{else if eq $ele "checkbox"}}\
                 <el-checkbox v-model="formData.{{$name}}"></el-checkbox>
             {{else if eq $ele "textarea"}}\
@@ -33,7 +35,7 @@
         {{end}}{{end}}
         </el-row>
         <sticky :z-index="10" class="mod-form-bar">
-            <el-button @click="callback">取消</el-button>
+            <el-button @click="()=>callback({close: true})">取消</el-button>
             <el-button v-loading="requesting" type="primary" @click="submitForm">提交</el-button>
         </sticky>
       </div>
@@ -104,7 +106,7 @@ export default class extends Vue {
     }
   }
 
-  private callback(arg:any={state:0}){
+  private callback(arg:any={state:0,close:true,args:{}}){
     this.$emit("callback",arg);
   }
   private submitForm() {
@@ -119,7 +121,7 @@ export default class extends Vue {
             message: '操作成功',
             duration:2000,
           });
-          this.callback({state:1})
+          this.callback({state:1,close:true,args:{}})
         }else{
           await this.$alert(errMsg,"提示");
         }

@@ -7,7 +7,7 @@ class {{$title}}{{.global.entity_suffix}} {
     {{range $i,$c := .columns}}
     {{$type := type "dart" $c.Type}}\
     // {{$c.Comment}}
-    {{$type}} {{$c.Prop}};{{end}}
+    {{$type}} {{$c.Prop}} = {{default "dart" $c.Type}};{{end}}
 
 
     {{$title}}{{.global.entity_suffix}}();
@@ -16,12 +16,12 @@ class {{$title}}{{.global.entity_suffix}} {
         :{{range $i,$c := .columns}}\
         {{$c.Prop}} = {{default "dart" $c.Type}}{{if is_last $i $columns}};{{else}},{{end}}
         {{end}}
-
+        
     // 拷贝数据
     {{$title}}{{.global.entity_suffix}}.fromJson(Map<String, dynamic> json)
         :{{range $i,$c := $columns}}\
         {{if eq $c.Type 5}}\
-        {{$c.Prop}} = BigInt.from(json["{{$c.Prop}}"]){{if is_last $i $columns}};{{else}},{{end}}
+        {{$c.Prop}} = json["{{$c.Prop}}"] != null? BigInt.from(json["{{$c.Prop}}"]):BigInt.zero{{if is_last $i $columns}};{{else}},{{end}}
         {{else}}
         {{$c.Prop}} = json["{{$c.Prop}}"]{{if is_last $i $columns}};{{else}},{{end}}
         {{end}}{{end}}

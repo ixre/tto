@@ -2,7 +2,7 @@
 
 TMP_DIR="$HOME/.tto"
 set -e && mkdir -p "${TMP_DIR}"
-curl -L https://github.com/ixre/tto/releases/download/v0.4.1/tto-generator-bin.tar.gz | tar xz -C "${TMP_DIR}"
+curl -L https://github.com/ixre/tto/releases/download/v0.4.3/tto-generator-bin.tar.gz | tar xz -C "${TMP_DIR}"
 
 echo '=============================================================================='
 echo 'installing...'

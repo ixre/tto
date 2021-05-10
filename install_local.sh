@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-export GOPROXY=https://goproxy.io
+export GOPROXY=https://goproxy.cn,direct
 goods="windows"
 if [[ $(uname) == "Darwin" ]]; then
   goods='darwin'

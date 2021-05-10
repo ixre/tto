@@ -29,10 +29,10 @@ func ({{$p}} *{{$structName}}) Handle(g *echo.Group) {
   // {{.table.Name}} router
   g.GET("/{{$namePath}}/paging",{{$p}}.paging{{$shortTitle}})
   g.GET("/{{$namePath}}/:id",{{$p}}.get{{$shortTitle}})
-  g.GET("/{{$namePath}}",{{$p}}.query{{$shortTitle}})
   g.POST("/{{$namePath}}",{{$p}}.create{{$shortTitle}})
   g.PUT("/{{$namePath}}/:id",{{$p}}.update{{$shortTitle}})
   g.DELETE("/{{$namePath}}/:id",{{$p}}.delete{{$shortTitle}})
+  g.GET("/{{$namePath}}",{{$p}}.query{{$shortTitle}})
 }
 
 func ({{$p}} *{{$structName}}) paging{{$shortTitle}}(ctx echo.Context) error {
@@ -108,14 +108,14 @@ func ({{$p}} *{{$structName}}) update{{$shortTitle}}(ctx echo.Context) error {
   //if err := ctx.Bind(&mp); err != nil {
   //    return nil
   //}
+  /** #! 转换主键 */
+  {{ $goType := type "protobuf" .table.PkType}}\
+  {{if eq $goType "int32"}}{{$pk}} := int32(typeconv.MustInt(ctx.Param("id")))\
+  {{else if eq $goType "int64"}}{{$pk}} := int64(typeconv.MustInt(ctx.Param("id")))\
+  {{else}}{{$pk}} := ctx.Param("id"){{end}}
   dst := proto.Save{{$shortTitle}}Request{}
   err := ctx.Bind(&dst)
   if err == nil{
-    /** #! 转换主键 */
-    {{ $goType := type "protobuf" .table.PkType}}\
-    {{if eq $goType "int32"}}{{$pk}} := int32(typeconv.MustInt(ctx.Param("id")))\
-    {{else if eq $goType "int64"}}{{$pk}} := int64(typeconv.MustInt(ctx.Param("id")))\
-    {{else}}{{$pk}} := ctx.Param("id"){{end}}
     dst.{{.table.PkProp}} = {{$pk}}
     trans, cli, _ := service.{{$title}}ServiceClient()
     defer trans.Close()

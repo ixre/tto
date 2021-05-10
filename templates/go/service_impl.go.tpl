@@ -61,7 +61,7 @@ func ({{$p}} *{{$structName}}) Save{{$shortTitle}}(_ context.Context, r *proto.S
         if dst = {{$p}}.dao.Get{{$shortTitle}}(r.{{.table.PkProp}}); dst == nil{
             return &proto.Save{{$shortTitle}}Response{
                 ErrCode: 2,
-                ErrMsg:  "no such record",
+                ErrMsg:  "no such data",
             }, nil
         }
     } else {

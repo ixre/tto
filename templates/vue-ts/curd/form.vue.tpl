@@ -30,6 +30,7 @@
             {{else}}\
                 <el-input v-model="formData.{{$name}}" class="mod-form-input" autosize placeholder="请输入{{$c.Comment}}"/>
             {{end}}
+                <span class="mod-form-remark"></span>
             </el-form-item>
           </el-col>
         {{end}}{{end}}

@@ -83,7 +83,7 @@ func doUpdate(force bool)(bool,error){
 	if err != nil{
 		fmt.Fprint(os.Stdout,err.Error())
 		fmt.Fprint(os.Stdout,"\n\n请重新运行以下命令安装最新版本\n")
-		fmt.Fprint(os.Stdout,"curl -L https://raw.githubusercontent.com/ixre/tto/master/install|sh")
+		fmt.Fprint(os.Stdout,"curl -L https://raw.githubusercontent.com/ixre/tto/master/install | sh")
 		fmt.Fprint(os.Stdout,"\n\n或参考http://github.com/ixre/tto手工升级")
 		os.Exit(1)
 	}

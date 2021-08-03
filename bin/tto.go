@@ -61,7 +61,7 @@ func generate() {
 	var printVer bool
 	var cleanLast bool
 	var compactMode bool
-	var keepLocal bool
+	//var keepLocal bool
 
 	flag.StringVar(&genDir, "o", "./output", "path of output directory")
 	flag.StringVar(&tplDir, "t", "./templates", "path of code templates directory")
@@ -73,7 +73,7 @@ func generate() {
 	flag.BoolVar(&cleanLast, "clean", false, "clean last generate files")
 	flag.BoolVar(&debug, "debug", false, "debug mode")
 	flag.BoolVar(&compactMode, "compact", false, "compact mode for old project")
-	flag.BoolVar(&keepLocal, "local", false, "don't update any new version")
+	//flag.BoolVar(&keepLocal, "local", false, "don't update any new version")
 	flag.BoolVar(&printVer, "v", false, "print version")
 	flag.Parse()
 
@@ -81,9 +81,9 @@ func generate() {
 		println("tto Generator v" + tto.BuildVersion)
 		return
 	}
-	if !keepLocal && checkEveryDay() {
-		os.Exit(0)
-	}
+	//if !keepLocal && checkEveryDay() {
+	//	os.Exit(0)
+	//}
 	re, err := tto.LoadRegistry(confPath)
 	if err != nil {
 		println("[ tto][ fatal]:", err.Error())

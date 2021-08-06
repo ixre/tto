@@ -60,6 +60,7 @@ public class {{.table.Title}}{{.global.entity_suffix}} {
         {{else if eq $goType "double"}}dst.set{{$c.Prop}}(TypeConv.toDouble(data.get("{{$c.Prop}}")));\
         {{else if eq $goType "BigDecimal"}}dst.set{{$c.Prop}}(TypeConv.toBigDecimal(data.get("{{$c.Prop}}")));\
         {{else if eq $goType "Date"}}dst.set{{$c.Prop}}(TypeConv.toDateTime(data.get("{{$c.Prop}}")));\
+        {{else if eq $goType "Byte[]"}}dst.set{{$c.Prop}}(TypeConv.toBytes(data.get("{{$c.Prop}}")));\
         {{else}}dst.set{{$c.Prop}}(TypeConv.toString(data.get("{{$c.Name}}")));{{end}}{{end}}
         return dst;
     }

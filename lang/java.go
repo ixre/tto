@@ -86,6 +86,8 @@ func JavaValues(typeId int) string {
 		return "\"\""
 	case orm.TypeDateTime:
 		return "new Date()"
+	case orm.TypeBytes:
+		return "new Byte[0]"
 	}
 	return fmt.Sprintf("Unknown type id:%d", typeId)
 }

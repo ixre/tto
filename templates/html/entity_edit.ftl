@@ -40,7 +40,7 @@
 <script type="text/javascript" src="/js/base.js"></script>
 <script type="text/javascript">
     var entity = "$${Entity}";
-    var formId = "form1";
+    var form_id = "form1";
     require(["/js/own/require_config.js"], function () {
         require(["base"], pageLoad);
     });

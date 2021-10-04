@@ -42,7 +42,7 @@
 <script type="text/javascript" src="/assets/js/base.js"></script>
 <script type="text/javascript">
     var entity = $${EntityJSON};
-    var formId = "form1";
+    var form_id = "form1";
     require(["/assets/js/super/require_config.js"], function () {
         require(["base"], pageLoad);
     });

@@ -38,7 +38,7 @@
 <script type="text/javascript" src="${.Var.StaticPath}/assets/js/base.js?hash={{`{{.Var.Spam}}`}}"></script>
 <script type="text/javascript">
     //var entity = {{`{{.Map.Entity}}`}} || {};
-    var formId = "form1";
+    var form_id = "form1";
     var baseJsUrl = "{{`{{.Var.StaticPath}}`}}";
     require([baseJsUrl + "/assets/js/super/require_config.js?hash={{`{{.Var.Spam}}`}}"], function () {
         require(["base"], pageLoad);

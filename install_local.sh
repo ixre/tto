@@ -2,9 +2,9 @@
 
 export GOPROXY=https://goproxy.cn,direct
 goods="windows"
-if [[ $(uname) == "Darwin" ]]; then
+if [ "$(uname)" = "Darwin" ]; then
   goods='darwin'
-elif [ $(uname) == "Linux" ]; then
+elif [ "$(uname)" = "Linux" ]; then
   goods="linux"
 fi
 

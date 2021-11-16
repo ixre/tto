@@ -1,4 +1,4 @@
-package main
+package tto
 
 import (
 	"archive/tar"
@@ -6,7 +6,6 @@ import (
 	"compress/gzip"
 	"errors"
 	"fmt"
-	"github.com/ixre/tto"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -33,14 +32,14 @@ import (
 
 var versionInfoURL = "https://github.com/ixre/tto/releases/"
 
-type version struct{
+type version struct {
 	version string
 	remark  string
 	distURL string
 }
 
-func doUpdate(force bool)(bool,error){
-	fmt.Fprint(os.Stdout,"正在检查版本...\r")
+func DoUpdate(force bool) (bool, error) {
+	_, _ = fmt.Fprint(os.Stdout, "正在检查版本...\r")
 	var v *version
 	var err error
 	var tryTimes = 0
@@ -56,40 +55,40 @@ func doUpdate(force bool)(bool,error){
 			msg += "," + err.Error()
 		}
 		fmt.Println(msg)
-		return false,err
+		return false, err
 	}
-	if !checkNewVersion(v.version,tto.BuildVersion){
+	if !checkNewVersion(v.version, BuildVersion) {
 		fmt.Println("已经是最新版本")
-		return false,nil
+		return false, nil
 	}
 	printVersion(v)
 	if !force {
 		fmt.Printf("是否现在更新? [Y/N] ")
 		input := bufio.NewScanner(os.Stdin) //初始化一个扫表对象
 		input.Scan()
-		if strings.ToLower(input.Text()) != "y"{
+		if strings.ToLower(input.Text()) != "y" {
 			os.Exit(0)
 		}
 	}
-	fmt.Fprint(os.Stdout,"下载更新包...\r")
-	tmpFile := fmt.Sprintf("%s/tto-release-%s.tar.gz",os.TempDir(),v.version)
-	err = prepareFiles(v.distURL,tmpFile)
-	if err != nil{
-		fmt.Println("下载失败:",err.Error())
+	_, _ = fmt.Fprint(os.Stdout, "下载更新包...\r")
+	tmpFile := fmt.Sprintf("%s/tto-release-%s.tar.gz", os.TempDir(), v.version)
+	err = prepareFiles(v.distURL, tmpFile)
+	if err != nil {
+		fmt.Println("下载失败:", err.Error())
 		os.Exit(1)
 	}
-	fmt.Fprint(os.Stdout,"安装中...\r")
+	_, _ = fmt.Fprint(os.Stdout, "安装中...\r")
 	err = install(tmpFile)
-	if err != nil{
-		fmt.Fprint(os.Stdout,err.Error())
-		fmt.Fprint(os.Stdout,"\n\n请重新运行以下命令安装最新版本\n")
-		fmt.Fprint(os.Stdout,"curl -L https://raw.githubusercontent.com/ixre/tto/master/install | sh")
-		fmt.Fprint(os.Stdout,"\n\n或参考http://github.com/ixre/tto手工升级")
+	if err != nil {
+		_, _ = fmt.Fprint(os.Stdout, err.Error())
+		_, _ = fmt.Fprint(os.Stdout, "\n\n请重新运行以下命令安装最新版本\n")
+		_, _ = fmt.Fprint(os.Stdout, "curl -L https://raw.githubusercontent.com/ixre/tto/master/install | sh")
+		_, _ = fmt.Fprint(os.Stdout, "\n\n或参考http://github.com/ixre/tto手工升级")
 		os.Exit(1)
 	}
-	fmt.Fprint(os.Stdout,"恭喜! 安装完成, Enjoy it!")
+	_, _ = fmt.Fprint(os.Stdout, "恭喜! 安装完成, Enjoy it!")
 	time.Sleep(time.Second)
-	return true,nil
+	return true, nil
 }
 
 func checkNewVersion(v string, v2 string) bool {
@@ -97,41 +96,41 @@ func checkNewVersion(v string, v2 string) bool {
 }
 
 func install(file string) error {
-	tmpDir := filepath.Dir(file)+"/tto"
-	err := decompressTarFile(file,tmpDir)
+	tmpDir := filepath.Dir(file) + "/tto"
+	err := decompressTarFile(file, tmpDir)
 	// 获取当前程序的位置
-	path,_:= os.Executable()
-	switch runtime.GOOS{
+	path, _ := os.Executable()
+	switch runtime.GOOS {
 	case "linux":
-		 err = overwriteFile(tmpDir+"/tto",path)
+		err = overwriteFile(tmpDir+"/tto", path)
 	case "windows":
-		err = overwriteFile(tmpDir+"/tto.exe",path)
+		err = overwriteFile(tmpDir+"/tto.exe", path)
 	case "darwin":
-		err = overwriteFile(tmpDir+"/tto-mac",path)
+		err = overwriteFile(tmpDir+"/tto-mac", path)
 	}
 	return err
 }
 
 // 删除原程序,替换为新程序
-func overwriteFile(src string,dst string)error {
+func overwriteFile(src string, dst string) error {
 	sf, _ := os.Open(src)
-	df, err := os.OpenFile(dst+"__",os.O_CREATE|os.O_RDWR,os.ModePerm)
-	if os.IsPermission(err){
-		if runtime.GOOS == "windows"{
+	df, err := os.OpenFile(dst+"__", os.O_CREATE|os.O_RDWR, os.ModePerm)
+	if os.IsPermission(err) {
+		if runtime.GOOS == "windows" {
 			return errors.New("安装失败,使用管理员运行此命令")
 		}
 		return errors.New("无法获得权限进行安装, 请尝试使用 `sudo tto update`")
 	}
 	// 先生成临时文件,再替换文件,避免出现BUSY
 	_, err = io.Copy(df, sf)
-	if err == nil{
-		err = syscall.Rename(dst+"__",dst)
+	if err == nil {
+		err = syscall.Rename(dst+"__", dst)
 	}
 	return err
 }
 
 // 解压文件
-func decompressTarFile(file string,dstDir string) error {
+func decompressTarFile(file string, dstDir string) error {
 	srcFile, err := os.Open(file)
 	if err != nil {
 		return err
@@ -152,12 +151,12 @@ func decompressTarFile(file string,dstDir string) error {
 				return err
 			}
 		}
-		filename := dstDir +"/"+ hdr.Name
+		filename := dstDir + "/" + hdr.Name
 		file, err := createFile(filename)
 		if err != nil {
 			return err
 		}
-		if file != nil{
+		if file != nil {
 			_, _ = io.Copy(file, tr)
 		}
 	}
@@ -173,71 +172,71 @@ func createFile(name string) (*os.File, error) {
 	if dirPath != name[:len(name)-1] {
 		return os.Create(name)
 	}
-	return nil,nil
+	return nil, nil
 }
 
-func prepareFiles(distURL string,file string)error {
-	return down(distURL,file,func(total int,reads int,time int){
-		prg := int(float32(reads)/float32(total)*100)
-		bit := reads/time/1000
+func prepareFiles(distURL string, file string) error {
+	return down(distURL, file, func(total int, reads int, time int) {
+		prg := int(float32(reads) / float32(total) * 100)
+		bit := reads / time / 1000
 		if bit > 0 {
-			line := "下载更新包 "+strconv.Itoa(prg)+"% 速度："+
-				strconv.Itoa(bit)+"kb/s \r"
-			fmt.Fprint(os.Stdout,line)
+			line := "下载更新包 " + strconv.Itoa(prg) + "% 速度：" +
+				strconv.Itoa(bit) + "kb/s \r"
+			fmt.Fprint(os.Stdout, line)
 		}
-	},-1)
+	}, -1)
 }
 
 func printVersion(v *version) {
-	line := fmt.Sprintf("跨平台代码生成器(tto Generator v%s)",tto.BuildVersion)
-	lineFill := strings.Repeat("=",len([]rune(line))+8)
+	line := fmt.Sprintf("跨平台代码生成器(tto Generator v%s)", BuildVersion)
+	lineFill := strings.Repeat("=", len([]rune(line))+8)
 	//fmt.Println(lineFill)
 	fmt.Println(line)
-	fmt.Printf("Release Date: %s\n",getReleaseDate())
-	fmt.Printf("HomePage    : %s\n",tto.ReleaseCodeHome)
+	fmt.Printf("Release Date: %s\n", getReleaseDate())
+	fmt.Printf("HomePage    : %s\n", ReleaseCodeHome)
 
-	fmt.Println(fmt.Sprintf("检测到新版本 v%s!",v.version))
+	fmt.Println(fmt.Sprintf("检测到新版本 v%s!", v.version))
 	fmt.Println(lineFill)
 	fmt.Println("Update log:")
-	fmt.Println(""+v.remark+"\n")
+	fmt.Println("" + v.remark + "\n")
 	fmt.Println(lineFill)
 }
 
 func getReleaseDate() string {
-	if path, err := os.Executable();err == nil {
-		if fi, err := os.Stat(path);err == nil {
+	if path, err := os.Executable(); err == nil {
+		if fi, err := os.Stat(path); err == nil {
 			return fi.ModTime().Format("2006-01-02 15:04")
 		}
 	}
 	return "-"
 }
 
-func checkVersion()(*version,error){
+func checkVersion() (*version, error) {
 	releases, err := getReleases()
-	if err != nil{
-		return nil,err
+	if err != nil {
+		return nil, err
 	}
 	var ver *version
 	verReg := regexp.MustCompile("\"(.+?/releases/download/v(.+?)/.+?)\"")
 	submatch := verReg.FindAllStringSubmatch(releases, -1)
-	if len(submatch)==0{
-		return nil,nil
+	if len(submatch) == 0 {
+		return nil, nil
 	}
 	ver = &version{
 		version: submatch[0][2],
 		remark:  "",
-		distURL: "https://github.com"+submatch[0][1],
+		distURL: "https://github.com" + submatch[0][1],
 	}
 	// 获取版本更新信息
-	blockR := regexp.MustCompile("release-entry[\\s\\S]+?releases/tag/v"+
-		ver.version+"[\\s\\S]+?markdown-body\">([\\s\\S]+?)</div>")
+	blockR := regexp.MustCompile("release-entry[\\s\\S]+?releases/tag/v" +
+		ver.version + "[\\s\\S]+?markdown-body\">([\\s\\S]+?)</div>")
 	blockMatches := blockR.FindStringSubmatch(releases)
-	remark := regexp.MustCompile("<[^>]+>").ReplaceAllString(blockMatches[1],"")
+	remark := regexp.MustCompile("<[^>]+>").ReplaceAllString(blockMatches[1], "")
 	ver.remark = strings.TrimSpace(remark)
-	return ver,nil
+	return ver, nil
 }
 
-func getReleases()(string,error) {
+func getReleases() (string, error) {
 	cli := http.Client{}
 	req, _ := http.NewRequest("GET", versionInfoURL, nil)
 	cli.Timeout = time.Second * 6
@@ -247,15 +246,14 @@ func getReleases()(string,error) {
 		bytes, _ := ioutil.ReadAll(rsp.Body)
 		return string(bytes), nil
 	}
-	return "",nil
+	return "", nil
 }
 
-
-func down(ur, target string,onProgress func(total int,reads int,seconds int), timeout int)error {
+func down(ur, target string, onProgress func(total int, reads int, seconds int), timeout int) error {
 	// 创建目录
 	dir := filepath.Dir(target)
-	if _,err := os.Stat(dir);os.IsNotExist(err){
-		if err := os.MkdirAll(dir, os.ModePerm);err != nil{
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 			return err
 		}
 	}
@@ -275,15 +273,15 @@ func down(ur, target string,onProgress func(total int,reads int,seconds int), ti
 			return errors.New(fmt.Sprintf("%s seek length not equal file size,"+
 				"seek=%d,size=%d\n", target, sk, size))
 		}
-	 }
-	 if os.IsNotExist(err){
+	}
+	if os.IsNotExist(err) {
 		file, err = os.Create(target)
 		if err != nil {
 			return err
 		}
 	}
 	client := &http.Client{}
-	if timeout >0 {
+	if timeout > 0 {
 		client.Timeout = time.Duration(timeout) * time.Second
 	}
 	request := http.Request{}
@@ -327,7 +325,7 @@ func down(ur, target string,onProgress func(total int,reads int,seconds int), ti
 		var read int
 		read, err = body.Read(bs)
 		reads += read
-		onProgress(total,reads,int(time.Now().Unix()-begin+1))
+		onProgress(total, reads, int(time.Now().Unix()-begin+1))
 		if err != nil {
 			if err != io.EOF {
 				fmt.Println(target, "read err:"+err.Error())

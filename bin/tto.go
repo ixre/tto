@@ -27,7 +27,7 @@ func main() {
 	switch cmd {
 	case "update":
 		forceUpdate := len(os.Args) > 2 && os.Args[2] == "-y"
-		_, _ = doUpdate(forceUpdate)
+		_, _ = tto.DoUpdate(forceUpdate)
 	case "generate":
 		generate()
 	}
@@ -43,7 +43,7 @@ func checkEveryDay() bool {
 	}
 	if dt := time.Now().Unix(); dt-unix > 3600*24 {
 		_ = ioutil.WriteFile(timeFile, []byte(strconv.Itoa(int(dt))), os.ModePerm)
-		b, _ := doUpdate(false)
+		b, _ := tto.DoUpdate(false)
 		return b
 	}
 	return false
@@ -161,8 +161,8 @@ func generate() {
 		dg.UseUpperId()
 	}
 	// 实体后缀
-	if suffix := re.GetString("code.entity_suffix");suffix != ""{
-		dg.Var(tto.ENTITY_SUFFIX,suffix)
+	if suffix := re.GetString("code.entity_suffix"); suffix != "" {
+		dg.Var(tto.ENTITY_SUFFIX, suffix)
 	}
 	// 获取表格并转换
 	userMeta := re.GetBoolean("code.meta_settings")
@@ -279,7 +279,7 @@ func getDb(driver string, r *tto.Registry) *sql.DB {
 		err = conn.Ping()
 	}
 	if err != nil {
-		conn.Close()
+		_ = conn.Close()
 		//如果异常，则显示并退出
 		log.Fatalln("[ tto][ init]:" + conn.Driver() + "-" + err.Error())
 	}
@@ -311,7 +311,7 @@ func genGoRepoCode(dg tto.Session, tables []*tto.Table,
 		// 生成GoRepo代码
 		err := ig.GenerateGoRepoCodes(tables, genDir)
 		//格式化代码
-		shell.Run("gofmt -w " + genDir)
+		_, _, _ = shell.Run("gofmt -w " + genDir)
 		return err
 	}
 	return nil

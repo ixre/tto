@@ -102,7 +102,7 @@ type sessionImpl struct {
 }
 
 func (s *sessionImpl) UseUpperId() {
-	s.useUpper_id = true
+	s.useUpperId = true
 }
 
 // 数据库代码生成器

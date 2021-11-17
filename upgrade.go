@@ -231,6 +231,9 @@ func checkVersion() (*version, error) {
 	blockR := regexp.MustCompile("release-entry[\\s\\S]+?releases/tag/v" +
 		ver.version + "[\\s\\S]+?markdown-body\">([\\s\\S]+?)</div>")
 	blockMatches := blockR.FindStringSubmatch(releases)
+	if len(blockMatches) == 0 {
+		return nil, errors.New("未获取到版本信息")
+	}
 	remark := regexp.MustCompile("<[^>]+>").ReplaceAllString(blockMatches[1], "")
 	ver.remark = strings.TrimSpace(remark)
 	return ver, nil

@@ -7,7 +7,7 @@ if [ "$(uname)" = "Darwin" ]; then
 elif [ "$(uname)" = "Linux" ]; then
   goods="linux"
 fi
-
+go mod tidy
 CGO_ENABLED=0 GOOS=${goods} ARCH=amd64 go build -v -o tto bin/*.go
 sudo rm -rf /usr/local/bin/tto
 sudo mv tto /usr/local/bin

@@ -20,12 +20,12 @@ public class {{.table.Title}}Service {
     private {{$tableTitle}}JpaRepository repo;
 
     /** 查找{{.table.Comment}} */
-    public {{$tableTitle}}{{.global.entity_suffix}} findById({{$pkType}} id){
+    public {{$tableTitle}}{{.global.entity_suffix}} find{{$shortTitle}}ById({{$pkType}} id){
         return this.repo.findById(id).orElse(null);
     }
 
     /** 保存{{.table.Comment}} */
-    public Error save{{$tableTitle}}({{$tableTitle}}{{.global.entity_suffix}} e){
+    public Error save{{$shortTitle}}({{$tableTitle}}{{.global.entity_suffix}} e){
          return Standard.std.tryCatch(()-> {
             {{$tableTitle}}{{.global.entity_suffix}} dst;
             {{if equal_any .table.PkType 3 4 5}}\
@@ -57,12 +57,12 @@ public class {{.table.Title}}Service {
 
 
     /** 批量保存{{.table.Comment}} */
-    public Iterable<{{$tableTitle}}{{.global.entity_suffix}}> saveAll{{$tableTitle}}(Iterable<{{$tableTitle}}{{.global.entity_suffix}}> entities){
+    public Iterable<{{$tableTitle}}{{.global.entity_suffix}}> saveAll{{$shortTitle}}(Iterable<{{$tableTitle}}{{.global.entity_suffix}}> entities){
         return this.repo.saveAll(entities);
     }
 
     /** 删除{{.table.Comment}} */
-    public Error deleteById({{$pkType}} id) {
+    public Error delete{{$shortTitle}}ById({{$pkType}} id) {
          return Standard.std.tryCatch(()-> {
              this.repo.deleteById(id);
              return null;

@@ -1,8 +1,8 @@
 #!target:spring/src/main/kotlin/{{.global.pkg}}/restful/{{.table.Prefix}}/{{.table.Title}}Resource.kt
 package {{pkg "kotlin" .global.pkg}}.restful
 
-import {{pkg "kotlin" .global.pkg}}.pojo.{{.table.Title}}{{.global.entity_suffix}}
-import {{pkg "kotlin" .global.pkg}}.service.{{.table.Title}}Service
+import {{pkg "kotlin" .global.pkg}}.entity.{{.table.Title}}{{.global.entity_suffix}}
+import {{pkg "kotlin" .global.pkg}}.service.{{.table.Prefix}}.{{.table.Title}}Service
 import {{pkg "kotlin" .global.pkg}}.component.ReportComponent
 import net.fze.annotation.Resource
 import net.fze.common.Result

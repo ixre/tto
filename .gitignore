@@ -31,3 +31,4 @@ generated_code
 tto_*.conf
 *.iml
 mac-tto
+/tto

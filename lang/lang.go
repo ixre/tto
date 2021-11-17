@@ -37,7 +37,7 @@ var langMap = map[string]Lang{
 	"typescript": &Typescript{},
 	"protobuf":   &Protobuf{},
 	"thrift":     &Thrift{},
-	"dart":&dart{},
+	"dart":       &dart{},
 }
 
 func Get(n string) Lang {

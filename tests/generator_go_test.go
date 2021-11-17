@@ -62,7 +62,6 @@ func TestGenByTemplate(t *testing.T) {
 	time.Sleep(30 * time.Second)
 }
 
-
 func TestCodeTemplate_String(t *testing.T) {
 	//var r2 = regexp.MustCompile("\\{\\n*(\\s{5,})")
 	var r = regexp.MustCompile("\\{[\\n\\r]+?\\s*\\n+")
@@ -85,6 +84,6 @@ ret.Value[i] = &proto.PagingPermDept{
 `
 	//content = strings.Replace(content,"\t","",-1)
 	t.Log(r.MatchString(content))
-	t.Log(r.FindAllStringSubmatch(content,-1))
-	t.Log(r.ReplaceAllString(content,"{\n"))
+	t.Log(r.FindAllStringSubmatch(content, -1))
+	t.Log(r.ReplaceAllString(content, "{\n"))
 }

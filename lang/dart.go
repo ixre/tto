@@ -13,8 +13,8 @@ import "github.com/ixre/gof/db/orm"
  */
 
 var _ Lang = new(dart)
-type dart struct{
 
+type dart struct {
 }
 
 func (d dart) ParseType(typeId int) string {
@@ -49,11 +49,11 @@ func (d dart) DefaultValue(typeId int) string {
 		return "\"\""
 	case orm.TypeBoolean:
 		return "false"
-	case orm.TypeInt16,orm.TypeInt32:
+	case orm.TypeInt16, orm.TypeInt32:
 		return "0"
 	case orm.TypeInt64:
 		return "BigInt.from(0)"
-	case orm.TypeFloat32,orm.TypeFloat64, orm.TypeDecimal:
+	case orm.TypeFloat32, orm.TypeFloat64, orm.TypeDecimal:
 		return "0.0"
 	case orm.TypeDateTime:
 		return "DateTime.now()"

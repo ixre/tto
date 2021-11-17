@@ -4,8 +4,6 @@ import (
 	"github.com/pelletier/go-toml"
 )
 
-
-
 // global registry
 var g *RegistryReader
 
@@ -62,16 +60,21 @@ func GetRegistry() *RegistryReader {
 func initRegistry(r *Registry) *RegistryReader {
 	mp := map[string]interface{}{}
 	keys := make([]string, 0)
-	if n := r.tree.Get("global"); n != nil {
-		if tree := n.(*toml.Tree); tree != nil {
-			for _, k := range tree.Keys() {
-				mp[k] = tree.Get(k)
-				keys = append(keys, k)
-			}
-		}
-	}
+	initByPrefix(r, "global", mp, &keys)
+	initByPrefix(r, "custom", mp, &keys)
 	return &RegistryReader{
 		Data: mp,
 		Keys: keys,
+	}
+}
+
+func initByPrefix(r *Registry, s string, mp map[string]interface{}, keys *[]string) {
+	if n := r.tree.Get(s); n != nil {
+		if tree := n.(*toml.Tree); tree != nil {
+			for _, k := range tree.Keys() {
+				mp[k] = tree.Get(k)
+				*keys = append(*keys, k)
+			}
+		}
 	}
 }

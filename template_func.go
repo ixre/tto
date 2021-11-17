@@ -37,6 +37,8 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	fm["type"] = t.langType
 	// 返回SQL/ORM类型, 如：{{sql_type "py" .columns[0].Type}}
 	fm["sql_type"] = t.ormType
+	// 返回主键代码类型
+	fm["pk_type"] = t.langPkType
 	// 包: {{pkg "go" "com/tto/pkg"}}
 	fm["pkg"] = t.langPkg
 	// 包名: {{pkg "go" "github/com/ixre"}} => github.com/ixre
@@ -121,9 +123,17 @@ func (t *internalFunc) langType(lang string, typeId int) string {
 	//return strconv.Itoa(typeId)
 }
 
+func (t *internalFunc) langPkType(lang string, typeId int) string {
+	// JAVA ORM框架要求为包装类
+	if lang == "java" {
+		return (lang2.JavaLang{}).ParsePkType(typeId)
+	}
+	return lang2.Get(lang).ParseType(typeId)
+}
+
 // 返回SQL/ORM类型
 func (t *internalFunc) ormType(lang string, typeId int, len int) string {
-	return lang2.Get(lang).SqlMapType(typeId,len)
+	return lang2.Get(lang).SqlMapType(typeId, len)
 }
 
 // 将包名替换为.分割, 通常C#,JAVA语言使用"."分割包名
@@ -131,7 +141,7 @@ func (t *internalFunc) langPkg(lang string, pkg string) string {
 	return lang2.Get(lang).PkgPath(pkg)
 }
 
-func (t *internalFunc) langPkgName(lang string,pkg string)string{
+func (t *internalFunc) langPkgName(lang string, pkg string) string {
 	return lang2.Get(lang).PkgName(pkg)
 }
 
@@ -192,7 +202,6 @@ func (t *internalFunc) substr(s string, n ...int) string {
 	return s
 }
 
-
 // 截取第N个字符位置后的字符串,如:{{substr_n "sys_user_list" "_" 1}}得到:user_list
 func (t *internalFunc) substrN(s, char string, n int) string {
 	i, times := 0, 0
@@ -230,14 +239,14 @@ func (t *internalFunc) getN(args interface{}, n int) interface{} {
 // 字符组合,如：{{str_join "1","2","3" ","}}结果为:1,2,3
 func (t *internalFunc) strJoin(s string, args ...string) string {
 	l := len(args)
-	if  l== 0{
+	if l == 0 {
 		return s
 	}
-	if l == 1{
-		return s +args[0]
+	if l == 1 {
+		return s + args[0]
 	}
-	n := append([]string{s},args[:len(args)-1]...)
-	return strings.Join(n,args[l-1])
+	n := append([]string{s}, args[:len(args)-1]...)
+	return strings.Join(n, args[l-1])
 }
 
 // 是否包含
@@ -308,7 +317,7 @@ func (t *internalFunc) tryGet(columns []*Column, name string) *Column {
 }
 
 // 获取用户环境变量
-func (t *internalFunc) getEnv(key string)string{
+func (t *internalFunc) getEnv(key string) string {
 	return os.Getenv(key)
 }
 

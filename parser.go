@@ -15,20 +15,20 @@ import (
 // 获取表结构,userMeta 是否使用用户的元数据
 func parseTable(ordinal int, tb *orm.Table, shortUpper bool, userMeta bool) *Table {
 	n := &Table{
-		Ordinal: ordinal,
-		Name:    tb.Name,
-		Prefix:  prefix(tb.Name),
-		Title:   title(tb.Name, shortUpper),
+		Ordinal:    ordinal,
+		Name:       tb.Name,
+		Prefix:     prefix(tb.Name),
+		Title:      title(tb.Name, shortUpper),
 		ShortTitle: shortTitle(tb.Name),
-		Comment: tb.Comment,
-		Engine:  tb.Engine,
-		Schema:  tb.Schema,
-		Charset: tb.Charset,
-		Raw:     tb,
-		Pk:      "id",
-		PkProp:  "Id",
-		PkType:  orm.TypeInt32,
-		Columns: make([]*Column, len(tb.Columns)),
+		Comment:    tb.Comment,
+		Engine:     tb.Engine,
+		Schema:     tb.Schema,
+		Charset:    tb.Charset,
+		Raw:        tb,
+		Pk:         "id",
+		PkProp:     "Id",
+		PkType:     orm.TypeInt32,
+		Columns:    make([]*Column, len(tb.Columns)),
 	}
 	if len(n.Comment) == 0 {
 		n.Comment = n.Title
@@ -162,15 +162,15 @@ func smartField(c *Column) *config.ColumnMeta {
 func smartElement(c *Column) (string, map[string]string) {
 	name := c.Name
 	len := c.Length
-	if strings.HasPrefix(name, "is_"){
+	if strings.HasPrefix(name, "is_") {
 		return "checkbox", map[string]string{"是": "1", "否": "0"}
 	}
-	if strings.HasSuffix(name, "_time"){
+	if strings.HasSuffix(name, "_time") {
 		return "time", map[string]string{}
 	}
 	if strings.HasSuffix(name, "state") ||
 		strings.HasSuffix(name, "status") ||
-		strings.HasSuffix(name,"enabled"){
+		strings.HasSuffix(name, "enabled") {
 		return "radio", map[string]string{}
 	}
 	if strings.HasSuffix(name, "_date") {

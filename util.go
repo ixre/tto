@@ -8,14 +8,14 @@ import (
 	"unicode"
 )
 
-func GetDialect(driver string)(dialect orm.Dialect,driverName string) {
+func GetDialect(driver string) (dialect orm.Dialect, driverName string) {
 	switch driver {
-	case "mysql","mariadb":
-		return &orm.MySqlDialect{},"mysql"
-	case "postgres", "postgresql","pgsql":
-		return &orm.PostgresqlDialect{},"pgsql"
+	case "mysql", "mariadb":
+		return &orm.MySqlDialect{}, "mysql"
+	case "postgres", "postgresql", "pgsql":
+		return &orm.PostgresqlDialect{}, "pgsql"
 	}
-	return nil,"-"
+	return nil, "-"
 }
 
 func prefix(str string) string {
@@ -55,9 +55,8 @@ func shortTitle(str string) string {
 	return strings.Join(n, "")
 }
 
-
 // 将首字母小写
-func  lowerTitle(s string) string {
+func lowerTitle(s string) string {
 	if rune0 := rune(s[0]); unicode.IsUpper(rune0) {
 		return string(unicode.ToLower(rune0)) + s[1:]
 	}

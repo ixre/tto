@@ -18,6 +18,7 @@ import (
 var _ Lang = new(GoLang)
 
 var pkgRegex = regexp.MustCompile("/(com|net|io|cn|org|info)/")
+
 type GoLang struct {
 }
 
@@ -26,7 +27,7 @@ func (g GoLang) SqlMapType(typeId int, len int) string {
 }
 
 func (g GoLang) PkgPath(pkg string) string {
-	return pkgRegex.ReplaceAllString(pkg,".$1/")
+	return pkgRegex.ReplaceAllString(pkg, ".$1/")
 }
 
 func (g GoLang) PkgName(pkg string) string {

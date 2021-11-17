@@ -2,19 +2,19 @@
 package {{pkg "java" .global.pkg}}.service
 
 import {{pkg "java" .global.pkg}}.entity.{{.table.Title}}{{.global.entity_suffix}}
-import {{pkg "java" .global.pkg}}.repo.{{.table.Title}}JpaRepository
+import {{pkg "java" .global.pkg}}.repo.{{.table.Prefix}}.{{.table.Title}}JpaRepository
 import org.springframework.stereotype.Service
 import org.springframework.data.repository.findByIdOrNull
 import net.fze.common.catch
 import net.fze.util.Times
 import javax.annotation.Resource
-{{$tableTitle := .table.Title}}
-{{$shortTitle := .table.ShortTitle}}
-{{$pkName := .table.Pk}}
-{{$pkProp :=  .table.PkProp}}
+{{$tableTitle := .table.Title}}\
+{{$shortTitle := .table.ShortTitle}}\
+{{$pkName := .table.Pk}}\
+{{$pkProp :=  .table.PkProp}}\
 {{$pkType := type "kotlin" .table.PkType}}
 /** {{.table.Comment}}服务  */
-@Service
+@Service("{{.table.Name}}_service")
 class {{.table.Title}}Service {
     @Resource
     lateinit var repo: {{$tableTitle}}JpaRepository
@@ -37,12 +37,18 @@ class {{.table.Title}}Service {
             } else {
                 dst = {{$tableTitle}}{{.global.entity_suffix}}.createDefault()
                 {{$c := try_get .columns "create_time"}}\
-                {{if $c }}dst.createTime = Times.Instance.unix().toLong(){{end}}
+                {{if $c}}{{if equal_any $c.Type 3 4 5 }}\
+                dst.createTime = Times.unix().toLong()
+                {{else}}\
+                dst.createTime = java.util.Date(){{end}}{{end}}
             }
             {{range $i,$c := exclude .columns $pkName "create_time" "update_time"}}
             dst.{{lower_title $c.Prop}} = e.{{lower_title $c.Prop}}{{end}}\
             {{$c := try_get .columns "update_time"}}
-            {{if $c}}dst.updateTime = Times.Instance.unix().toLong(){{end}}
+            {{if $c}}{{if equal_any $c.Type 3 4 5 }}\
+            dst.updateTime = Times.unix().toLong()
+            {{else}}\
+            dst.updateTime = java.util.Date(){{end}}{{end}}
             this.repo.save(dst)
             null
         }.error()

@@ -16,6 +16,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/user"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -38,6 +39,8 @@ const (
 	TIME = "time"
 	// 版本
 	VERSION = "version"
+	// 当前用户
+	USER = "user"
 )
 
 type (
@@ -127,7 +130,7 @@ func (s *sessionImpl) init() Session {
 	// predefine default vars
 	s.Var(BASE_URL, "")
 	s.Var(BASE_PATH, "")
-	s.Var(ENTITY_SUFFIX,"Entity")
+	s.Var(ENTITY_SUFFIX, "Entity")
 	// load global registry
 	rd := GetRegistry()
 	for _, k := range rd.Keys {
@@ -135,9 +138,16 @@ func (s *sessionImpl) init() Session {
 	}
 	// put system vars
 	s.Package("com/your/pkg")
-	s.Var("db", s.driver)
 	s.Var(TIME, time.Now().Format("2006/01/02 15:04:05"))
 	s.Var(VERSION, BuildVersion)
+	// setting user variables
+	if usr, err := user.Current(); err == nil {
+		s.Var(USER, usr.Username)
+	} else {
+		s.Var(USER, "")
+	}
+	s.Var("db", s.driver)
+	s.Var("year", time.Now().Format("2006"))
 	return s
 }
 
@@ -232,7 +242,7 @@ func (s *sessionImpl) GenerateCodeByTables(tables []*Table, tpl *CodeTemplate) s
 	}
 	groups := s.reduceGroup(tbs)
 	mp := map[string]interface{}{
-		"groups":groups,
+		"groups": groups,
 		"tables": tbs,
 		"global": s.codeVars,
 	}
@@ -407,11 +417,15 @@ func (s *sessionImpl) reduceGroup(tables []*Table) map[string][]*Table {
 	return groups
 }
 
+// 输出到文件
 func (s *sessionImpl) flushToFile(tpl *CodeTemplate, tb *Table, path string, output string, opt *Options) {
+	// 获取文件的路径和名称
 	dstPath, _ := s.predefineTargetPath(tpl, tb)
 	if dstPath == "" {
 		dstPath = s.defaultTargetPath(path, tb)
 	}
+	fileName := dstPath[strings.LastIndexAny(dstPath, "/\\")+1:]
+	output = strings.Replace(output, "$file_name$", fileName, 1) // 替换文件名占位符
 	savedPath := filepath.Clean(opt.OutputDir + "/" + dstPath)
 	if err := SaveFile(output, savedPath); err != nil {
 		println(fmt.Sprintf("[ tto][ error]: save file failed! %s ,template:%s", err.Error(), tpl.FilePath()))
@@ -502,20 +516,20 @@ func (s *sessionImpl) copyTable(table *Table, lowerProp bool) *Table {
 		return s
 	}
 	dst := &Table{
-		Ordinal: table.Ordinal,
-		Name:    table.Name,
-		Prefix:  table.Prefix,
-		Title:   table.Title,
+		Ordinal:    table.Ordinal,
+		Name:       table.Name,
+		Prefix:     table.Prefix,
+		Title:      table.Title,
 		ShortTitle: shortTitle(table.Name),
-		Comment: table.Comment,
-		Engine:  table.Engine,
-		Schema:  table.Schema,
-		Charset: table.Charset,
-		Raw:     table.Raw,
-		Pk:      table.Pk,
-		PkProp:  prop(table.PkProp),
-		PkType:  table.PkType,
-		Columns: make([]*Column, len(table.Columns)),
+		Comment:    table.Comment,
+		Engine:     table.Engine,
+		Schema:     table.Schema,
+		Charset:    table.Charset,
+		Raw:        table.Raw,
+		Pk:         table.Pk,
+		PkProp:     prop(table.PkProp),
+		PkType:     table.PkType,
+		Columns:    make([]*Column, len(table.Columns)),
 	}
 	for i, v := range table.Columns {
 		dst.Columns[i] = &Column{

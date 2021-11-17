@@ -15,8 +15,7 @@ var (
 	dbPrefix   = "mm_"
 	connString = "root:@tcp(127.0.0.1:3306)/baozhang?charset=utf8"
 	genDir     = "generated_code/"
-    tplDir  ="./templates/java/spring/kt"
-
+	tplDir     = "./templates/java/spring/kt"
 )
 
 // 生成数据库所有的代码文件
@@ -26,7 +25,7 @@ func TestGenAll(t *testing.T) {
 
 	// 初始化生成器
 	conn, _ := db.NewConnector(driver, connString, nil, false)
-	ds,_ := orm.NewDialectSession(driver,conn.Raw())
+	ds, _ := orm.NewDialectSession(driver, conn.Raw())
 
 	// 生成自定义代码
 	opt := &Options{
@@ -35,7 +34,7 @@ func TestGenAll(t *testing.T) {
 		OutputDir:       genDir,
 		ExcludePatterns: []string{"grid_list.html"},
 	}
-	dg := DBCodeGenerator(ds.Driver(),opt)
+	dg := DBCodeGenerator(ds.Driver(), opt)
 	list, err := ds.TablesByPrefix(dbName, "", dbPrefix)
 	if err != nil {
 		println("[ tto][ error]: not found tables", err.Error())

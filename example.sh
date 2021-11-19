@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Folder like this:
+# Files like this:
 # ```
 # + generator
 #  - templates
@@ -8,14 +8,17 @@
 # - example.sh
 # ```
 
-GEN_DIR=$(dirname "$0")/generator
+CONF_DIR=$(dirname "$0")/generator
 
-tto -conf "$GEN_DIR"/tto.conf -t "$GEN_DIR"/templates -o output -excludes QRT -clean
+tto -conf "$CONF_DIR"/tto.conf -t "$CONF_DIR"/templates -o output -excludes tmp_ -clean
 
-find output/java -name "*.java"  -print0 | xargs -0 sed -i 's/ int / Integer /g' && \
-find output/java -name "*.java"  -print0 | xargs -0 sed -i 's/ long / Long /g' && \
-find output/java -name "*.java" -print0 | xargs -0 sed -i 's/ float / Float /g'
+# Replace generator description part of code file
+# find output/spring -name "*.java" -print0 |  xargs -0 sed -i ':label;N;s/This.*Copy/Copy/g;b label'
+# Replace package
+# find output/spring -name "*.java" -print0 |  xargs -0 sed -i 's/net.fze/cn.cgt/g'
+# Replace type
+# find output/java -name "*.java"  -print0 | xargs -0 sed -i 's/ int / Integer /g'
+# copy files to project folder
+# find ./src -path "*/entity" -print0 | xargs -0 cp output/spring/src/main/java/com/github/tto/entity/*
 
-#find platform-business/src -path "*/k2/entity" -print0 | \
-#   xargs  -0 cp output/spring/src/main/java/com/github/system1/entity/*
 exit 0;

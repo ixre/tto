@@ -6,6 +6,7 @@ import {{pkg "java" .global.pkg}}.repo.{{.table.Prefix}}.{{.table.Title}}JpaRepo
 import org.springframework.stereotype.Service;
 import net.fze.common.Standard;
 import net.fze.util.Times;
+import net.fze.util.TypeConv;
 import javax.annotation.Resource;
 import java.util.Optional;
 {{$tableTitle := .table.Title}}\
@@ -39,7 +40,7 @@ public class {{.table.Title}}Service {
                 dst = {{$tableTitle}}{{.global.entity_suffix}}.createDefault();
                 {{$c := try_get .columns "create_time"}}\
                 {{if $c}}{{if equal_any $c.Type 3 4 5 }}\
-                dst.setCreateTime(Times.unix().toLong());
+                dst.setCreateTime(TypeConv.toLong(Times.unix()));
                 {{else}}\
                 dst.setCreateTime(new java.util.Date());{{end}}{{end}}
             }\
@@ -47,7 +48,7 @@ public class {{.table.Title}}Service {
             dst.set{{$c.Prop}}(e.get{{$c.Prop}}());{{end}}\
             {{$c := try_get .columns "update_time"}}
             {{if $c}}{{if equal_any $c.Type 3 4 5 }}\
-            dst.setUpdateTime(Times.unix().toLong());
+            dst.setUpdateTime(TypeConv.toLong(Times.unix()));
             {{else}}\
             dst.setUpdateTime(new java.util.Date());{{end}}{{end}}
             this.repo.save(dst);

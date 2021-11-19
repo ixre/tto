@@ -32,7 +32,21 @@ func (t Typescript) ParseType(typeId int) string {
 }
 
 func (t Typescript) DefaultValue(typeId int) string {
-	return GoValues(typeId)
+	return tsValues(typeId)
+}
+
+func tsValues(typeId int) string {
+	switch typeId {
+	case orm.TypeString:
+		return "''"
+	case orm.TypeBoolean:
+		return "false"
+	case orm.TypeInt16, orm.TypeInt32, orm.TypeInt64:
+		return "0"
+	case orm.TypeFloat32, orm.TypeFloat64:
+		return "0.0"
+	}
+	return "<unknown>"
 }
 
 var _ Lang = new(Typescript)

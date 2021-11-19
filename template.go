@@ -57,10 +57,10 @@ func (g *CodeTemplate) resolve(s string) *CodeTemplate {
 // 返回模板内容
 func (g *CodeTemplate) formatContent(s string) string {
 	s = predefineRegexp.ReplaceAllString(s, "")
-	s = lineJoinRegexp.ReplaceAllString(s, "")
-	s = tplCommentRegexp.ReplaceAllString(s, "")
 	// 去掉模板注释
-
+	s = tplCommentRegexp.ReplaceAllString(s, "")
+	// 去掉多余的换行
+	s = lineJoinRegexp.ReplaceAllString(s, "")
 	return s
 }
 

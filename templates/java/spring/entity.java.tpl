@@ -34,19 +34,29 @@ public class {{.table.Title}}{{.global.entity_suffix}} {
     }
     {{end}}
 
-    /** 拷贝数据  */
-    public {{.table.Title}}{{.global.entity_suffix}} copy({{.table.Title}}{{.global.entity_suffix}} src){
+
+     /** 创建深拷贝  */
+    public {{.table.Title}}{{.global.entity_suffix}} copy(){
         {{.table.Title}}{{.global.entity_suffix}} dst = new {{.table.Title}}{{.global.entity_suffix}}();
         {{range $i,$c := .columns}}
-        dst.set{{$c.Prop}}(src.get{{$c.Prop}}());{{end}}
+        dst.set{{$c.Prop}}(this.get{{$c.Prop}}());{{end}}
         return dst;
     }
-    /** 拷贝数据  */
+
+    /** 转换为MAP  */
     public Map<String,Object> toMap(){
         Map<String,Object> mp = new HashMap<>();\
         {{range $i,$c := .columns}}
         mp.put("{{$c.Prop}}",this.{{$c.Name}});{{end}}
         return mp;
+    }
+
+    /** 拷贝数据  */
+    public static {{.table.Title}}{{.global.entity_suffix}} copy({{.table.Title}}{{.global.entity_suffix}} src){
+        {{.table.Title}}{{.global.entity_suffix}} dst = new {{.table.Title}}{{.global.entity_suffix}}();
+        {{range $i,$c := .columns}}
+        dst.set{{$c.Prop}}(src.get{{$c.Prop}}());{{end}}
+        return dst;
     }
 
     public static {{.table.Title}}{{.global.entity_suffix}} fromMap(Map<String,Object> data){
@@ -61,7 +71,7 @@ public class {{.table.Title}}{{.global.entity_suffix}} {
         {{else if eq $goType "BigDecimal"}}dst.set{{$c.Prop}}(TypeConv.toBigDecimal(data.get("{{$c.Prop}}")));\
         {{else if eq $goType "Date"}}dst.set{{$c.Prop}}(TypeConv.toDateTime(data.get("{{$c.Prop}}")));\
         {{else if eq $goType "Byte[]"}}dst.set{{$c.Prop}}(TypeConv.toBytes(data.get("{{$c.Prop}}")));\
-        {{else}}dst.set{{$c.Prop}}(TypeConv.toString(data.get("{{$c.Name}}")));{{end}}{{end}}
+        {{else}}dst.set{{$c.Prop}}(TypeConv.toString(data.get("{{$c.Prop}}")));{{end}}{{end}}
         return dst;
     }
 

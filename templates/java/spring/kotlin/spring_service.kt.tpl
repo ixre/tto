@@ -19,12 +19,17 @@ class {{.table.Title}}Service {
     @Resource
     lateinit var repo: {{$tableTitle}}JpaRepository
 
-    // 根据ID查找{{.table.Comment}}
-    fun find{{$shortTitle}}ById(id:{{$pkType}}):{{$tableTitle}}{{.global.entity_suffix}}?{
+    /** 根据ID查找{{.table.Comment}} */
+    fun find{{$shortTitle}}ById(id:{{$pkType}}): {{$tableTitle}}{{.global.entity_suffix}}?{
         return this.repo.findByIdOrNull(id)
     }
 
-    // 保存{{.table.Comment}}
+    /** 查找所有{{.table.Comment}} */
+    fun findAll(): List<{{$tableTitle}}{{.global.entity_suffix}}> {
+        return this.repo.findAll()
+    }
+
+    /** 保存{{.table.Comment}} */
     fun save{{$shortTitle}}(e: {{$tableTitle}}{{.global.entity_suffix}}):Error? {
         return catch {
             val dst: {{$tableTitle}}{{.global.entity_suffix}}
@@ -54,12 +59,12 @@ class {{.table.Title}}Service {
         }.error()
     }
 
-    // 批量保存{{.table.Comment}}
+    /** 批量保存{{.table.Comment}} */
     fun saveAll{{$shortTitle}}(entities:Iterable<{{$tableTitle}}{{.global.entity_suffix}}>): Iterable<{{$tableTitle}}{{.global.entity_suffix}}>{
         return this.repo.saveAll(entities)
     }
 
-    // 删除{{.table.Comment}}
+    /** 删除{{.table.Comment}} */
     fun delete{{$shortTitle}}ById(id:{{$pkType}}):Error? {
         return catch {
             this.repo.deleteById(id)

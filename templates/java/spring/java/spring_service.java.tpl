@@ -8,7 +8,7 @@ import net.fze.common.Standard;
 import net.fze.util.Times;
 import net.fze.util.TypeConv;
 import javax.annotation.Resource;
-import java.util.Optional;
+import java.util.List;
 {{$tableTitle := .table.Title}}\
 {{$shortTitle := .table.ShortTitle}}\
 {{$pkName := .table.Pk}}\
@@ -23,6 +23,11 @@ public class {{.table.Title}}Service {
     /** 查找{{.table.Comment}} */
     public {{$tableTitle}}{{.global.entity_suffix}} find{{$shortTitle}}ById({{$pkType}} id){
         return this.repo.findById(id).orElse(null);
+    }
+
+    /** 查找全部{{.table.Comment}} */
+    public List<{{$tableTitle}}{{.global.entity_suffix}}> findAll() {
+        return this.repo.findAll();
     }
 
     /** 保存{{.table.Comment}} */

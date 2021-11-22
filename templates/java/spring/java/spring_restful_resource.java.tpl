@@ -66,15 +66,15 @@ public class {{.table.Title}}Resource {
     /** {{.table.Comment}}列表 */
     @GetMapping
     @Resource(key = "{{$resPrefix}}:list",name="查询{{.table.Comment}}")
-    public List<{{.table.Title}}{{.global.entity_suffix}}> list(@RequestParam(name="params",value="{}") String params) {
+    public List<{{.table.Title}}{{.global.entity_suffix}}> list(@RequestParam(name="params",defaultValue="{}") String params) {
         //val p = ReportUtils.parseParams(params).getValue();
-        return new ArrayList<>();
+        return this.service.findAll();
     }
 
     /** {{.table.Comment}}分页数据 */
     @GetMapping("/paging")
     @Resource(key = "{{$resPrefix}}:paging",name="查询{{.table.Comment}}分页数据")
-    public DataResult paging(@RequestParam(name ="params",value = "{}", required = false) String params,
+    public DataResult paging(@RequestParam(name ="params",defaultValue = "{}", required = false) String params,
                @RequestParam("page") String page,
                @RequestParam("rows") String rows){
         Params p = ReportUtils.parseParams(params);

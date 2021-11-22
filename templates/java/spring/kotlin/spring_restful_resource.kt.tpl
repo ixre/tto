@@ -66,7 +66,7 @@ class {{.table.Title}}Resource {
     @Resource("{{$resPrefix}}:list",name="查询{{.table.Comment}}")
     fun list(@RequestParam("params") params:String="{}"): List<{{.table.Title}}{{.global.entity_suffix}}> {
         //val p = ReportUtils.parseParams(params).getValue()
-        return mutableListOf()
+        return this.service.findAll()
     }
 
     /** {{.table.Comment}}分页数据 */

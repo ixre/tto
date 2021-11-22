@@ -18,10 +18,11 @@ import java.util.ArrayList;
 {{$shortTitle := .table.ShortTitle}}
 {{$pkType := type "kotlin" .table.PkType}}
 {{$resPrefix := replace (name_path .table.Name) "/" ":"}}
+{{$basePath := join .global.base_path (name_path .table.Name) "/"}}\
 
 /* {{.table.Comment}}资源 */
 @RestController
-@RequestMapping("/{{name_path .table.Name}}")
+@RequestMapping("{{$basePath}}")
 public class {{.table.Title}}Resource {
     @Autowired private {{.table.Title}}Service service;
     @Autowired private ReportComponent reportComponent;

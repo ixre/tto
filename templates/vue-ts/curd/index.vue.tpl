@@ -99,7 +99,7 @@ import {parseResult} from "@/fx";
 
 // {{.table.Comment}}数据映射类
 interface ListModel {  {{range $i,$c := .columns}}
-    {{$c.Name}}:{{type "ts" $c.Type}} // {{$c.Comment}} \
+    {{$c.Name}}: {{type "ts" $c.Type}} // {{$c.Comment}} \
     {{end}}
 }
 

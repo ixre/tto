@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.*
 {{$shortTitle := .table.ShortTitle}}
 {{$pkType := type "kotlin" .table.PkType}}
 {{$resPrefix := replace (name_path .table.Name) "/" ":"}}
+{{$basePath := join .global.base_path (name_path .table.Name) "/"}}\
 
 /* {{.table.Comment}}资源 */
 @RestController
-@RequestMapping("/{{name_path .table.Name}}")
+@RequestMapping("{{$basePath}}")
 class {{.table.Title}}Resource {
     @Autowired private lateinit var service:{{.table.Title}}Service
     @Autowired private lateinit var reportComponent: ReportComponent

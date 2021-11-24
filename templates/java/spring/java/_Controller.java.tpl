@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 @RequestMapping("/admin/{{.table.Prefix}}")
 public class {{.table.Title}}Controller {
-    @Autowired private {{.table.Title}}Service service;
+    @Inject private {{.table.Title}}Service service;
 
     /** {{.table.Comment}}列表 */
     @GetMapping("/{{lower_title .table.Title}}List")

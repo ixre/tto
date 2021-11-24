@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import net.fze.common.Standard;
 import net.fze.util.Times;
 import net.fze.util.TypeConv;
-import javax.annotation.Resource;
+import javax.inject.Inject;
 import java.util.List;
 {{$tableTitle := .table.Title}}\
 {{$shortTitle := .table.ShortTitle}}\
@@ -17,7 +17,7 @@ import java.util.List;
 /** {{.table.Comment}}服务  */
 @Service("{{.table.Name}}_service")
 public class {{.table.Title}}Service {
-    @Resource
+    @Inject
     private {{$tableTitle}}JpaRepository repo;
 
     /** 查找{{.table.Comment}} */

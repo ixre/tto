@@ -10,6 +10,7 @@ import net.fze.extras.report.DataResult
 import net.fze.extras.report.ReportUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
+import javax.inject.Inject
 
 
 {{$tableTitle := .table.Title}}
@@ -22,8 +23,8 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("{{$basePath}}")
 class {{.table.Title}}Resource {
-    @Autowired private lateinit var service:{{.table.Title}}Service
-    @Autowired private lateinit var reportComponent: ReportComponent
+    @Inject private lateinit var service:{{.table.Title}}Service
+    @Inject private lateinit var reportComponent: ReportComponent
 
     /** 获取{{.table.Comment}} */
     @GetMapping("/{id}")

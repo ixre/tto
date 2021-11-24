@@ -11,6 +11,7 @@ import net.fze.extras.report.ReportUtils;
 import net.fze.extras.report.Params;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import javax.inject.Inject;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -24,8 +25,8 @@ import java.util.ArrayList;
 @RestController
 @RequestMapping("{{$basePath}}")
 public class {{.table.Title}}Resource {
-    @Autowired private {{.table.Title}}Service service;
-    @Autowired private ReportComponent reportComponent;
+    @Inject private {{.table.Title}}Service service;
+    @Inject private ReportComponent reportComponent;
 
     /** 获取{{.table.Comment}} */
     @GetMapping("/{id}")

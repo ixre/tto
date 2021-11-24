@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service
 import org.springframework.data.repository.findByIdOrNull
 import net.fze.common.catch
 import net.fze.util.Times
-import javax.annotation.Resource
+import javax.inject.Inject
 {{$tableTitle := .table.Title}}\
 {{$shortTitle := .table.ShortTitle}}\
 {{$pkName := .table.Pk}}\
@@ -16,7 +16,7 @@ import javax.annotation.Resource
 /** {{.table.Comment}}服务  */
 @Service("{{.table.Name}}_service")
 class {{.table.Title}}Service {
-    @Resource
+    @Inject
     lateinit var repo: {{$tableTitle}}JpaRepository
 
     /** 根据ID查找{{.table.Comment}} */

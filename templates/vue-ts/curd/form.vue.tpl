@@ -2,7 +2,7 @@
 #!target:ts/feature/{{name_path .table.Name}}/form.vue
 <template>
   <div class="createPost-container">
-    <el-form ref="formData" class="form-container mod-form" size="small"
+    <el-form ref="dataForm" class="form-container mod-form" size="small"
              label-position="right" :model="formData" :rules="rules">
       <div class="createPost-main-container mod-form-container">
         <el-row :gutter="15">
@@ -64,7 +64,7 @@ export default class extends Vue {
   @Prop({ default: 0 }) private value!: number|string; /* 如果id有值,则为更新. 反之为新增. 如：:disabled="id" */
 
   private formData :I{{$Class}} = default{{$Class}}();
-  private requesting = 0;
+  private requesting = false;
 
   // 设置验证表单字段的规则,取消验证请注释对应的规则
   /** #! 验证规则会反应到组件,比如required,所以不用在组件上再加required */
@@ -111,10 +111,10 @@ export default class extends Vue {
     this.$emit("callback",arg);
   }
   private submitForm() {
-    (this.$refs.formData as Form).validate(async valid => {
+    (this.$refs.dataForm as Form).validate(async valid => {
       if (valid) {
-        if(this.requesting === 1)return;this.requesting = 1;
-        let ret = await (this.value?update{{$Class}}(this.value,this.formData):create{{$Class}}(this.formData)).finally(()=>this.requesting = 0);
+        if(this.requesting)return;this.requesting=true;
+        let ret = await (this.value?update{{$Class}}(this.value,this.formData):create{{$Class}}(this.formData)).finally(()=>this.requesting=false);
         const {errCode,errMsg} = parseResult(ret.data);
         if(errCode === 0){
           this.$notify.success({

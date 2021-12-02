@@ -112,7 +112,7 @@ interface ListModel {  {{range $i,$c := .columns}}
 })
 export default class extends Vue {
     private dialog:{title:string,open:boolean,params:any,modal:any}= {title:"Form",open:false,params:0,modal: null};
-    private requesting = 0;
+    private requesting = false;
     private tableHeight = 0;
     private selectedIds :{{type "ts" $PkType}}[]= [];
     private selectedRows:ListModel[] = [];
@@ -226,8 +226,8 @@ export default class extends Vue {
             cancelButtonText: '取消',
             type: 'warning'
         }).then(async () => {
-            if(this.requesting === 1)return;this.requesting = 1;
-            let ret = await delete{{$Class}}(row.{{.table.Pk}}).finally(()=>this.requesting = 0);
+            if(this.requesting)return;this.requesting=true;
+            let ret = await delete{{$Class}}(row.{{.table.Pk}}).finally(()=>this.requesting=false);
             let result = parseResult(ret.data);
             await this.notifyResult(result);
             if (result.errCode === 0) {
@@ -242,8 +242,8 @@ export default class extends Vue {
             cancelButtonText: '取消',
             type: 'warning'
         }).then(async () => {
-            if(this.requesting === 1)return;this.requesting = 1;
-            let ret = await batchDelete{{$Class}}(this.selectedIds).finally(()=>this.requesting = 0);
+            if(this.requesting)return;this.requesting=true;
+            let ret = await batchDelete{{$Class}}(this.selectedIds).finally(()=>this.requesting=false);
             let result = parseResult(ret.data);
             await this.notifyResult(result);
             if (result.errCode === 0) {

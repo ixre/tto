@@ -29,10 +29,64 @@ func ({{$p}} *{{$structName}}) Handle(g *echo.Group) {
   // {{.table.Name}} router
   g.GET("/{{$namePath}}/paging",{{$p}}.paging{{$shortTitle}})
   g.GET("/{{$namePath}}/:id",{{$p}}.get{{$shortTitle}})
-  g.POST("/{{$namePath}}",{{$p}}.create{{$shortTitle}})
-  g.PUT("/{{$namePath}}/:id",{{$p}}.update{{$shortTitle}})
-  g.DELETE("/{{$namePath}}/:id",{{$p}}.delete{{$shortTitle}})
   g.GET("/{{$namePath}}",{{$p}}.query{{$shortTitle}})
+  g.POST("/{{$namePath}}",{{$p}}.create{{$shortTitle}})
+  g.DELETE("/{{$namePath}}/:id",{{$p}}.delete{{$shortTitle}})
+  g.PUT("/{{$namePath}}/:id",{{$p}}.update{{$shortTitle}})
+}
+
+func ({{$p}} *{{$structName}}) get{{$shortTitle}}(ctx echo.Context) error {
+  /** #! 转换主键 */
+  {{ $goType := type "protobuf" .table.PkType}}\
+  {{if eq $goType "int32"}}{{$pk}} := int32(typeconv.MustInt(ctx.Param("id")))\
+  {{else if eq $goType "int64"}}{{$pk}} := int64(typeconv.MustInt(ctx.Param("id")))\
+  {{else}}{{$pk}} := ctx.Param("id"){{end}}
+  trans,cli,_ := service.{{$title}}ServiceClient()
+  defer trans.Close()
+  ret, _ := cli.Get{{$shortTitle}}(context.TODO(), &proto.{{$pkType}}{Value:{{$pk}}})
+  return ctx.JSON(http.StatusOK,ret)
+}
+
+func ({{$p}} *{{$structName}}) create{{$shortTitle}}(ctx echo.Context) error {
+  dst := proto.Save{{$shortTitle}}Request{}
+  err := ctx.Bind(&dst)
+  if err == nil{
+    trans,cli,_ := service.{{$title}}ServiceClient()
+    defer trans.Close()
+    ret, _ := cli.Save{{$shortTitle}}(context.TODO(), &dst)
+    return ctx.JSON(http.StatusOK,ret)
+  }
+  return err
+}
+
+func ({{$p}} *{{$structName}}) delete{{$shortTitle}}(ctx echo.Context) error {
+  /** #! 转换主键 */
+  {{ $goType := type "protobuf" .table.PkType}}\
+  {{if eq $goType "int32"}}{{$pk}} := int32(typeconv.MustInt(ctx.Param("id")))\
+  {{else if eq $goType "int64"}}{{$pk}} := int64(typeconv.MustInt(ctx.Param("id")))\
+  {{else}}{{$pk}} := ctx.Param("id"){{end}}
+  trans, cli, _ := service.{{$title}}ServiceClient()
+  defer trans.Close()
+  ret, _ := cli.Delete{{$shortTitle}}(context.TODO(), &proto.{{$pkType}}{Value: {{$pk}}})
+  return ctx.JSON(http.StatusOK, ret)
+}
+
+func ({{$p}} *{{$structName}}) update{{$shortTitle}}(ctx echo.Context) error {
+  dst := proto.Save{{$shortTitle}}Request{}
+  err := ctx.Bind(&dst)
+  if err == nil{
+    /** #! 转换主键 */
+    {{ $goType := type "protobuf" .table.PkType}}\
+    {{if eq $goType "int32"}}{{$pk}} := int32(typeconv.MustInt(ctx.Param("id")))\
+    {{else if eq $goType "int64"}}{{$pk}} := int64(typeconv.MustInt(ctx.Param("id")))\
+    {{else}}{{$pk}} := ctx.Param("id"){{end}}
+    dst.{{.table.PkProp}} = {{$pk}}
+    trans, cli, _ := service.{{$title}}ServiceClient()
+    defer trans.Close()
+    ret, _ := cli.Save{{$shortTitle}}(context.TODO(), &dst)
+    return ctx.JSON(http.StatusOK, ret)
+  }
+  return err
 }
 
 func ({{$p}} *{{$structName}}) paging{{$shortTitle}}(ctx echo.Context) error {
@@ -79,68 +133,10 @@ func ({{$p}} *{{$structName}}) paging{{$shortTitle}}(ctx echo.Context) error {
     return ctx.JSON(http.StatusOK, data)
 }
 
-func ({{$p}} *{{$structName}}) get{{$shortTitle}}(ctx echo.Context) error {
-  /** #! 转换主键 */
-  {{ $goType := type "protobuf" .table.PkType}}\
-  {{if eq $goType "int32"}}{{$pk}} := int32(typeconv.MustInt(ctx.Param("id")))\
-  {{else if eq $goType "int64"}}{{$pk}} := int64(typeconv.MustInt(ctx.Param("id")))\
-  {{else}}{{$pk}} := ctx.Param("id"){{end}}
-  trans,cli,_ := service.{{$title}}ServiceClient()
-  defer trans.Close()
-  ret, _ := cli.Get{{$shortTitle}}(context.TODO(), &proto.{{$pkType}}{Value:{{$pk}}})
-  return ctx.JSON(http.StatusOK,ret)
-}
-
-func ({{$p}} *{{$structName}}) create{{$shortTitle}}(ctx echo.Context) error {
-  dst := proto.Save{{$shortTitle}}Request{}
-  err := ctx.Bind(&dst)
-  if err == nil{
-    trans,cli,_ := service.{{$title}}ServiceClient()
-    defer trans.Close()
-    ret, _ := cli.Save{{$shortTitle}}(context.TODO(), &dst)
-    return ctx.JSON(http.StatusOK,ret)
-  }
-  return err
-}
-
-func ({{$p}} *{{$structName}}) update{{$shortTitle}}(ctx echo.Context) error {
-  //mp := map[string]interface{}{}
-  //if err := ctx.Bind(&mp); err != nil {
-  //    return nil
-  //}
-  /** #! 转换主键 */
-  {{ $goType := type "protobuf" .table.PkType}}\
-  {{if eq $goType "int32"}}{{$pk}} := int32(typeconv.MustInt(ctx.Param("id")))\
-  {{else if eq $goType "int64"}}{{$pk}} := int64(typeconv.MustInt(ctx.Param("id")))\
-  {{else}}{{$pk}} := ctx.Param("id"){{end}}
-  dst := proto.Save{{$shortTitle}}Request{}
-  err := ctx.Bind(&dst)
-  if err == nil{
-    dst.{{.table.PkProp}} = {{$pk}}
-    trans, cli, _ := service.{{$title}}ServiceClient()
-    defer trans.Close()
-    ret, _ := cli.Save{{$shortTitle}}(context.TODO(), &dst)
-    return ctx.JSON(http.StatusOK, ret)
-  }
-  return err
-}
-
-func ({{$p}} *{{$structName}}) delete{{$shortTitle}}(ctx echo.Context) error {
-/** #! 转换主键 */
-{{ $goType := type "protobuf" .table.PkType}}\
-{{if eq $goType "int32"}}{{$pk}} := int32(typeconv.MustInt(ctx.Param("id")))\
-{{else if eq $goType "int64"}}{{$pk}} := int64(typeconv.MustInt(ctx.Param("id")))\
-{{else}}{{$pk}} := ctx.Param("id"){{end}}
-trans, cli, _ := service.{{$title}}ServiceClient()
-defer trans.Close()
-ret, _ := cli.Delete{{$shortTitle}}(context.TODO(), &proto.{{$pkType}}{Value: {{$pk}}})
-return ctx.JSON(http.StatusOK, ret)
-}
-
 func ({{$p}} *{{$structName}}) query{{$shortTitle}}(ctx echo.Context) error {
   dst := &proto.Query{{$shortTitle}}Request{}
   trans, cli, _ := service.{{$title}}ServiceClient()
   defer trans.Close()
   ret, _ := cli.Query{{$shortTitle}}List(context.TODO(), dst)
-  return ctx.JSON(http.StatusOK,ret.List)
+  return ctx.JSON(http.StatusOK,ret.Value)
 }

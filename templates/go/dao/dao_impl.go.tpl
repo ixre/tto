@@ -113,7 +113,7 @@ func ({{$p}} *{{$structName}}) PagingQuery{{$shortTitle}}(begin, end int,where, 
 	_ = {{$p}}._orm.Connector().ExecScalar(s,&total)
 	if total > 0{
 	    s = fmt.Sprintf(`SELECT * FROM {{.table.Name}} WHERE %s %s
-	        LIMIT {{if eq .global.db "pgsql"}}$2 OFFSET $1{{else}}$1,$2{{end}}`,
+	        {{if eq .global.db "pgsql"}}LIMIT $2 OFFSET $1{{else}}LIMIT $1,$2{{end}}`,
             where, orderBy)
         err := {{$p}}._orm.Connector().Query(s, func(_rows *sql.Rows) {
             rows = db.RowsToMarshalMap(_rows)

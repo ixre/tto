@@ -243,7 +243,7 @@ func getReleases() (string, error) {
 	cli := http.Client{}
 	req, _ := http.NewRequest("GET", versionInfoURL, nil)
 	cli.Timeout = time.Second * 6
-	req.Header.Add("Usr-Agent", "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:82.0) Gecko/20100101 Firefox/82.0")
+	req.Header.Add("User-Agent", "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:82.0) Gecko/20100101 Firefox/82.0")
 	rsp, err := cli.Do(req)
 	if err == nil {
 		bytes, _ := ioutil.ReadAll(rsp.Body)

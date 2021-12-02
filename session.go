@@ -148,6 +148,7 @@ func (s *sessionImpl) init() Session {
 	}
 	s.Var("db", s.driver)
 	s.Var("year", time.Now().Format("2006"))
+	s.Var("organization", "56X.NET")
 	return s
 }
 

@@ -49,7 +49,7 @@
         entity["{{$c.Name}}"] = utils.unix2str(entity["{{$c.Name}}"]);
         {{end}}
         {{if ends_with $c.Name "_amount"}}
-        entity["{{$c.Name}}"] = utils.toAmount(entity["{{$c.Name}}"]);
+        entity["{{$c.Name}}"] = utils.formatMoney(entity["{{$c.Name}}"]);
         {{end}}
         {{end}}
         $b.json.bind('form1', entity);

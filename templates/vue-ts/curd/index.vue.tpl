@@ -41,7 +41,7 @@
     </div>
     <!-- 表单数据 -->
     <el-table ref="table" v-loading="list.loading" :data="list.data" :height="tableHeight"
-              fit :highlight-current-row="false" row-key="{{$Pk}}"
+              fit :highlight-current-row="false" row-key="{{$Pk}}" border
               @selection-change="handleSelectionChange" class="mod-grid-table">
         <el-table-column align="center" type="selection" width="45" />
         {{range $i,$c := .columns}} \
@@ -71,7 +71,7 @@
         {{end}} \
         {{end}} \
 
-        <el-table-column align="center" width="160" label="操作">
+        <el-table-column align="center" width="160" label="操作" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" icon="el-icon-edit-outline" title="编辑" @click="handleEdit(scope.row)">编辑</el-button>
               <el-button type="text" icon="el-icon-delete" title="删除" v-loading="requesting" @click="handleDelete(scope.row)">删除</el-button>
@@ -138,7 +138,7 @@ export default class extends Vue {
       state: this.stateOptions[0].value,
       order_by: this.sortOptions[0].value,
     };
-    
+
     created() {
         this.fetchData();
     }

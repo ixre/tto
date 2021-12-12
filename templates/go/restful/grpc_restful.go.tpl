@@ -18,8 +18,6 @@ import (
   "net/http"
 )
 
-var _ echox.GroupHandler = new({{$structName}});
-
 // {{.table.Comment}}
 type {{$structName}} struct{
 }

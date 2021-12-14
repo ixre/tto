@@ -33,9 +33,9 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	fm["upper"] = t.upper
 	// 首字母小写: 如:{{lower_title .table.Name}}
 	fm["lower_title"] = t.lowerTitle
-	// 类型: 如:{{type "go" .columns[0].Type}}
+	// 类型: 如:{{type "go" .columns[0].AdType}}
 	fm["type"] = t.langType
-	// 返回SQL/ORM类型, 如：{{sql_type "py" .columns[0].Type}}
+	// 返回SQL/ORM类型, 如：{{sql_type "py" .columns[0].AdType}}
 	fm["sql_type"] = t.ormType
 	// 返回主键代码类型
 	fm["pk_type"] = t.langPkType
@@ -43,7 +43,7 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	fm["pkg"] = t.langPkg
 	// 包名: {{pkg "go" "github/com/ixre"}} => github.com/ixre
 	fm["pkg_name"] = t.langPkgName
-	// 默认值, 如:{{default "go" .columns[0].Type}}
+	// 默认值, 如:{{default "go" .columns[0].AdType}}
 	fm["default"] = t.langDefaultValue
 	// 是否相等，如：{{equal "go" "rust"}
 	fm["equal"] = t.equal

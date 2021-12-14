@@ -214,9 +214,9 @@ export default class extends Vue {
 
     private async notifyResult({errCode, errMsg}) {
       if (errCode === 0) {
-        this.$notify.success({title: '提示', message: errMsg || '操作成功', duration: 2000});
+        this.$notify.success({title: '提示', message: !errMsg ? errMsg : '操作成功', duration: 2000});
       } else {
-        await this.$alert(errMsg || "操作失败", "提示");
+        await this.$alert( !errMsg ? errMsg : '操作失败', "提示");
       }
     }
 

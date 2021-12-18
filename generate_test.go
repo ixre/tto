@@ -48,7 +48,7 @@ func TestGenAll(t *testing.T) {
 	}
 
 	// 设置包名
-	dg.Package("go2o/core")
+	dg.Package("github.com/ixre/go2o/core")
 	// 清理上次生成的代码
 	os.RemoveAll(genDir)
 	// 生成GoRepo代码

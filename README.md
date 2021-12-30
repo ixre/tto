@@ -67,7 +67,7 @@ Usage of tto:
   -debug
         debug mode
   -excludes string
-        exclude tables by prefix
+        exclude tables by prefix; multiple use ',' to split
   -local
         don't update any new version
   -m string

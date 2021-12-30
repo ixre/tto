@@ -188,7 +188,7 @@ func filterTables(tables []*orm.Table, noTable string) []*orm.Table {
 	if noTable == "" {
 		return tables
 	}
-	excludes := strings.Split(noTable, ";")
+	excludes := strings.Split(noTable, ",")
 	arr := make([]*orm.Table, 0)
 	for _, v := range tables {
 		match := false

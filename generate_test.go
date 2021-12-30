@@ -14,7 +14,7 @@ var (
 	dbName     = ""
 	dbPrefix   = "mm_"
 	connString = "root:@tcp(127.0.0.1:3306)/baozhang?charset=utf8"
-	genDir     = "generated_code/"
+	genDir     = "./generated_code/"
 	tplDir     = "./templates/java/spring/kt"
 )
 

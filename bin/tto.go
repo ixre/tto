@@ -136,7 +136,7 @@ func generate() {
 		return
 	}
 	// 获取排除的文件名
-	excludePatterns := []string{}
+	var excludePatterns []string
 	excludePatternParam := re.GetString("code.exclude_patterns")
 	if len(excludePatternParam) == 0 {
 		excludePatternParam = re.GetString("code.exclude_files")
@@ -188,12 +188,12 @@ func filterTables(tables []*orm.Table, noTable string) []*orm.Table {
 	if noTable == "" {
 		return tables
 	}
-	excludes := strings.Split(noTable, ",")
+	excludes := strings.Split(strings.ToLower(noTable), ",")
 	arr := make([]*orm.Table, 0)
 	for _, v := range tables {
 		match := false
 		for _, k := range excludes {
-			if k != "" && strings.Index(v.Name, k) != -1 {
+			if k != "" && strings.Index(strings.ToLower(v.Name), k) != -1 {
 				match = true
 				break
 			}

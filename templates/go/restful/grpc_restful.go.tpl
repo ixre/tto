@@ -10,7 +10,6 @@ package restful
 
 import (
   "context"
-  "encoding/json"
   "github.com/ixre/gof/types/typeconv"
   "github.com/labstack/echo/v4"
   "{{pkg "go" .global.pkg}}/service"
@@ -22,7 +21,7 @@ import (
 type {{$structName}} struct{
 }
 
-func ({{$p}} *{{$structName}}) Routes(g *echo.Group) {
+func ({{$p}} {{$structName}}) Routes(g *echo.Group) {
   // {{.table.Name}} router
   g.GET("/{{$namePath}}/paging",{{$p}}.paging{{$shortTitle}})
   g.GET("/{{$namePath}}/:id",{{$p}}.get{{$shortTitle}})

@@ -113,7 +113,7 @@ func (g *CodeTemplate) baseContent() string {
 #
 # Get started: https://github.com/ixre/tto
 #
-# Copyright (C) {{.global.year}} {{.global.organization}}, All rights reserved.
+# Copyright (C) 2009-{{.global.year}} {{.global.organization}}, All rights reserved.
 #
 # name : $file_name$
 # author : {{.global.user}}
@@ -138,7 +138,7 @@ func (g *CodeTemplate) copyright(s string) string {
  *
  * Get started: https://github.com/ixre/tto
  *
- * Copyright (C) {{.global.year}} {{.global.organization}}, All rights reserved.
+ * Copyright (C) 2009-{{.global.year}} {{.global.organization}}, All rights reserved.
  *
  * name : $file_name$
  * author : {{.global.user}}

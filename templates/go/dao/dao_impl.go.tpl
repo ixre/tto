@@ -23,85 +23,85 @@ type {{$structName}} struct{
 
 var {{$structName}}Mapped = false
 
-// Create new {{$title}}Dao
+// New{{$title}}Dao Create new {{$title}}Dao
 func New{{$title}}Dao(o orm.Orm) dao.I{{$title}}Dao{
     if !{{$structName}}Mapped{
-        _ = o.Mapping(model.{{$title}}{},"{{.table.Name}}")
+        _ = o.Mapping(model.{{$shortTitle}}{},"{{.table.Name}}")
         {{$structName}}Mapped = true
     }
     return &{{$structName}}{
         _orm:o,
     }
 }
-// Get {{.table.Comment}}
-func ({{$p}} *{{$structName}}) Get{{$shortTitle}}(primary interface{})*model.{{$title}}{
-    e := model.{{$title}}{}
+// Get{{$shortTitle}} Get {{.table.Comment}}
+func ({{$p}} *{{$structName}}) Get{{$shortTitle}}(primary interface{})*model.{{$shortTitle}}{
+    e := model.{{$shortTitle}}{}
     err := {{$p}}._orm.Get(primary,&e)
     if err == nil{
         return &e
     }
     if err != sql.ErrNoRows{
-      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$title}}")
+      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$shortTitle}}")
     }
     return nil
 }
 
-// GetBy {{.table.Comment}}
-func ({{$p}} *{{$structName}}) Get{{$shortTitle}}By(where string,v ...interface{})*model.{{$title}}{
-    e := model.{{$title}}{}
+// Get{{$shortTitle}}By GetBy {{.table.Comment}}
+func ({{$p}} *{{$structName}}) Get{{$shortTitle}}By(where string,v ...interface{})*model.{{$shortTitle}}{
+    e := model.{{$shortTitle}}{}
     err := {{$p}}._orm.GetBy(&e,where,v...)
     if err == nil{
         return &e
     }
     if err != sql.ErrNoRows{
-      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$title}}")
+      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$shortTitle}}")
     }
     return nil
 }
 
-// Count {{.table.Comment}} by condition
+// Count{{$shortTitle}} Count {{.table.Comment}} by condition
 func ({{$p}} *{{$structName}}) Count{{$shortTitle}}(where string,v ...interface{})(int,error){
-   return {{$p}}._orm.Count(model.{{$title}}{},where,v...)
+   return {{$p}}._orm.Count(model.{{$shortTitle}}{},where,v...)
 }
 
-// Select {{.table.Comment}}
-func ({{$p}} *{{$structName}}) Select{{$shortTitle}}(where string,v ...interface{})[]*model.{{$title}} {
-    list := make([]*model.{{$title}},0)
+// Select{{$shortTitle}} Select {{.table.Comment}}
+func ({{$p}} *{{$structName}}) Select{{$shortTitle}}(where string,v ...interface{})[]*model.{{$shortTitle}} {
+    list := make([]*model.{{$shortTitle}},0)
     err := {{$p}}._orm.Select(&list,where,v...)
     if err != nil && err != sql.ErrNoRows{
-      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$title}}")
+      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$shortTitle}}")
     }
     return list
 }
 
-// Save {{.table.Comment}}
-func ({{$p}} *{{$structName}}) Save{{$shortTitle}}(v *model.{{$title}})(int,error){
+// Save{{$shortTitle}} Save {{.table.Comment}}
+func ({{$p}} *{{$structName}}) Save{{$shortTitle}}(v *model.{{$shortTitle}})(int,error){
     id,err := orm.Save({{$p}}._orm,v,int(v.{{title .table.Pk}}))
     if err != nil && err != sql.ErrNoRows{
-      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$title}}")
+      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$shortTitle}}")
     }
     return id,err
 }
 
-// Delete {{.table.Comment}}
+// Delete{{$shortTitle}} Delete {{.table.Comment}}
 func ({{$p}} *{{$structName}}) Delete{{$shortTitle}}(primary interface{}) error {
-    err := {{$p}}._orm.DeleteByPk(model.{{$title}}{}, primary)
+    err := {{$p}}._orm.DeleteByPk(model.{{$shortTitle}}{}, primary)
     if err != nil && err != sql.ErrNoRows{
-      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$title}}")
+      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$shortTitle}}")
     }
     return err
 }
 
-// Batch Delete {{.table.Comment}}
+// BatchDelete{{$shortTitle}} Batch Delete {{.table.Comment}}
 func ({{$p}} *{{$structName}}) BatchDelete{{$shortTitle}}(where string,v ...interface{})(int64,error) {
-    r,err := {{$p}}._orm.Delete(model.{{$title}}{},where,v...)
+    r,err := {{$p}}._orm.Delete(model.{{$shortTitle}}{},where,v...)
     if err != nil && err != sql.ErrNoRows{
-      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$title}}")
+      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$shortTitle}}")
     }
     return r,err
 }
 
-// Query paging data
+// PagingQuery{{$shortTitle}} Query paging data
 func ({{$p}} *{{$structName}}) PagingQuery{{$shortTitle}}(begin, end int,where, orderBy string) (total int, rows []map[string]interface{}) {
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
@@ -109,13 +109,13 @@ func ({{$p}} *{{$structName}}) PagingQuery{{$shortTitle}}(begin, end int,where, 
 	if where == "" {
 	    where = "1=1"
 	}
-	s := fmt.Sprintf(`SELECT COUNT(0) FROM {{.table.Name}} WHERE %s`, where)
-	_ = {{$p}}._orm.Connector().ExecScalar(s,&total)
+	query := fmt.Sprintf(`SELECT COUNT(0) FROM {{.table.Name}} WHERE %s`, where)
+	_ = {{$p}}._orm.Connector().ExecScalar(query,&total)
 	if total > 0{
-	    s = fmt.Sprintf(`SELECT * FROM {{.table.Name}} WHERE %s %s
+	    query = fmt.Sprintf(`SELECT * FROM {{.table.Name}} WHERE %s %s
 	        {{if eq .global.db "pgsql"}}LIMIT $2 OFFSET $1{{else}}LIMIT $1,$2{{end}}`,
             where, orderBy)
-        err := {{$p}}._orm.Connector().Query(s, func(_rows *sql.Rows) {
+        err := {{$p}}._orm.Connector().Query(query, func(_rows *sql.Rows) {
             rows = db.RowsToMarshalMap(_rows)
         }, begin, end-begin)
         if err != nil{

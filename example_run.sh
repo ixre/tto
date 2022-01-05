@@ -5,11 +5,14 @@
 # + generator
 #  - templates
 #  - tto.conf
-# - example.sh
+# - example_run.sh
 # ```
 
-CONF_DIR=$(dirname "$0")/generator
+if [[ $(whereis tto) = 'tto:' ]]; then
+  echo '未安装tto客户端,请运行安装命令： curl -L https://raw.githubusercontent.com/ixre/tto/master/install | sh'
+fi
 
+CONF_DIR=$(dirname "$0")/generator
 tto -conf "$CONF_DIR"/tto.conf -t "$CONF_DIR"/templates -o output -excludes tmp_ -clean
 
 # Replace generator description part of code file

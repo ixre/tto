@@ -57,12 +57,12 @@ class {{.table.Title}}Service {
             } else {
                 dst = {{$tableTitle}}{{.global.entity_suffix}}.createDefault()
                 {{$c := try_get .columns "create_time"}}\
-                {{if $c }}dst.createTime = Times.Instance.unix().toLong(){{end}}
+                {{if $c }}dst.createTime = Times.unix().toLong(){{end}}
             }
             {{range $i,$c := exclude .columns $pkName "create_time" "update_time"}}
             dst.{{lower_title $c.Prop}} = e.{{lower_title $c.Prop}}{{end}}\
             {{$c := try_get .columns "update_time"}}
-            {{if $c}}dst.updateTime = Times.Instance.unix().toLong(){{end}}
+            {{if $c}}dst.updateTime = Times.unix().toLong(){{end}}
             this.repo.persistAndFlush(dst)
             null
         }.error()

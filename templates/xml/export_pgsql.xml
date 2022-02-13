@@ -7,13 +7,15 @@
     <Query>
         <![CDATA[
         SELECT * FROM "{{.table.Name}}"
-        ORDER BY {{.table.Pk }} DESC LIMIT {page_size} OFFSET {page_offset}
+        WHERE {where}
+        ORDER BY {order_by} DESC LIMIT {page_size} OFFSET {page_offset}
      ]]>
     </Query>
     <Import><![CDATA[]]></Import>
     <Total>
         <![CDATA[
-            SELECT COUNT(0) FROM "{{.table.Name}}"
+            SELECT COUNT({{.table.Pk }}) FROM "{{.table.Name}}"
+            WHERE {where}
         ]]>
     </Total>
 </ExportItemConfig>

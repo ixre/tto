@@ -35,6 +35,7 @@ var langMap = map[string]Lang{
 	"kotlin":     &KotlinLang{},
 	"python":     &PythonLang{},
 	"typescript": &Typescript{},
+	"csharp":     &CSharpLang{},
 	"protobuf":   &Protobuf{},
 	"thrift":     &Thrift{},
 	"dart":       &dart{},
@@ -50,6 +51,8 @@ func Get(n string) Lang {
 		n = "kotlin"
 	case "pb", "grpc":
 		n = "protobuf"
+	case "cs":
+		n = "csharp"
 	}
 	if l, b := langMap[n]; b {
 		return l

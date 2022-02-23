@@ -4,6 +4,7 @@ package {{pkg "java" .global.pkg}}.service
 import {{pkg "java" .global.pkg}}.entity.{{.table.Title}}{{.global.entity_suffix}}
 import {{pkg "java" .global.pkg}}.repo.{{.table.Prefix}}.{{.table.Title}}JpaRepository
 import org.springframework.stereotype.Service
+import org.springframework.data.domain.Example
 import org.springframework.data.repository.findByIdOrNull
 import net.fze.common.catch
 import net.fze.util.Times
@@ -25,7 +26,7 @@ class {{.table.Title}}Service {
     }
 
     /** 查找所有{{.table.Comment}} */
-    fun findAll(): List<{{$tableTitle}}{{.global.entity_suffix}}> {
+    fun findAll{{$shortTitle}}(): List<{{$tableTitle}}{{.global.entity_suffix}}> {
         return this.repo.findAll()
     }
 
@@ -57,6 +58,16 @@ class {{.table.Title}}Service {
             this.repo.save(dst)
             null
         }.error()
+    }
+
+    /** 根据对象条件查找 */
+    fun find{{$shortTitle}}By(o:{{$tableTitle}}{{.global.entity_suffix}}):{{$tableTitle}}{{.global.entity_suffix}}?{
+        return this.repo.findOne(Example.of(o)).orElse(null)
+    }
+
+    /** 根据对象条件查找 */
+    fun find{{$shortTitle}}ListBy(o:{{$tableTitle}}{{.global.entity_suffix}}):List<{{$tableTitle}}{{.global.entity_suffix}}> {
+        return this.repo.findAll(Example.of(o));
     }
 
     /** 批量保存{{.table.Comment}} */

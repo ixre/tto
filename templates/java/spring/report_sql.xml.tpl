@@ -14,7 +14,7 @@
     <Import><![CDATA[]]></Import>
     <Total>
         <![CDATA[
-            SELECT COUNT({{.table.Pk }}) FROM {{.table.Name}}
+            SELECT COUNT(0) FROM {{.table.Name}}
         ]]>
     </Total>
 </ExportItemConfig>

@@ -13,15 +13,16 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
+{{$entity := join .table.Title .global.entity_suffix}}
 /** {{.table.Comment}} */
 @Entity
 @Table(name = "{{.table.Name}}", schema = "{{.table.Schema}}")
-public class {{.table.Title}}{{.global.entity_suffix}} {
+public class {{$entity}} {
     {{range $i,$c := .columns}}{{$type := type "java" $c.Type}}
     private {{$type}} {{$c.Name}};
-    public void set{{$c.Prop}}({{$type}} {{$c.Name}}){
+    public {{$entity}} set{{$c.Prop}}({{$type}} {{$c.Name}}){
         this.{{$c.Name}} = {{$c.Name}};
+        return this;
     }
 
     /** {{$c.Comment}} */{{if $c.IsPk}}
@@ -36,8 +37,8 @@ public class {{.table.Title}}{{.global.entity_suffix}} {
 
 
      /** 创建深拷贝  */
-    public {{.table.Title}}{{.global.entity_suffix}} copy(){
-        {{.table.Title}}{{.global.entity_suffix}} dst = new {{.table.Title}}{{.global.entity_suffix}}();
+    public {{$entity}} copy(){
+        {{$entity}} dst = new {{$entity}}();
         {{range $i,$c := .columns}}
         dst.set{{$c.Prop}}(this.get{{$c.Prop}}());{{end}}
         return dst;
@@ -51,16 +52,8 @@ public class {{.table.Title}}{{.global.entity_suffix}} {
         return mp;
     }
 
-    /** 拷贝数据  */
-    public static {{.table.Title}}{{.global.entity_suffix}} copy({{.table.Title}}{{.global.entity_suffix}} src){
-        {{.table.Title}}{{.global.entity_suffix}} dst = new {{.table.Title}}{{.global.entity_suffix}}();
-        {{range $i,$c := .columns}}
-        dst.set{{$c.Prop}}(src.get{{$c.Prop}}());{{end}}
-        return dst;
-    }
-
-    public static {{.table.Title}}{{.global.entity_suffix}} fromMap(Map<String,Object> data){
-        {{.table.Title}}{{.global.entity_suffix}} dst = new {{.table.Title}}{{.global.entity_suffix}}();\
+    public static {{$entity}} fromMap(Map<String,Object> data){
+        {{$entity}} dst = new {{$entity}}();\
         {{range $i,$c := .columns}}
         {{ $goType := type "java" $c.Type}}\
         {{if eq $goType "int"}}dst.set{{$c.Prop}}(TypeConv.toInt(data.get("{{$c.Prop}}")));\
@@ -75,8 +68,8 @@ public class {{.table.Title}}{{.global.entity_suffix}} {
         return dst;
     }
 
-    public static {{.table.Title}}{{.global.entity_suffix}} createDefault(){
-        {{.table.Title}}{{.global.entity_suffix}} dst = new {{.table.Title}}{{.global.entity_suffix}}();\
+    public static {{$entity}} createDefault(){
+        {{$entity}} dst = new {{$entity}}();\
         {{range $i,$c := .columns}}
         dst.set{{$c.Prop}}({{default "java" $c.Type}});{{end}}
         return dst;

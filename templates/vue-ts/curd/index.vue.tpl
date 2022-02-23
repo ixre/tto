@@ -156,7 +156,7 @@ export default class extends Vue {
     private async fetchData(args:any|null = null) {
         const { data } = await getPaging{{$Class}}(this.list.page,this.list.rows,this.queryParams);
         this.list.data = data.rows;
-        this.list.total = data.total;
+        if(data.total > 0)this.list.total = data.total;
         setTimeout(()=>this.list.loading = false,300);
     }
 

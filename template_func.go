@@ -108,7 +108,7 @@ func (t *internalFunc) langType(lang string, typeId int) string {
 	//case "go":
 	//	return l.GoTypes(typeId)
 	//case "java":
-	//	return l.JavaTypes(typeId)
+	//	return l.javaTypes(typeId)
 	//case "kotlin":
 	//	return l.KotlinTypes(typeId)
 	//case "thrift":
@@ -152,7 +152,7 @@ func (t *internalFunc) langDefaultValue(lang string, typeId int) string {
 	//case "go", "thrift","protobuf","ts":
 	//	return l.GoValues(typeId)
 	//case "java","kotlin":
-	//	return l.JavaValues(typeId)
+	//	return l.javaValues(typeId)
 	//case "py":
 	//	return l.PythonValues(typeId)
 	//}

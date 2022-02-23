@@ -36,11 +36,11 @@ func (j JavaLang) PkgPath(pkg string) string {
 }
 
 func (j JavaLang) ParseType(typeId int) string {
-	return JavaTypes(typeId)
+	return javaTypes(typeId)
 }
 
 func (j JavaLang) DefaultValue(typeId int) string {
-	return JavaValues(typeId)
+	return javaValues(typeId)
 }
 
 func (j JavaLang) ParsePkType(typeId int) string {
@@ -49,7 +49,7 @@ func (j JavaLang) ParsePkType(typeId int) string {
 
 var _ Lang = new(JavaLang)
 
-func JavaTypes(typeId int) string {
+func javaTypes(typeId int) string {
 	switch typeId {
 	case orm.TypeBoolean:
 		return "boolean"
@@ -97,7 +97,7 @@ func javaPkTypes(typeId int) string {
 	return fmt.Sprintf("Unknown type id:%d", typeId)
 }
 
-func JavaValues(typeId int) string {
+func javaValues(typeId int) string {
 	switch typeId {
 	case orm.TypeBoolean:
 		return "false"

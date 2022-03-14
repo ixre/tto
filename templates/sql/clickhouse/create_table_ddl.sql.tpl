@@ -15,9 +15,12 @@ CREATE TABLE IF NOT EXISTS {{.table.Name}}
      {{else if eq $goType 7}} Float64 \
      {{else if eq $goType 14}} String \
      {{else if eq $goType 15}} Date \
-     {{else if eq $goType 16}}D ecimal64 \
+     {{else if eq $goType 16}} Decimal64(2) \
      {{else}} {{$goType}} {{end}} COMMENT '{{$c.Comment}}'{{if not (is_last $i $columns)}},{{end}}\
     {{end}}
 ) ENGINE = MergeTree
 ORDER BY {{.table.Pk}}
+{{$c := try_get .columns "create_time"}} \
+{{if $c}}PARTITION BY toYYYYMM(toDateTime(create_time)) \
+{{end}}{{end}}
 SETTINGS index_granularity= 8192 ;

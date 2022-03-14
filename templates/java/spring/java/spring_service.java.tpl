@@ -3,6 +3,8 @@ package {{pkg "java" .global.pkg}}.service;
 
 import {{pkg "java" .global.pkg}}.entity.{{.table.Title}}{{.global.entity_suffix}};
 import {{pkg "java" .global.pkg}}.repo.{{.table.Prefix}}.{{.table.Title}}JpaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Example;
 import net.fze.common.Standard;
@@ -70,6 +72,11 @@ public class {{.table.Title}}Service {
     /** 根据对象条件查找 */
     public List<{{$tableTitle}}{{.global.entity_suffix}}> find{{$shortTitle}}ListBy({{$tableTitle}}{{.global.entity_suffix}} o) {
         return this.repo.findAll(Example.of(o));
+    }
+
+    /** 根据条件分页查询 */
+    public Page<{{$tableTitle}}{{.global.entity_suffix}}> findPagingWalletRecord({{$tableTitle}}{{.global.entity_suffix}} o, Pageable page) {
+        return this.repo.findAll(Example.of(o),page);
     }
 
     /** 批量保存{{.table.Comment}} */

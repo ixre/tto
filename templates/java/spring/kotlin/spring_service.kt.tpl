@@ -3,6 +3,8 @@ package {{pkg "java" .global.pkg}}.service
 
 import {{pkg "java" .global.pkg}}.entity.{{.table.Title}}{{.global.entity_suffix}}
 import {{pkg "java" .global.pkg}}.repo.{{.table.Prefix}}.{{.table.Title}}JpaRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.data.domain.Example
 import org.springframework.data.repository.findByIdOrNull
@@ -67,7 +69,12 @@ class {{.table.Title}}Service {
 
     /** 根据对象条件查找 */
     fun find{{$shortTitle}}ListBy(o:{{$tableTitle}}{{.global.entity_suffix}}):List<{{$tableTitle}}{{.global.entity_suffix}}> {
-        return this.repo.findAll(Example.of(o));
+        return this.repo.findAll(Example.of(o))
+    }
+
+    /** 根据条件分页查询 */
+    fun findPagingWalletRecord(o : {{$tableTitle}}{{.global.entity_suffix}},  page : Pageable):Page<{{$tableTitle}}{{.global.entity_suffix}}> {
+        return this.repo.findAll(Example.of(o),page)
     }
 
     /** 批量保存{{.table.Comment}} */

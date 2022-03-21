@@ -59,7 +59,8 @@ public class {{.table.Title}}Service {
             dst.setUpdateTime(TypeConv.toLong(Times.unix()));
             {{else}}\
             dst.setUpdateTime(new java.util.Date());{{end}}{{end}}
-            this.repo.save(dst);
+            dst = this.repo.save(dst);
+            e.set{{.table.PkProp}}(dst.get{{.table.PkProp}}());
             return null;
         }).error();
     }

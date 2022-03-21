@@ -10,8 +10,6 @@ package lang
  * history :
  */
 
-
-
 import (
 	"fmt"
 	"github.com/ixre/gof/db/orm"

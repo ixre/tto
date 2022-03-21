@@ -57,7 +57,8 @@ class {{.table.Title}}Service {
             dst.updateTime = Times.unix().toLong()
             {{else}}\
             dst.updateTime = java.util.Date(){{end}}{{end}}
-            this.repo.save(dst)
+            dst = this.repo.save(dst)
+            e.{{lower_title .table.PkProp}} = dst.{{lower_title .table.PkProp}}
             null
         }.error()
     }

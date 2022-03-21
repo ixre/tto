@@ -225,7 +225,7 @@ func execCommand(command string, bashExec string) error {
 			}
 			command = bashExec + " " + command
 		}
-		_, _, err := shell.Run(command,true)
+		_, _, err := shell.Run(command, true)
 		return err
 	}
 	return nil
@@ -311,7 +311,7 @@ func genGoRepoCode(dg tto.Session, tables []*tto.Table,
 		// 生成GoRepo代码
 		err := ig.GenerateGoRepoCodes(tables, genDir)
 		//格式化代码
-		_, _, _ = shell.Run("gofmt -w " + genDir,false)
+		_, _, _ = shell.Run("gofmt -w "+genDir, false)
 		return err
 	}
 	return nil

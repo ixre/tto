@@ -16,12 +16,14 @@ import java.util.Map;
 {{$entity := join .table.Title .global.entity_suffix}}
 /** {{.table.Comment}} */
 @Entity
+{{/*　@DynamicInsert 排除值为null的字段　*/}} \
 @Table(name = "{{.table.Name}}", schema = "{{.table.Schema}}")
 public class {{$entity}} {
     {{range $i,$c := .columns}}{{$type := type "java" $c.Type}}
-    private {{$type}} {{$c.Name}};
-    public {{$entity}} set{{$c.Prop}}({{$type}} {{$c.Name}}){
-        this.{{$c.Name}} = {{$c.Name}};
+    {{$lowerProp := lower_title $c.Prop}} \
+    private {{$type}} {{$lowerProp}};
+    public {{$entity}} set{{$c.Prop}}({{$type}} {{$lowerProp}}){
+        this.{{$lowerProp}} = {{$lowerProp}};
         return this;
     }
 
@@ -31,27 +33,33 @@ public class {{$entity}} {
     @Basic{{end}}
     @Column(name = "{{$c.Name}}"{{if not $c.NotNull}}, nullable = true{{end}} {{if ne $c.Length 0}},length = {{$c.Length}}{{end}})
     public {{$type}} get{{$c.Prop}}() {
-        return this.{{$c.Name}};
+        return this.{{$lowerProp}};
     }
     {{end}}
 
 
      /** 创建深拷贝  */
+    /*
     public {{$entity}} copy(){
         {{$entity}} dst = new {{$entity}}();
         {{range $i,$c := .columns}}
         dst.set{{$c.Prop}}(this.get{{$c.Prop}}());{{end}}
         return dst;
     }
+    */
 
     /** 转换为MAP  */
+    /*
     public Map<String,Object> toMap(){
         Map<String,Object> mp = new HashMap<>();\
         {{range $i,$c := .columns}}
-        mp.put("{{$c.Prop}}",this.{{$c.Name}});{{end}}
+        mp.put("{{$c.Name}}",this.{{lower_title $c.Prop}});{{end}}
         return mp;
     }
+    */
 
+    /** 从MAP转换 */
+    /*
     public static {{$entity}} fromMap(Map<String,Object> data){
         {{$entity}} dst = new {{$entity}}();\
         {{range $i,$c := .columns}}
@@ -67,7 +75,9 @@ public class {{$entity}} {
         {{else}}dst.set{{$c.Prop}}(TypeConv.toString(data.get("{{$c.Prop}}")));{{end}}{{end}}
         return dst;
     }
+    */
 
+    {{/* 通过字段直接给默认值会影响Example.of, 所以通过方法来设置默认值 */}}
     public static {{$entity}} createDefault(){
         {{$entity}} dst = new {{$entity}}();\
         {{range $i,$c := .columns}}

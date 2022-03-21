@@ -9,26 +9,26 @@ import (
 )
 
 // GenerateClickHouseMergeTreeTableDDL 使用MergeTree引擎生成Clickhouse表的DDL语法
-func GenerateClickHouseMergeTreeTableDDL(table *tto.Table)string{
+func GenerateClickHouseMergeTreeTableDDL(table *tto.Table) string {
 	/*
-	创建本地表
+		创建本地表
 
-	建表语句基本语法如下：
+		建表语句基本语法如下：
 
 
-	CREATE TABLE [IF NOT EXISTS] [db.]table_name ON CLUSTER cluster
-	(
-	    name1 [type1] [DEFAULT|MATERIALIZED|ALIAS expr1],
-	    name2 [type2] [DEFAULT|MATERIALIZED|ALIAS expr2],
-	    ...
-	    INDEX index_name1 expr1 TYPE type1(...) GRANULARITY value1,
-	    INDEX index_name2 expr2 TYPE type2(...) GRANULARITY value2
-	) ENGINE = engine_name()
-	[PARTITION BY expr]
-	[ORDER BY expr]
-	[PRIMARY KEY expr]
-	[SAMPLE BY expr]
-	[SETTINGS name=value, ...];
+		CREATE TABLE [IF NOT EXISTS] [db.]table_name ON CLUSTER cluster
+		(
+		    name1 [type1] [DEFAULT|MATERIALIZED|ALIAS expr1],
+		    name2 [type2] [DEFAULT|MATERIALIZED|ALIAS expr2],
+		    ...
+		    INDEX index_name1 expr1 TYPE type1(...) GRANULARITY value1,
+		    INDEX index_name2 expr2 TYPE type2(...) GRANULARITY value2
+		) ENGINE = engine_name()
+		[PARTITION BY expr]
+		[ORDER BY expr]
+		[PRIMARY KEY expr]
+		[SAMPLE BY expr]
+		[SETTINGS name=value, ...];
 
 	*/
 	buf := bytes.NewBuffer(nil)
@@ -37,13 +37,13 @@ func GenerateClickHouseMergeTreeTableDDL(table *tto.Table)string{
 	buf.WriteString(" COMMENT '")
 	buf.WriteString(table.Comment)
 	buf.WriteString("' \n(\n")
-	for i,v := range table.Columns{
-		buf.WriteString(strings.Repeat(" ",4))
-		buf.WriteString("`"+v.Name+"` ")
+	for i, v := range table.Columns {
+		buf.WriteString(strings.Repeat(" ", 4))
+		buf.WriteString("`" + v.Name + "` ")
 		buf.WriteString(getClickhouseColumnType(v.Type))
 		buf.WriteString(" COMMENT ")
-		buf.WriteString("'"+v.Comment+"'")
-		if i < len(table.Columns)-1{
+		buf.WriteString("'" + v.Comment + "'")
+		if i < len(table.Columns)-1 {
 			buf.WriteString(",")
 		}
 		buf.WriteString("\n")

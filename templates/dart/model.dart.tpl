@@ -16,7 +16,7 @@ class {{$title}}{{.global.entity_suffix}} {
         :{{range $i,$c := .columns}}\
         {{$c.Prop}} = {{default "dart" $c.Type}}{{if is_last $i $columns}};{{else}},{{end}}
         {{end}}
-        
+
     // 拷贝数据
     {{$title}}{{.global.entity_suffix}}.fromJson(Map<String, dynamic> json)
         :{{range $i,$c := $columns}}\
@@ -27,13 +27,7 @@ class {{$title}}{{.global.entity_suffix}} {
         {{end}}{{end}}
 
     // 根据字段拷贝数据
-    {{$title}}{{.global.entity_suffix}}.fromRawMap(Map<String, dynamic> src)
-       :{{range $i,$c := $columns}}\
-        {{$c.Prop}} = src["{{$c.Prop}}"]{{if is_last $i $columns}};{{else}},{{end}}
-        {{end}}
-
-    // 根据字段拷贝数据
-    Map<String,dynamic> toMap(){
+    Map<String,dynamic> toJson(){
         return {
             {{range $i,$c := $columns}}
             "{{$c.Prop}}":this.{{$c.Prop}},{{end}}

@@ -23,15 +23,9 @@ func (d dart) ParseType(typeId int) string {
 		return "String"
 	case orm.TypeBoolean:
 		return "bool"
-	case orm.TypeInt16:
+	case orm.TypeInt16,orm.TypeInt32,orm.TypeInt64:
 		return "int"
-	case orm.TypeInt32:
-		return "int"
-	case orm.TypeInt64:
-		return "BigInt"
-	case orm.TypeFloat32:
-		return "num"
-	case orm.TypeFloat64, orm.TypeDecimal:
+	case orm.TypeFloat32,orm.TypeFloat64, orm.TypeDecimal:
 		return "num"
 	case orm.TypeDateTime:
 		return "DateTime"
@@ -49,10 +43,8 @@ func (d dart) DefaultValue(typeId int) string {
 		return "\"\""
 	case orm.TypeBoolean:
 		return "false"
-	case orm.TypeInt16, orm.TypeInt32:
+	case orm.TypeInt16, orm.TypeInt32,orm.TypeInt64:
 		return "0"
-	case orm.TypeInt64:
-		return "BigInt.from(0)"
 	case orm.TypeFloat32, orm.TypeFloat64, orm.TypeDecimal:
 		return "0.0"
 	case orm.TypeDateTime:

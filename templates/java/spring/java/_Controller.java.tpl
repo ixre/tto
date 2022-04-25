@@ -60,11 +60,14 @@ public class {{.table.Title}}Controller {
             {{end}}
             this.service.save{{.table.Title}}(entity);
             return null;
-        }).error();
+          }).except(it->{
+            it.printStackTrace();
+            return null;
+         }).error();
         if(err != null){
-            return Result.create(1,err.getMessage());
+            return Result.error(1,err.getMessage());
         }
-        return Result.success(null);
+        return Result.success();
     }
 
     /** {{.table.Comment}}详情 */

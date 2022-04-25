@@ -48,7 +48,7 @@ public class {{.table.Title}}Service {
                 dst = {{$tableTitle}}{{.global.entity_suffix}}.createDefault();
                 {{$c := try_get .columns "create_time"}}\
                 {{if $c}}{{if equal_any $c.Type 3 4 5 }}\
-                dst.setCreateTime(TypeConv.toLong(Times.unix()));
+                dst.setCreateTime(Times.unix());
                 {{else}}\
                 dst.setCreateTime(new java.util.Date());{{end}}{{end}}
             }\
@@ -56,13 +56,16 @@ public class {{.table.Title}}Service {
             dst.set{{$c.Prop}}(e.get{{$c.Prop}}());{{end}}\
             {{$c := try_get .columns "update_time"}}
             {{if $c}}{{if equal_any $c.Type 3 4 5 }}\
-            dst.setUpdateTime(TypeConv.toLong(Times.unix()));
+            dst.setUpdateTime(Times.unix());
             {{else}}\
             dst.setUpdateTime(new java.util.Date());{{end}}{{end}}
             dst = this.repo.save(dst);
             e.set{{.table.PkProp}}(dst.get{{.table.PkProp}}());
             return null;
-        }).error();
+          }).except(it->{
+            it.printStackTrace();
+            return null;
+         }).error();
     }
 
     /** 根据对象条件查找 */
@@ -90,6 +93,9 @@ public class {{.table.Title}}Service {
          return Standard.std.tryCatch(()-> {
              this.repo.deleteById(id);
              return null;
+           }).except(it->{
+            it.printStackTrace();
+            return null;
          }).error();
     }
 

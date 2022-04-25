@@ -38,7 +38,7 @@ class {{.table.Title}}Resource {
     @Resource("{{$resPrefix}}:create",name="创建{{.table.Comment}}")
     fun create(@RequestBody entity: {{.table.Title}}{{.global.entity_suffix}}):Result {
         val err = this.service.save{{$shortTitle}}(entity)
-        if(err != null)return Result.create(1,err.message)
+        if(err != null)return Result.error(1,err.message)
         return Result.OK
     }
 
@@ -48,7 +48,7 @@ class {{.table.Title}}Resource {
     fun update(@PathVariable("id") id:{{$pkType}},@RequestBody entity: {{.table.Title}}{{.global.entity_suffix}}):Result {
         entity.{{lower_title .table.PkProp}} = id
         val err = this.service.save{{$shortTitle}}(entity)
-        if(err != null)return Result.create(1,err.message)
+        if(err != null)return Result.error(1,err.message)
         return Result.OK
     }
 
@@ -58,7 +58,7 @@ class {{.table.Title}}Resource {
     @Resource("{{$resPrefix}}:delete",name="删除{{.table.Comment}}")
     fun delete(@PathVariable("id") id:{{$pkType}}):Result {
         val err = this.service.delete{{$shortTitle}}ById(id)
-        if(err != null)return Result.create(1,err.message)
+        if(err != null)return Result.error(1,err.message)
         return Result.OK
     }
 
@@ -67,7 +67,7 @@ class {{.table.Title}}Resource {
     @Resource("{{$resPrefix}}:list",name="查询{{.table.Comment}}")
     fun list(@RequestParam("params") params:String="{}"): List<{{.table.Title}}{{.global.entity_suffix}}> {
         //val p = ReportUtils.parseParams(params).getValue()
-        return this.service.findAll()
+        return this.service.findAll{{$shortTitle}}();
     }
 
     /** {{.table.Comment}}分页数据 */

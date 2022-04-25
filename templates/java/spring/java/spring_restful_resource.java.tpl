@@ -40,7 +40,7 @@ public class {{.table.Title}}Resource {
     @Resource(key = "{{$resPrefix}}:create",name="创建{{.table.Comment}}")
     public Result create(@RequestBody {{.table.Title}}{{.global.entity_suffix}} entity){
         Error err = this.service.save{{$shortTitle}}(entity);
-        if(err != null)return Result.create(1,err.getMessage());
+        if(err != null)return Result.error(1,err.getMessage());
         return Result.OK;
     }
 
@@ -50,7 +50,7 @@ public class {{.table.Title}}Resource {
     public Result update(@PathVariable("id") {{$pkType}} id,@RequestBody {{.table.Title}}{{.global.entity_suffix}} entity) {
         entity.set{{.table.PkProp}}(id);
         Error err = this.service.save{{$shortTitle}}(entity);
-        if(err != null) return Result.create(1,err.getMessage());
+        if(err != null) return Result.error(1,err.getMessage());
         return Result.OK;
     }
 
@@ -60,7 +60,7 @@ public class {{.table.Title}}Resource {
     @Resource(key = "{{$resPrefix}}:delete",name="删除{{.table.Comment}}")
     public Result delete(@PathVariable("id") {{$pkType}} id){
         Error err = this.service.delete{{$shortTitle}}ById(id);
-        if(err != null) return Result.create(1,err.getMessage());
+        if(err != null) return Result.error(1,err.getMessage());
         return Result.OK;
     }
 
@@ -69,7 +69,7 @@ public class {{.table.Title}}Resource {
     @Resource(key = "{{$resPrefix}}:list",name="查询{{.table.Comment}}")
     public List<{{.table.Title}}{{.global.entity_suffix}}> list(@RequestParam(name="params",defaultValue="{}") String params) {
         //val p = ReportUtils.parseParams(params).getValue();
-        return this.service.findAll();
+        return this.service.findAll{{$shortTitle}}();
     }
 
     /** {{.table.Comment}}分页数据 */

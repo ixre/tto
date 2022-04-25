@@ -46,7 +46,7 @@ class {{.table.Title}}Service {
                 dst = {{$tableTitle}}{{.global.entity_suffix}}.createDefault()
                 {{$c := try_get .columns "create_time"}}\
                 {{if $c}}{{if equal_any $c.Type 3 4 5 }}\
-                dst.createTime = Times.unix().toLong()
+                dst.createTime = Times.unix()
                 {{else}}\
                 dst.createTime = java.util.Date(){{end}}{{end}}
             }
@@ -54,13 +54,13 @@ class {{.table.Title}}Service {
             dst.{{lower_title $c.Prop}} = e.{{lower_title $c.Prop}}{{end}}\
             {{$c := try_get .columns "update_time"}}
             {{if $c}}{{if equal_any $c.Type 3 4 5 }}\
-            dst.updateTime = Times.unix().toLong()
+            dst.updateTime = Times.unix()
             {{else}}\
             dst.updateTime = java.util.Date(){{end}}{{end}}
             dst = this.repo.save(dst)
             e.{{lower_title .table.PkProp}} = dst.{{lower_title .table.PkProp}}
             null
-        }.error()
+        }.except { it.printStackTrace() }.error()
     }
 
     /** 根据对象条件查找 */
@@ -88,6 +88,6 @@ class {{.table.Title}}Service {
         return catch {
             this.repo.deleteById(id)
             null
-        }.error()
+        }.except { it.printStackTrace() }.error()
     }
 }

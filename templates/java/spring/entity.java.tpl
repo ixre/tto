@@ -38,9 +38,8 @@ public class {{$entity}} {
     {{end}}
 
 
-     /** 创建深拷贝  */
     /*
-    public {{$entity}} copy(){
+    public {{$entity}} deep(){
         {{$entity}} dst = new {{$entity}}();
         {{range $i,$c := .columns}}
         dst.set{{$c.Prop}}(this.get{{$c.Prop}}());{{end}}
@@ -48,17 +47,15 @@ public class {{$entity}} {
     }
     */
 
-    /** 转换为MAP  */
     /*
     public Map<String,Object> toMap(){
         Map<String,Object> mp = new HashMap<>();\
         {{range $i,$c := .columns}}
-        mp.put("{{$c.Name}}",this.{{lower_title $c.Prop}});{{end}}
+        mp.put("{{lower_title $c.Prop}}",this.{{lower_title $c.Prop}});{{end}}
         return mp;
     }
     */
 
-    /** 从MAP转换 */
     /*
     public static {{$entity}} fromMap(Map<String,Object> data){
         {{$entity}} dst = new {{$entity}}();\

@@ -8,7 +8,7 @@
         <![CDATA[
         SELECT * FROM "{{.table.Name}}"
         WHERE {where}
-        ORDER BY {order_by} DESC LIMIT {page_size} OFFSET {page_offset}
+        ORDER BY {order_by} LIMIT {page_size} OFFSET {page_offset}
      ]]>
     </Query>
     <Import><![CDATA[]]></Import>

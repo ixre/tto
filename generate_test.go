@@ -55,7 +55,7 @@ func TestGenAll(t *testing.T) {
 	//dg.GenerateGoRepoCodes(tables, genDir)
 	dg.WalkGenerateCodes(tables)
 	//格式化代码
-	shell.Run("gofmt -w " + genDir)
+	shell.Run("gofmt -w " + genDir, false)
 	t.Log("生成成功, 输出目录", genDir)
 }
 

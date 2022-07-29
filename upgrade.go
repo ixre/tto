@@ -217,7 +217,7 @@ func checkVersion() (*version, error) {
 		return nil, err
 	}
 	var ver *version
-	verReg := regexp.MustCompile("\"(.+?/releases/download/v(.+?)/.+?)\"")
+	verReg := regexp.MustCompile(`\"(.+?/releases/download/v(.+?)/.+?)\"`)
 	submatch := verReg.FindAllStringSubmatch(releases, -1)
 	if len(submatch) == 0 {
 		return nil, nil
@@ -228,8 +228,8 @@ func checkVersion() (*version, error) {
 		distURL: "https://github.com" + submatch[0][1],
 	}
 	// 获取版本更新信息
-	blockR := regexp.MustCompile("release-entry[\\s\\S]+?releases/tag/v" +
-		ver.version + "[\\s\\S]+?markdown-body\">([\\s\\S]+?)</div>")
+	blockR := regexp.MustCompile(`release-entry[\s\S]+?releases/tag/v` +
+		ver.version + `[\\s\\S]+?markdown-body\">([\s\S]+?)</div>`)
 	blockMatches := blockR.FindStringSubmatch(releases)
 	if len(blockMatches) == 0 {
 		return nil, errors.New("未获取到版本信息")

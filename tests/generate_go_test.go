@@ -9,11 +9,11 @@
 package tests
 
 import (
-	"github.com/ixre/tto/utils"
 	"regexp"
 	"sync"
 	"testing"
 	"time"
+	"github.com/ixre/tto/utils"
 )
 
 type testStruct struct {
@@ -64,7 +64,7 @@ func TestGenByTemplate(t *testing.T) {
 
 func TestCodeTemplate_String(t *testing.T) {
 	//var r2 = regexp.MustCompile("\\{\\n*(\\s{5,})")
-	var r = regexp.MustCompile("\\{[\\n\\r]+?\\s*\\n+")
+	var r = regexp.MustCompile(`\{[\n\r]+?\s*\n+`)
 
 	var content = `
 return &proto.SPermDict{

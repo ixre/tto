@@ -22,5 +22,5 @@ CREATE TABLE IF NOT EXISTS {{.table.Name}}
 ORDER BY {{.table.Pk}}
 {{$c := try_get .columns "create_time"}} \
 {{if $c}}PARTITION BY toYYYYMM(toDateTime(create_time)) \
-{{end}}{{end}}
+{{end}}
 SETTINGS index_granularity= 8192 ;

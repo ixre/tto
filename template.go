@@ -6,9 +6,10 @@ import (
 	"sync"
 )
 
-var predefineRegexp = regexp.MustCompilePOSIX("#\\!([^\\!-]+):([^#]+?)")
-var lineJoinRegexp = regexp.MustCompile("\\s*\\\\(\\s+)")
-var tplCommentRegexp = regexp.MustCompile("/\\*+(\\s*)#!(.+?)*/")
+var predefineRegexp = regexp.MustCompilePOSIX(`#\!([^\!-]+):([^#]+?)`)
+var lineJoinRegexp = regexp.MustCompile(`\s*\\(\s+)` )
+// var lineJoinRegexp = regexp.MustCompile(`\\s*\\\\(\\s+)`)
+var tplCommentRegexp = regexp.MustCompile(`/\*+(\s*)#!(.+?)*/`)
 
 type TemplateKind int
 

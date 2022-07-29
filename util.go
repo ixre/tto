@@ -57,6 +57,9 @@ func shortTitle(str string) string {
 
 // 将首字母小写
 func lowerTitle(s string) string {
+	if len(s) == 0{
+		return s
+	}
 	if rune0 := rune(s[0]); unicode.IsUpper(rune0) {
 		return string(unicode.ToLower(rune0)) + s[1:]
 	}

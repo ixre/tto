@@ -61,11 +61,13 @@ func generate() {
 	var printVer bool
 	var cleanLast bool
 	var compactMode bool
+	var modelPath string // 模型文件的路径
 	//var keepLocal bool
 
 	flag.StringVar(&genDir, "o", "./output", "path of output directory")
 	flag.StringVar(&tplDir, "t", "./templates", "path of code templates directory")
 	flag.StringVar(&majorLang, "m", "go", "major code lang like java or go")
+	flag.StringVar(&modelPath, "model", "", "path to model directory")
 	flag.StringVar(&confPath, "conf", "./tto.conf", "config path")
 	flag.StringVar(&table, "table", "", "table name or table prefix")
 	flag.StringVar(&excludedTables, "excludes", "", "exclude tables by prefix")
@@ -119,22 +121,7 @@ func generate() {
 	if err := runBefore(re, bashExec); err != nil {
 		log.Fatalln("[ tto][ fatal]:", err.Error())
 	}
-	// 初始化生成器
-	driver := re.GetString("database.driver")
-	dbName := re.GetString("database.name")
-	schema := re.GetString("database.schema")
-	dialect, dbDriver := tto.GetDialect(driver)
-	ds := orm.DialectSession(getDb(driver, re), dialect)
-	list, err := ds.TablesByPrefix(dbName, schema, table)
-	if err != nil {
-		println("[ app][ info]: ", err.Error())
-		return
-	}
-	list = filterTables(list, excludedTables)
-	if len(list) == 0 {
-		println("[ app][ info]: no any tables")
-		return
-	}
+
 	// 获取排除的文件名
 	var excludePatterns []string
 	excludePatternParam := re.GetString("code.exclude_patterns")
@@ -155,6 +142,10 @@ func generate() {
 		ExcludePatterns: excludePatterns,
 		MajorLang:       majorLang,
 	}
+	// 初始化生成器
+	driver := re.GetString("database.driver")
+	dialect, dbDriver := tto.GetDialect(driver)
+
 	dg := tto.DBCodeGenerator(dbDriver, opt)
 	dg.Package(pkgName)
 	if re.GetBoolean("code.id_upper") {
@@ -165,13 +156,28 @@ func generate() {
 		dg.Var(tto.ENTITY_SUFFIX, suffix)
 	}
 	// 获取表格并转换
-	userMeta := re.GetBoolean("code.meta_settings")
-	tables, err := dg.Parses(list, userMeta)
+	var tables []*tto.Table
+	if len(modelPath) == 0 {
+		dbName := re.GetString("database.name")
+		schema := re.GetString("database.schema")
+		ds := orm.DialectSession(getDb(driver, re), dialect)
+		list, err := ds.TablesByPrefix(dbName, schema, table)
+		if err != nil {
+			println("[ app][ info]: ", err.Error())
+			return
+		}
+		userMeta := re.GetBoolean("code.meta_settings")
+		tables, err = dg.Parses(list, userMeta)
+		
+	}else{
+		tables,err = tto.ReadModels(modelPath)
+	}
 	if err != nil {
 		println("[ tto][ error]:", err.Error())
 		return
 	}
-
+	// 筛选表
+	tables = filterTables(tables, excludedTables)
 	// 生成代码
 	if err := genByArch(arch, dg, tables, opt); err != nil {
 		log.Fatalln("[ tto][ fatal]:", err.Error())
@@ -184,12 +190,12 @@ func generate() {
 		len(tables)))
 }
 
-func filterTables(tables []*orm.Table, noTable string) []*orm.Table {
+func filterTables(tables []*tto.Table, noTable string) []*tto.Table {
 	if noTable == "" {
 		return tables
 	}
 	excludes := strings.Split(strings.ToLower(noTable), ",")
-	arr := make([]*orm.Table, 0)
+	arr := make([]*tto.Table, 0)
 	for _, v := range tables {
 		match := false
 		for _, k := range excludes {

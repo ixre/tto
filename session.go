@@ -296,8 +296,8 @@ func (s *sessionImpl) defaultTargetPath(tplFilePath string, table *Table) string
 	return strings.TrimSpace(tplFilePath + table.Name)
 }
 
-var multiLineRegexp = regexp.MustCompile("(\\{|,|>)[\\n\\r]+?\\s*\\n+")
-var multiLineRevertRegexp = regexp.MustCompile("\\n+\\s*[\\n\\r]+?\\}")
+var multiLineRegexp = regexp.MustCompile(`(\{|,|>)[\n\r]+?\s*\n+`)
+var multiLineRevertRegexp = regexp.MustCompile(`\n+\s*[\n\r]+?\}`)
 
 // 格式化代码
 func (s *sessionImpl) formatCode(tpl *CodeTemplate, code string) string {
@@ -465,6 +465,9 @@ func (s *sessionImpl) testFilePath(path string, excludePatterns []string) bool {
 	if strings.HasSuffix(strings.ToUpper(path), "README.MD") {
 		return false
 	}
+	if !strings.HasSuffix(path,".tpl"){
+		return false
+	}
 	if excludePatterns == nil {
 		return true
 	}
@@ -473,7 +476,7 @@ func (s *sessionImpl) testFilePath(path string, excludePatterns []string) bool {
 			return false
 		}
 		// 前后匹配
-		if strings.Index(v, "*") != -1 {
+		if strings.Contains(v, "*") {
 			c := strings.Replace(v, "*", "", -1)
 			if v[0] == '*' && strings.HasSuffix(path, c) {
 				return false
@@ -484,7 +487,7 @@ func (s *sessionImpl) testFilePath(path string, excludePatterns []string) bool {
 			continue
 		}
 		// 模糊匹配
-		if strings.Index(path, v) != -1 {
+		if strings.Contains(path, v) {
 			return false
 		}
 	}

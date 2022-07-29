@@ -5,8 +5,10 @@
 特点:
 
 - 支持mysql/mariadb和postgresql数据库
-- 支持Go,JAVA,Kotlin,Thrift,Protobuf,Python,TS/JS,Html,C#等多种语言
-- 支持代码模板, 提供模板函数,代码生成完全可控.
+- 支持Go,JAVA,Kotlin,Thrift,Protobuf,Python,Ts/Js,C#,Html等多种语言
+- 支持代码模板, 提供模板函数,可自定义生成格式；安装包内置多种语言模板
+- 支持根据模型文件逆向生成数据库及代码
+- 支持版本自动更新
 
 ## 安装
 
@@ -19,7 +21,7 @@ curl -L https://raw.githubusercontent.com/ixre/tto/master/install | sh
 在Windows下,可使用Mingw32或使用git安装附带的`git-bash.exe`运行命令安装；
 同时也可以[下载](https://github.com/ixre/tto/releases/)安装包,将`tto.exe`文件复制到`C:\windows\system32`下完成手动安装
 
-`tto`内置了升级功能,命令如下:
+`tto`内置了版本更新功能,命令如下:
 
 ```
 tto update
@@ -402,6 +404,11 @@ public class {{.table.Title}}{{.global.entity_suffix}} {
 }
 
 ```
+
+## 逆向生成代码
+
+参见代码：[generate_test.go](generate_test.go)
+
 
 **如果您觉得这个项目不错, 请给个star吧.**
 

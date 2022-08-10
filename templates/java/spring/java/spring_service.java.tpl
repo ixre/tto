@@ -16,7 +16,7 @@ import java.util.List;
 {{$shortTitle := .table.ShortTitle}}\
 {{$pkName := .table.Pk}}\
 {{$pkProp :=  .table.PkProp}}\
-{{$pkType := type "kotlin" .table.PkType}}
+{{$pkType := type "java" .table.PkType}}
 /** {{.table.Comment}}服务  */
 @Service("{{.table.Name}}_service")
 public class {{.table.Title}}Service {

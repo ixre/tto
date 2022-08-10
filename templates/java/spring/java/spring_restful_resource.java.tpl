@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 {{$tableTitle := .table.Title}}
 {{$shortTitle := .table.ShortTitle}}
-{{$pkType := type "kotlin" .table.PkType}}
+{{$pkType := type "java" .table.PkType}}
 {{$resPrefix := replace (name_path .table.Name) "/" ":"}}
 {{$basePath := join .global.base_path (name_path .table.Name) "/"}}\
 

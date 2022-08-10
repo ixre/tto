@@ -17,7 +17,7 @@ var (
 	dbPrefix   = "t_CSTD_GoodsMst_2003"
 	connString = "root:@tcp(127.0.0.1:3306)/baozhang?charset=utf8"
 	genDir     = "./generated_code/"
-	tplDir     = "./templates/java/spring/kotlin"
+	tplDir     = "./templates/java/spring/java"
 )
 
 // 生成数据库所有的代码文件

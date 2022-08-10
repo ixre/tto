@@ -26,8 +26,8 @@ func parseTable(ordinal int, tb *db.Table, shortUpper bool, userMeta bool) *Tabl
 		Schema:     tb.Schema,
 		Charset:    tb.Charset,
 		Raw:        tb,
-		Pk:         "id",
-		PkProp:     "Id",
+		Pk:         "",
+		PkProp:     "",
 		PkType:     db.TypeInt32,
 		Columns:    make([]*Column, len(tb.Columns)),
 	}
@@ -60,6 +60,13 @@ func parseTable(ordinal int, tb *db.Table, shortUpper bool, userMeta bool) *Tabl
 			c.Type = db.TypeInt32
 		}
 		n.Columns[i] = c
+	}
+	// 如果未设置主键，则默认第一个列
+	if n.Pk == ""{
+		fc := tb.Columns[0]
+		n.Pk = fc.Name
+		n.PkProp = title(fc.Name, shortUpper)
+		n.PkType = fc.Type
 	}
 	return loadUserMeta(n, userMeta)
 }

@@ -8,7 +8,6 @@ find output/java -name "*.java" | xargs sed -i 's/ float / Float /g'
 
 import (
 	"fmt"
-
 	"github.com/ixre/gof/db/db"
 )
 

@@ -5,23 +5,21 @@
 ```java
 import net.fze.common.Standard;
 import net.fze.extras.report.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
+
+import javax.inject.Inject;
 import javax.sql.DataSource;
 
 @Component
 public class ReportComponent implements IDbProvider {
     private final HashMap<String, ExportHub> exportHubMap = new HashMap<>();
 
-    private final DataSource ds;
+    @Inject private DataSource ds;
 
-    public ReportComponent(@Inject DataSource ds) {
-        this.ds = ds;
-    }
-
-    @NotNull
     @Override
     public Connection getDB() {
         try {

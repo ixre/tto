@@ -12,7 +12,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/ixre/gof/db/orm"
 	"io/ioutil"
 	"log"
 	"os"
@@ -24,6 +23,8 @@ import (
 	"sync"
 	"text/template"
 	"time"
+
+	"github.com/ixre/gof/db/db"
 )
 
 const (
@@ -62,7 +63,7 @@ type (
 		// 遍历模板文件夹, 并生成代码, 如果为源代码目标,文件存在,则自动生成添加 .gen后缀
 		WalkGenerateCodes(tables []*Table) error
 		// 转换表格,如果meta为true,则读取元数据,如果没有则自动生成元数据
-		Parses(tables []*orm.Table, meta bool) (arr []*Table, err error)
+		Parses(tables []*db.Table, meta bool) (arr []*Table, err error)
 	}
 )
 
@@ -153,7 +154,7 @@ func (s *sessionImpl) init() Session {
 }
 
 // 转换表格,如果meta为true,则读取元数据,如果没有则自动生成元数据
-func (s *sessionImpl) Parses(tables []*orm.Table, meta bool) (arr []*Table, err error) {
+func (s *sessionImpl) Parses(tables []*db.Table, meta bool) (arr []*Table, err error) {
 	n := make([]*Table, len(tables))
 	for i, tb := range tables {
 		n[i] = parseTable(i, tb, s.useUpperId, meta)
@@ -465,7 +466,7 @@ func (s *sessionImpl) testFilePath(path string, excludePatterns []string) bool {
 	if strings.HasSuffix(strings.ToUpper(path), "README.MD") {
 		return false
 	}
-	if !strings.HasSuffix(path,".tpl"){
+	if !strings.HasSuffix(path, ".tpl") {
 		return false
 	}
 	if excludePatterns == nil {

@@ -2,7 +2,8 @@ package lang
 
 import (
 	"fmt"
-	"github.com/ixre/gof/db/orm"
+
+	"github.com/ixre/gof/db/db"
 )
 
 /**
@@ -21,7 +22,7 @@ type PythonLang struct {
 // python SQL ORM 类型与python类型不一样,需单独处理
 func (p PythonLang) SqlMapType(typeId int, len int) string {
 	switch typeId {
-	case orm.TypeString:
+	case db.TypeString:
 		if len > 0 {
 			if len > 2048 {
 				return "Text"
@@ -29,19 +30,19 @@ func (p PythonLang) SqlMapType(typeId int, len int) string {
 			return fmt.Sprintf("String(%d)", len)
 		}
 		return "String"
-	case orm.TypeBoolean:
+	case db.TypeBoolean:
 		return "Boolean"
-	case orm.TypeInt16:
+	case db.TypeInt16:
 		return "SmallInteger"
-	case orm.TypeInt32:
+	case db.TypeInt32:
 		return "Integer"
-	case orm.TypeInt64:
+	case db.TypeInt64:
 		return "BigInteger"
-	case orm.TypeFloat32:
+	case db.TypeFloat32:
 		return "Float"
-	case orm.TypeFloat64:
+	case db.TypeFloat64:
 		return "Float"
-	case orm.TypeDecimal:
+	case db.TypeDecimal:
 		return "Decimal"
 	}
 	return "String"
@@ -67,17 +68,17 @@ var _ Lang = new(PythonLang)
 
 func PyTypes(typeId int) string {
 	switch typeId {
-	case orm.TypeBoolean:
+	case db.TypeBoolean:
 		return "bool"
-	case orm.TypeFloat32, orm.TypeFloat64, orm.TypeDecimal:
+	case db.TypeFloat32, db.TypeFloat64, db.TypeDecimal:
 		return "float"
-	case orm.TypeInt16, orm.TypeInt32, orm.TypeInt64:
+	case db.TypeInt16, db.TypeInt32, db.TypeInt64:
 		return "int"
-	case orm.TypeString:
+	case db.TypeString:
 		return "str"
-	case orm.TypeDateTime:
+	case db.TypeDateTime:
 		return "time"
-	case orm.TypeBytes:
+	case db.TypeBytes:
 		return "byte[]"
 	}
 	return "any"
@@ -85,13 +86,13 @@ func PyTypes(typeId int) string {
 
 func PythonValues(typeId int) string {
 	switch typeId {
-	case orm.TypeBoolean:
+	case db.TypeBoolean:
 		return "False"
-	case orm.TypeInt64, orm.TypeInt16, orm.TypeInt32:
+	case db.TypeInt64, db.TypeInt16, db.TypeInt32:
 		return "0"
-	case orm.TypeFloat32, orm.TypeFloat64, orm.TypeDecimal:
+	case db.TypeFloat32, db.TypeFloat64, db.TypeDecimal:
 		return "0.0"
-	case orm.TypeString:
+	case db.TypeString:
 		return "\"\""
 	}
 	return "None"

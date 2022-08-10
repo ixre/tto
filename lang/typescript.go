@@ -1,8 +1,6 @@
 package lang
 
-import (
-	"github.com/ixre/gof/db/orm"
-)
+import "github.com/ixre/gof/db/db"
 
 /**
  * Copyright (C) 2007-2020 56X.NET,All rights reserved.
@@ -37,13 +35,13 @@ func (t Typescript) DefaultValue(typeId int) string {
 
 func tsValues(typeId int) string {
 	switch typeId {
-	case orm.TypeString:
+	case db.TypeString:
 		return "''"
-	case orm.TypeBoolean:
+	case db.TypeBoolean:
 		return "false"
-	case orm.TypeInt16, orm.TypeInt32, orm.TypeInt64:
+	case db.TypeInt16, db.TypeInt32, db.TypeInt64:
 		return "0"
-	case orm.TypeFloat32, orm.TypeFloat64:
+	case db.TypeFloat32, db.TypeFloat64:
 		return "0.0"
 	}
 	return "<unknown>"
@@ -53,21 +51,21 @@ var _ Lang = new(Typescript)
 
 func TsTypes(typeId int) string {
 	switch typeId {
-	case orm.TypeBoolean:
+	case db.TypeBoolean:
 		return "boolean"
-	case orm.TypeInt64:
+	case db.TypeInt64:
 		return "number"
-	case orm.TypeFloat32:
+	case db.TypeFloat32:
 		return "number"
-	case orm.TypeFloat64:
+	case db.TypeFloat64:
 		return "number"
-	case orm.TypeInt16, orm.TypeInt32, orm.TypeDecimal:
+	case db.TypeInt16, db.TypeInt32, db.TypeDecimal:
 		return "number"
-	case orm.TypeString:
+	case db.TypeString:
 		return "string"
-	case orm.TypeDateTime:
+	case db.TypeDateTime:
 		return "Date"
-	case orm.TypeBytes:
+	case db.TypeBytes:
 		return "any"
 	}
 	return "any"

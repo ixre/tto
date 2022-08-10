@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/db/dialect"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/shell"
 	"github.com/ixre/tto"
@@ -144,7 +145,7 @@ func generate() {
 	}
 	// 初始化生成器
 	driver := re.GetString("database.driver")
-	dialect, dbDriver := tto.GetDialect(driver)
+	dbDriver, dialect := dialect.GetDialect(driver)
 
 	dg := tto.DBCodeGenerator(dbDriver, opt)
 	dg.Package(pkgName)
@@ -168,9 +169,9 @@ func generate() {
 		}
 		userMeta := re.GetBoolean("code.meta_settings")
 		tables, err = dg.Parses(list, userMeta)
-		
-	}else{
-		tables,err = tto.ReadModels(modelPath)
+
+	} else {
+		tables, err = tto.ReadModels(modelPath)
 	}
 	if err != nil {
 		println("[ tto][ error]:", err.Error())

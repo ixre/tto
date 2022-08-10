@@ -18,7 +18,8 @@ find output/java -name "*.java" | xargs sed -i 's/ float / Float /g'
 
 import (
 	"fmt"
-	"github.com/ixre/gof/db/orm"
+
+	"github.com/ixre/gof/db/db"
 )
 
 type JavaLang struct {
@@ -51,23 +52,23 @@ var _ Lang = new(JavaLang)
 
 func javaTypes(typeId int) string {
 	switch typeId {
-	case orm.TypeBoolean:
+	case db.TypeBoolean:
 		return "boolean"
-	case orm.TypeInt64:
+	case db.TypeInt64:
 		return "long"
-	case orm.TypeFloat32:
+	case db.TypeFloat32:
 		return "float"
-	case orm.TypeFloat64:
+	case db.TypeFloat64:
 		return "double"
-	case orm.TypeInt16, orm.TypeInt32:
+	case db.TypeInt16, db.TypeInt32:
 		return "int"
-	case orm.TypeString:
+	case db.TypeString:
 		return "String"
-	case orm.TypeDecimal:
+	case db.TypeDecimal:
 		return "BigDecimal"
-	case orm.TypeDateTime:
+	case db.TypeDateTime:
 		return "Date"
-	case orm.TypeBytes:
+	case db.TypeBytes:
 		return "Byte[]"
 	}
 	return fmt.Sprintf("Unknown type id:%d", typeId)
@@ -75,23 +76,23 @@ func javaTypes(typeId int) string {
 
 func javaPkTypes(typeId int) string {
 	switch typeId {
-	case orm.TypeBoolean:
+	case db.TypeBoolean:
 		return "Boolean"
-	case orm.TypeInt64:
+	case db.TypeInt64:
 		return "Long"
-	case orm.TypeFloat32:
+	case db.TypeFloat32:
 		return "Float"
-	case orm.TypeFloat64:
+	case db.TypeFloat64:
 		return "Double"
-	case orm.TypeInt16, orm.TypeInt32:
+	case db.TypeInt16, db.TypeInt32:
 		return "Integer"
-	case orm.TypeString:
+	case db.TypeString:
 		return "String"
-	case orm.TypeDecimal:
+	case db.TypeDecimal:
 		return "BigDecimal"
-	case orm.TypeDateTime:
+	case db.TypeDateTime:
 		return "Date"
-	case orm.TypeBytes:
+	case db.TypeBytes:
 		return "Byte[]"
 	}
 	return fmt.Sprintf("Unknown type id:%d", typeId)
@@ -99,21 +100,21 @@ func javaPkTypes(typeId int) string {
 
 func javaValues(typeId int) string {
 	switch typeId {
-	case orm.TypeBoolean:
+	case db.TypeBoolean:
 		return "false"
-	case orm.TypeInt64:
+	case db.TypeInt64:
 		return "0L"
-	case orm.TypeFloat32, orm.TypeFloat64:
+	case db.TypeFloat32, db.TypeFloat64:
 		return "0F"
-	case orm.TypeInt16, orm.TypeInt32:
+	case db.TypeInt16, db.TypeInt32:
 		return "0"
-	case orm.TypeDecimal:
+	case db.TypeDecimal:
 		return "new BigDecimal(0.0)"
-	case orm.TypeString:
+	case db.TypeString:
 		return "\"\""
-	case orm.TypeDateTime:
+	case db.TypeDateTime:
 		return "new Date()"
-	case orm.TypeBytes:
+	case db.TypeBytes:
 		return "new Byte[0]"
 	}
 	return fmt.Sprintf("Unknown type id:%d", typeId)

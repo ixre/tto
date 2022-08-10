@@ -7,7 +7,8 @@ import (
 )
 
 var predefineRegexp = regexp.MustCompilePOSIX(`#\!([^\!-]+):([^#]+?)`)
-var lineJoinRegexp = regexp.MustCompile(`\s*\\(\s+)` )
+var lineJoinRegexp = regexp.MustCompile(`\s*\\(\s+)`)
+
 // var lineJoinRegexp = regexp.MustCompile(`\\s*\\\\(\\s+)`)
 var tplCommentRegexp = regexp.MustCompile(`/\*+(\s*)#!(.+?)*/`)
 

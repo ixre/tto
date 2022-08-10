@@ -1,8 +1,9 @@
 package lang
 
 import (
-	"github.com/ixre/gof/db/orm"
 	"regexp"
+
+	"github.com/ixre/gof/db/db"
 )
 
 /**
@@ -44,23 +45,23 @@ func (g GoLang) DefaultValue(typeId int) string {
 
 func GoTypes(typeId int) string {
 	switch typeId {
-	case orm.TypeString:
+	case db.TypeString:
 		return "string"
-	case orm.TypeBoolean:
+	case db.TypeBoolean:
 		return "bool"
-	case orm.TypeInt16:
+	case db.TypeInt16:
 		return "int16"
-	case orm.TypeInt32:
+	case db.TypeInt32:
 		return "int"
-	case orm.TypeInt64:
+	case db.TypeInt64:
 		return "int64"
-	case orm.TypeFloat32:
+	case db.TypeFloat32:
 		return "float32"
-	case orm.TypeFloat64, orm.TypeDecimal:
+	case db.TypeFloat64, db.TypeDecimal:
 		return "float64"
-	case orm.TypeDateTime:
+	case db.TypeDateTime:
 		return "time.Time"
-	case orm.TypeBytes:
+	case db.TypeBytes:
 		return "[]byte"
 	}
 	return "interface{}"
@@ -68,16 +69,14 @@ func GoTypes(typeId int) string {
 
 func GoValues(typeId int) string {
 	switch typeId {
-	case orm.TypeString:
+	case db.TypeString:
 		return "\"\""
-	case orm.TypeBoolean:
+	case db.TypeBoolean:
 		return "false"
-	case orm.TypeInt16, orm.TypeInt32, orm.TypeInt64:
+	case db.TypeInt16, db.TypeInt32, db.TypeInt64:
 		return "0"
-	case orm.TypeFloat32, orm.TypeFloat64:
+	case db.TypeFloat32, db.TypeFloat64:
 		return "0.0"
 	}
 	return "<unknown>"
 }
-
-

@@ -1,13 +1,14 @@
 package tto
 
 import (
-	"github.com/ixre/gof/db/orm"
-	"github.com/ixre/tto/config"
 	"strings"
+
+	"github.com/ixre/gof/db/db"
+	"github.com/ixre/tto/config"
 )
 
 // BuildVersion 版本号
-const BuildVersion = "0.5.0"
+const BuildVersion = "0.5.1"
 
 // ReleaseCodeHome 代码页
 const ReleaseCodeHome = "https://github.com/ixre/tto"
@@ -36,7 +37,7 @@ type Table struct {
 	// 数据库编码
 	Charset string
 	// 表
-	Raw *orm.Table
+	Raw *db.Table
 	// 主键
 	Pk string
 	// 主键属性

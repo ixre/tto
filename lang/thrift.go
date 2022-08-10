@@ -1,8 +1,9 @@
 package lang
 
 import (
-	"github.com/ixre/gof/db/orm"
 	"strconv"
+
+	"github.com/ixre/gof/db/db"
 )
 
 type Thrift struct {
@@ -39,23 +40,23 @@ var _ Lang = new(Thrift)
 
 func ThriftTypes(typeId int) string {
 	switch typeId {
-	case orm.TypeString:
+	case db.TypeString:
 		return "string"
-	case orm.TypeBoolean:
+	case db.TypeBoolean:
 		return "bool"
-	case orm.TypeInt16:
+	case db.TypeInt16:
 		return "i16"
-	case orm.TypeInt32:
+	case db.TypeInt32:
 		return "i32"
-	case orm.TypeInt64:
+	case db.TypeInt64:
 		return "i64"
-	case orm.TypeFloat32:
+	case db.TypeFloat32:
 		return "f32"
-	case orm.TypeFloat64:
+	case db.TypeFloat64:
 		return "f64"
-	case orm.TypeDecimal:
+	case db.TypeDecimal:
 		return "f64"
-	case orm.TypeDateTime:
+	case db.TypeDateTime:
 		return "string"
 	}
 	return strconv.Itoa(typeId)

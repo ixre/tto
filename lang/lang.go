@@ -1,9 +1,10 @@
 package lang
 
 import (
-	"github.com/ixre/gof/db/orm"
 	"strconv"
 	"strings"
+
+	"github.com/ixre/gof/db/db"
 )
 
 /**
@@ -87,13 +88,13 @@ func (c CommonLang) DefaultValue(typeId int) string {
 
 func CommonValues(typeId int) string {
 	switch typeId {
-	case orm.TypeBoolean:
+	case db.TypeBoolean:
 		return "false"
-	case orm.TypeInt64, orm.TypeInt16, orm.TypeInt32:
+	case db.TypeInt64, db.TypeInt16, db.TypeInt32:
 		return "0"
-	case orm.TypeFloat32, orm.TypeFloat64, orm.TypeDecimal:
+	case db.TypeFloat32, db.TypeFloat64, db.TypeDecimal:
 		return "0.0"
-	case orm.TypeString:
+	case db.TypeString:
 		return "\"\""
 	}
 	return "null"

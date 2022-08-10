@@ -2,7 +2,8 @@ package lang
 
 import (
 	"fmt"
-	"github.com/ixre/gof/db/orm"
+
+	"github.com/ixre/gof/db/db"
 )
 
 /**
@@ -41,23 +42,23 @@ var _ Lang = new(Protobuf)
 
 func ProtobufTypes(typeId int) string {
 	switch typeId {
-	case orm.TypeBoolean:
+	case db.TypeBoolean:
 		return "bool"
-	case orm.TypeFloat32:
+	case db.TypeFloat32:
 		return "double"
-	case orm.TypeFloat64:
+	case db.TypeFloat64:
 		return "double"
-	case orm.TypeInt16:
+	case db.TypeInt16:
 		return "int32"
-	case orm.TypeInt32:
+	case db.TypeInt32:
 		return "int32"
-	case orm.TypeInt64:
+	case db.TypeInt64:
 		return "int64"
-	case orm.TypeString:
+	case db.TypeString:
 		return "string"
-	case orm.TypeDecimal:
+	case db.TypeDecimal:
 		return "decimal"
-	case orm.TypeDateTime:
+	case db.TypeDateTime:
 		return "string"
 	}
 	return fmt.Sprintf("Unknown type id:%d", typeId)

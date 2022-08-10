@@ -3,9 +3,10 @@ package ddl
 import (
 	"bytes"
 	"fmt"
-	"github.com/ixre/gof/db/orm"
-	"github.com/ixre/tto"
 	"strings"
+
+	"github.com/ixre/gof/db/db"
+	"github.com/ixre/tto"
 )
 
 // GenerateClickHouseMergeTreeTableDDL 使用MergeTree引擎生成Clickhouse表的DDL语法
@@ -59,25 +60,25 @@ func GenerateClickHouseMergeTreeTableDDL(table *tto.Table) string {
 
 func getClickhouseColumnType(typeId int) string {
 	switch typeId {
-	case orm.TypeBoolean:
+	case db.TypeBoolean:
 		return "Int8"
-	case orm.TypeInt64:
+	case db.TypeInt64:
 		return "Int64"
-	case orm.TypeFloat32:
+	case db.TypeFloat32:
 		return "Float32"
-	case orm.TypeFloat64:
+	case db.TypeFloat64:
 		return "Float64"
-	case orm.TypeInt16:
+	case db.TypeInt16:
 		return "Int16"
-	case orm.TypeInt32:
+	case db.TypeInt32:
 		return "Int32"
-	case orm.TypeString:
+	case db.TypeString:
 		return "String"
-	case orm.TypeDecimal:
+	case db.TypeDecimal:
 		return "Decimal64"
-	case orm.TypeDateTime:
+	case db.TypeDateTime:
 		return "Date"
-	case orm.TypeBytes:
+	case db.TypeBytes:
 		return "String"
 	}
 	return fmt.Sprintf("Unknown type id:%d", typeId)

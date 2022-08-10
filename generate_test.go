@@ -14,7 +14,7 @@ import (
 var (
 	driver     = "mysql"
 	dbName     = ""
-	dbPrefix   = "mm_"
+	dbPrefix   = "t_B"
 	connString = "root:@tcp(127.0.0.1:3306)/baozhang?charset=utf8"
 	genDir     = "./generated_code/"
 	tplDir     = "./templates/java/spring/kotlin"
@@ -24,6 +24,9 @@ var (
 func TestGenAll(t *testing.T) {
 	driver = "postgresql"
 	connString = "postgres://postgres:123456@127.0.0.1:5432/go2o?sslmode=disable"
+
+	// driver = "sqlserver"
+	// connString = "sqlserver://sfDBUser:Jbmeon@001@192.168.1.1:1433?database=DCF19_ERP_TEST_B&encrypt=disable"
 
 	// 初始化生成器
 	conn, _ := db.NewConnector(driver, connString, nil, false)
@@ -57,7 +60,7 @@ func TestGenAll(t *testing.T) {
 	//dg.GenerateGoRepoCodes(tables, genDir)
 	dg.WalkGenerateCodes(tables)
 	//格式化代码
-	shell.Run("gofmt -w " + genDir, false)
+	shell.Run("gofmt -w "+genDir, false)
 	t.Log("生成成功, 输出目录", genDir)
 }
 
@@ -71,7 +74,6 @@ func TestGenAll(t *testing.T) {
 // 	return nil
 // }
 
-
 func TestReadTables(t *testing.T) {
 	txt, _ := ioutil.ReadFile("./templates/table.tb")
 	tables, _ := ReadTables(string(txt))
@@ -81,7 +83,7 @@ func TestReadTables(t *testing.T) {
 func TestGenerateByReadedTables(t *testing.T) {
 	//txt, _ := ioutil.ReadFile("./templates/table.tb")
 	//tables, _ := ReadTables(string(txt), "user")
-	tables,_ := ReadModels("./templates")
+	tables, _ := ReadModels("./templates")
 	// 生成自定义代码
 	opt := &Options{
 		TplDir:          tplDir,

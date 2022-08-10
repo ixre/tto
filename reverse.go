@@ -8,7 +8,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/ixre/gof/db/orm"
+	"github.com/ixre/gof/db/db"
 	"github.com/ixre/tto/config"
 )
 
@@ -18,7 +18,7 @@ func ReadModels(path string) ([]*Table, error) {
 	if err == nil {
 		for _, v := range list {
 			if strings.HasSuffix(v.Name(), ".t") {
-				bytes, err := ioutil.ReadFile(filepath.Join(path,v.Name()))
+				bytes, err := ioutil.ReadFile(filepath.Join(path, v.Name()))
 				if err == nil {
 					tb, _ := ReadTables(string(bytes))
 					if len(tb) > 0 {
@@ -30,6 +30,7 @@ func ReadModels(path string) ([]*Table, error) {
 	}
 	return tables, err
 }
+
 var tableRegex = regexp.MustCompile(`///\s*([\S]+)\s*type\s+([^\s]+)\sstruct{([^}]+)}`)
 var txtColRegex = regexp.MustCompile(`///\s*([\S]+)\s*([\S]+)\s+([\S]+)\s+` + "`([^`]+)`")
 var txtPropRegex = regexp.MustCompile(`([\S]+?)\s*:\s*"(.+?)"`)
@@ -86,10 +87,10 @@ func readColumns(table *Table, txt string) {
 			table.PkProp = col.Prop
 			table.PkType = col.Type
 			if prefix := props["prefix"]; len(prefix) > 0 {
-				if !strings.HasSuffix(prefix,"_"){
+				if !strings.HasSuffix(prefix, "_") {
 					prefix += "_"
 				}
-				table.Name = KeyFormat(prefix+table.Name)
+				table.Name = KeyFormat(prefix + table.Name)
 				table.Prefix = prefix[:len(prefix)-1]
 			}
 		}
@@ -127,23 +128,23 @@ func KeyFormat(s string) string {
 func GetOrmTypeFromGoType(typeName string) int {
 	switch typeName {
 	case "string":
-		return orm.TypeString
+		return db.TypeString
 	case "bool":
-		return orm.TypeBoolean
+		return db.TypeBoolean
 	case "int16":
-		return orm.TypeInt16
+		return db.TypeInt16
 	case "int":
-		return orm.TypeInt32
+		return db.TypeInt32
 	case "int64":
-		return orm.TypeInt64
+		return db.TypeInt64
 	case "float32":
-		return orm.TypeFloat32
+		return db.TypeFloat32
 	case "float64":
-		return orm.TypeDecimal
+		return db.TypeDecimal
 	case "time.Time":
-		return orm.TypeDateTime
+		return db.TypeDateTime
 	case "[]byte":
-		return orm.TypeBytes
+		return db.TypeBytes
 	}
 	return 0
 }

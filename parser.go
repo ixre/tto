@@ -3,17 +3,18 @@ package tto
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ixre/gof/db/orm"
-	"github.com/ixre/gof/log"
-	"github.com/ixre/gof/util"
-	"github.com/ixre/tto/config"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/ixre/gof/db/db"
+	"github.com/ixre/gof/log"
+	"github.com/ixre/gof/util"
+	"github.com/ixre/tto/config"
 )
 
 // 获取表结构,userMeta 是否使用用户的元数据
-func parseTable(ordinal int, tb *orm.Table, shortUpper bool, userMeta bool) *Table {
+func parseTable(ordinal int, tb *db.Table, shortUpper bool, userMeta bool) *Table {
 	n := &Table{
 		Ordinal:    ordinal,
 		Name:       tb.Name,
@@ -27,7 +28,7 @@ func parseTable(ordinal int, tb *orm.Table, shortUpper bool, userMeta bool) *Tab
 		Raw:        tb,
 		Pk:         "id",
 		PkProp:     "Id",
-		PkType:     orm.TypeInt32,
+		PkType:     db.TypeInt32,
 		Columns:    make([]*Column, len(tb.Columns)),
 	}
 	if len(n.Comment) == 0 {
@@ -56,7 +57,7 @@ func parseTable(ordinal int, tb *orm.Table, shortUpper bool, userMeta bool) *Tab
 		}
 		// 兼容JAVA项目int主键
 		if CompactMode && c.DbType == "int(11)" {
-			c.Type = orm.TypeInt32
+			c.Type = db.TypeInt32
 		}
 		n.Columns[i] = c
 	}

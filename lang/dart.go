@@ -1,6 +1,8 @@
 package lang
 
-import "github.com/ixre/gof/db/orm"
+import (
+	"github.com/ixre/gof/db/db"
+)
 
 /**
  * Copyright (C) 2007-2020 56X.NET,All rights reserved.
@@ -19,15 +21,15 @@ type dart struct {
 
 func (d dart) ParseType(typeId int) string {
 	switch typeId {
-	case orm.TypeString:
+	case db.TypeString:
 		return "String"
-	case orm.TypeBoolean:
+	case db.TypeBoolean:
 		return "bool"
-	case orm.TypeInt16,orm.TypeInt32,orm.TypeInt64:
+	case db.TypeInt16, db.TypeInt32, db.TypeInt64:
 		return "int"
-	case orm.TypeFloat32,orm.TypeFloat64, orm.TypeDecimal:
+	case db.TypeFloat32, db.TypeFloat64, db.TypeDecimal:
 		return "num"
-	case orm.TypeDateTime:
+	case db.TypeDateTime:
 		return "DateTime"
 	}
 	return "dynamic"
@@ -39,15 +41,15 @@ func (d dart) SqlMapType(typeId int, len int) string {
 
 func (d dart) DefaultValue(typeId int) string {
 	switch typeId {
-	case orm.TypeString:
+	case db.TypeString:
 		return "\"\""
-	case orm.TypeBoolean:
+	case db.TypeBoolean:
 		return "false"
-	case orm.TypeInt16, orm.TypeInt32,orm.TypeInt64:
+	case db.TypeInt16, db.TypeInt32, db.TypeInt64:
 		return "0"
-	case orm.TypeFloat32, orm.TypeFloat64, orm.TypeDecimal:
+	case db.TypeFloat32, db.TypeFloat64, db.TypeDecimal:
 		return "0.0"
-	case orm.TypeDateTime:
+	case db.TypeDateTime:
 		return "DateTime.now()"
 	}
 	return "{}"

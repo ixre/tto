@@ -1,16 +1,6 @@
 package lang
 
 /**
- * Copyright (C) 2007-2020 56X.NET,All rights reserved.
- *
- * name : java
- * author : jarrysix (jarrysix#gmail.com)
- * date : 2020-11-20 11:11
- * description :
- * history :
- */
-
-/**
 find output/java -name "*.java" | xargs sed -i 's/ int / Integer /g' && \
 find output/java -name "*.java" | xargs sed -i 's/ long / Long /g' && \
 find output/java -name "*.java" | xargs sed -i 's/ float / Float /g'

@@ -20,16 +20,6 @@ import (
 	"time"
 )
 
-/**
- * Copyright (C) 2007-2020 56X.NET,All rights reserved.
- *
- * name : upgrade.go
- * author : jarrysix (jarrysix#gmail.com)
- * date : 2020-11-27 06:24
- * description :
- * history :
- */
-
 var versionInfoURL = "https://github.com/ixre/tto/releases/"
 
 type version struct {

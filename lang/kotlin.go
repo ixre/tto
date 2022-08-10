@@ -6,16 +6,6 @@ import (
 	"github.com/ixre/gof/db/db"
 )
 
-/**
- * Copyright (C) 2007-2020 56X.NET,All rights reserved.
- *
- * name : kotlin.go
- * author : jarrysix (jarrysix#gmail.com)
- * date : 2020-11-20 11:09
- * description :
- * history :
- */
-
 type KotlinLang struct {
 }
 

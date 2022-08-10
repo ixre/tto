@@ -18,7 +18,7 @@ tto -conf "$CONF_DIR"/tto.conf -t "$CONF_DIR"/templates -o output -excludes tmp_
 # Replace generator description part of code file
 # find output/spring -name "*.java" -print0 |  xargs -0 sed -i ':label;N;s/This.*Copy/Copy/g;b label'
 # Replace package
-# find output/spring -name "*.java" -print0 |  xargs -0 sed -i 's/net.fze/cn.cgt/g'
+# find output/spring -name "*.java" -print0 |  xargs -0 sed -i 's/net.fze/com.pkg/g'
 # Replace type
 # find output/java -name "*.java"  -print0 | xargs -0 sed -i 's/ int / Integer /g'
 # copy files to project folder

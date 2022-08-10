@@ -1,11 +1,3 @@
-/**
- * Copyright 2009-2019 @ 56x.net
- * name : Controller.java
- * author : jarrysix (jarrysix#gmail.com)
- * date : 2019-07-14 07:47
- * description :
- * history :
- */
 package {{pkg "java" .global.pkg}}.controllers;
 #!target:spring/src/main/java/{{.global.pkg}}/controllers/{{.table.Title}}Controller.java
 {{$pkField := lower_title .table.Pk}}

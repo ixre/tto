@@ -6,16 +6,6 @@ import (
 	"github.com/ixre/gof/db/db"
 )
 
-/**
- * Copyright (C) 2007-2020 56X.NET,All rights reserved.
- *
- * name : go
- * author : jarrysix (jarrysix#gmail.com)
- * date : 2020-11-20 11:11
- * description :
- * history :
- */
-
 var _ Lang = new(GoLang)
 
 var pkgRegex = regexp.MustCompile("/(com|net|io|cn|org|info)/")

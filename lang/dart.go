@@ -4,16 +4,6 @@ import (
 	"github.com/ixre/gof/db/db"
 )
 
-/**
- * Copyright (C) 2007-2020 56X.NET,All rights reserved.
- *
- * name : dart.go
- * author : jarrysix (jarrysix#gmail.com)
- * date : 2020-12-16 12:40
- * description :
- * history :
- */
-
 var _ Lang = new(dart)
 
 type dart struct {

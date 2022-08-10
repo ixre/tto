@@ -7,16 +7,6 @@ import (
 	"github.com/ixre/gof/db/db"
 )
 
-/**
- * Copyright (C) 2007-2020 56X.NET,All rights reserved.
- *
- * name : lang
- * author : jarrysix (jarrysix#gmail.com)
- * date : 2020-11-20 11:14
- * description :
- * history :
- */
-
 type Lang interface {
 	// ParseType parse to lang type
 	ParseType(typeId int) string

@@ -27,15 +27,6 @@ func (t Thrift) DefaultValue(typeId int) string {
 	panic("not support")
 }
 
-/**
- * Copyright (C) 2007-2020 56X.NET,All rights reserved.
- *
- * name : thrift.go
- * author : jarrysix (jarrysix#gmail.com)
- * date : 2020-11-20 11:04
- * description :
- * history :
- */
 var _ Lang = new(Thrift)
 
 func ThriftTypes(typeId int) string {

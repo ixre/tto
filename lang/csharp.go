@@ -1,15 +1,5 @@
 package lang
 
-/**
- * Copyright (C) 2007-2020 56X.NET,All rights reserved.
- *
- * name : java
- * author : jarrysix (jarrysix#gmail.com)
- * date : 2022-02-23 20:36
- * description :
- * history :
- */
-
 import (
 	"fmt"
 

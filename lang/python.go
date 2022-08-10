@@ -6,16 +6,6 @@ import (
 	"github.com/ixre/gof/db/db"
 )
 
-/**
- * Copyright (C) 2007-2020 56X.NET,All rights reserved.
- *
- * name : python.go
- * author : jarrysix (jarrysix#gmail.com)
- * date : 2020-11-20 11:10
- * description :
- * history :
- */
-
 type PythonLang struct {
 }
 

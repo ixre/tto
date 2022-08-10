@@ -1,14 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"database/sql"
 	"flag"
 	"fmt"
-	"github.com/ixre/gof/db"
-	"github.com/ixre/gof/db/dialect"
-	"github.com/ixre/gof/db/orm"
-	"github.com/ixre/gof/shell"
-	"github.com/ixre/tto"
 	"io/ioutil"
 	"log"
 	"os"
@@ -16,6 +12,12 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ixre/gof/db"
+	"github.com/ixre/gof/db/dialect"
+	"github.com/ixre/gof/db/orm"
+	"github.com/ixre/gof/shell"
+	"github.com/ixre/tto"
 )
 
 func main() {
@@ -92,6 +94,12 @@ func generate() {
 		println("[ tto][ fatal]:", err.Error())
 		return
 	}
+	if debug {
+		buf := bytes.NewBuffer(nil)
+		buf.WriteString(fmt.Sprintf("table : %s \n", table))
+		fmt.Println(buf.String())
+	}
+
 	log.SetFlags(log.Ltime | log.Lshortfile)
 	defer crashRecover(debug)
 	// 兼容模式
@@ -102,6 +110,10 @@ func generate() {
 	pkgName := "com/tto/pkg"
 	if re.Contains("code.pkg") {
 		pkgName = re.GetString("code.pkg")
+	}
+	orgName := "56X.NET"
+	if re.Contains("global.organization") {
+		orgName = re.GetString("global.organization")
 	}
 	// 获取bash启动脚本，默认unix系统包含了bash，windows下需指定
 	bashExec := ""
@@ -149,6 +161,7 @@ func generate() {
 
 	dg := tto.DBCodeGenerator(dbDriver, opt)
 	dg.Package(pkgName)
+	dg.Var("organization", orgName)
 	if re.GetBoolean("code.id_upper") {
 		dg.UseUpperId()
 	}

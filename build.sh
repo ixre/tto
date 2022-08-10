@@ -10,4 +10,4 @@ CGO_ENABLED=0 GOOS=windows ARCH=amd64 go build -o tto.exe bin/*.go
 
 tar cvzf tto-generator-bin.tar.gz example_run.sh mac-tto tto \
   tto.exe tto.conf templates README.md
-rm -rf tto mac-tto tto.exe
+#rm -rf tto mac-tto tto.exe

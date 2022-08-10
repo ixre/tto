@@ -270,8 +270,15 @@ func getDb(driver string, r *tto.Registry) *sql.DB {
 			r.Get(prefix+".port").(int64),
 			r.GetString(prefix+".name"),
 			dbCharset)
-	case "postgres", "postgresql":
+	case "postgres", "postgresql", "pgsql":
 		connStr = fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?sslmode=disable",
+			r.GetString(prefix+".user"),
+			r.GetString(prefix+".pwd"),
+			r.GetString(prefix+".server"),
+			r.Get(prefix+".port").(int64),
+			r.GetString(prefix+".name"))
+	case "mssql", "sqlserver":
+		connStr = fmt.Sprintf("sqlserver://%s:%s@%s:%d?database=%s&encrypt=disable",
 			r.GetString(prefix+".user"),
 			r.GetString(prefix+".pwd"),
 			r.GetString(prefix+".server"),

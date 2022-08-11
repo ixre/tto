@@ -65,12 +65,14 @@ func generate() {
 	var cleanLast bool
 	var compactMode bool
 	var modelPath string // 模型文件的路径
+	var pkgName string   // 包名
 	//var keepLocal bool
 
 	flag.StringVar(&genDir, "o", "./output", "path of output directory")
 	flag.StringVar(&tplDir, "t", "./templates", "path of code templates directory")
 	flag.StringVar(&majorLang, "m", "go", "major code lang like java or go")
 	flag.StringVar(&modelPath, "model", "", "path to model directory")
+	flag.StringVar(&pkgName, "pkg", "", "the package like 'net.fze.web',it will override file config")
 	flag.StringVar(&confPath, "conf", "./tto.conf", "config path")
 	flag.StringVar(&table, "table", "", "table name or table prefix")
 	flag.StringVar(&excludedTables, "excludes", "", "exclude tables by prefix")
@@ -96,6 +98,7 @@ func generate() {
 	}
 	if debug {
 		buf := bytes.NewBuffer(nil)
+		buf.WriteString(fmt.Sprintf("package: %s \n",pkgName))
 		buf.WriteString(fmt.Sprintf("table : %s \n", table))
 		fmt.Println(buf.String())
 	}
@@ -107,9 +110,13 @@ func generate() {
 		tto.CompactMode = true
 	}
 	// 获取包名
-	pkgName := "com/tto/pkg"
-	if re.Contains("code.pkg") {
-		pkgName = re.GetString("code.pkg")
+	
+	if len(strings.TrimSpace(pkgName)) == 0 {
+		if re.Contains("code.pkg") {
+			pkgName = re.GetString("code.pkg")
+		}else{	
+			pkgName = "com.tto.pkg"
+		}
 	}
 	orgName := "56X.NET"
 	if re.Contains("global.organization") {

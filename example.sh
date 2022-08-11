@@ -14,7 +14,12 @@ fi
 
 TABLE_KEYWORD=""
 CONF_DIR=$(dirname "$0")
-tto  -conf "$CONF_DIR"/tto.conf -t "$CONF_DIR"/templates -o output -excludes tmp_ -table "${TABLE_KEYWORD}" -clean
+tto  -conf "$CONF_DIR"/tto.conf -t "$CONF_DIR"/templates -o output \
+-model '' \
+-pkg '' \
+-excludes tmp_ \
+-table "${TABLE_KEYWORD}" \
+-clean
 
 # Replace generator description part of code file
 # find output/spring -name "*.java" -print0 |  xargs -0 sed -i ':label;N;s/This.*Copy/Copy/g;b label'

@@ -18,6 +18,7 @@ func (g GoLang) SqlMapType(typeId int, len int) string {
 }
 
 func (g GoLang) PkgPath(pkg string) string {
+	//return strings.Replace(pkg,".","/")
 	return pkgRegex.ReplaceAllString(pkg, ".$1/")
 }
 

@@ -1,3 +1,10 @@
+
+## 表名大小写敏感
+添加配置：
+```
+spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+```
+
 # 数据查询组件
 
 文件(JAVA版):`ReportComponent.java`

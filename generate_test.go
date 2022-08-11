@@ -14,10 +14,10 @@ import (
 var (
 	driver     = "mysql"
 	dbName     = ""
-	dbPrefix   = "t_CSTD_GoodsMst_2003"
+	dbPrefix   = "t_COPD_OrdMst"
 	connString = "root:@tcp(127.0.0.1:3306)/baozhang?charset=utf8"
 	genDir     = "./generated_code/"
-	tplDir     = "./templates/java/spring/java"
+	tplDir     = "./templates/java/spring"
 )
 
 // 生成数据库所有的代码文件

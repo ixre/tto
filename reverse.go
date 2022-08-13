@@ -30,7 +30,7 @@ func ReadModels(path string) ([]*Table, error) {
 	return tables, err
 }
 
-var tableRegex = regexp.MustCompile(`///*\s*([^\n]+)\n*\s*type\s+([^\s]+)\sstruct{([^}]+)}`)
+var tableRegex = regexp.MustCompile(`///*\s*([^\n]+)\n*\s*type\s+([^\s]+)\s+struct\s*{([^}]+)}`)
 var txtColRegex = regexp.MustCompile(`///*\s*([\S]+)\s*([\S]+)\s+([\S]+)\s+` + "`([^`]+)`")
 var txtPropRegex = regexp.MustCompile(`([\S]+?)\s*:\s*"(.+?)"`)
 
@@ -70,7 +70,7 @@ func ReadTables(txt string) ([]*Table, error) {
 		}
 		readColumns(tb, v[3])
 		tables = append(tables, tb)
-		log.Println(i, "->", tb.Name, tb.Comment)
+		log.Println("[ reverse]: find model ", tb.Name,":", tb.Comment)
 	}
 
 	return tables, nil

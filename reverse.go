@@ -56,7 +56,7 @@ func ReadTables(txt string) ([]*Table, error) {
 		tb := &Table{
 			Ordinal:    i,
 			Name:       tbName,
-			Prefix:     "",
+			Prefix:     prefix(tbName),
 			Title:      structName,
 			ShortTitle: structName,
 			Comment:    tbDoc,

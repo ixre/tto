@@ -9,7 +9,6 @@ import (
 	"unicode"
 
 	"github.com/ixre/gof/db/db"
-	"github.com/ixre/tto/config"
 )
 
 func ReadModels(path string) ([]*Table, error) {
@@ -31,8 +30,8 @@ func ReadModels(path string) ([]*Table, error) {
 	return tables, err
 }
 
-var tableRegex = regexp.MustCompile(`///\s*([\S]+)\s*type\s+([^\s]+)\sstruct{([^}]+)}`)
-var txtColRegex = regexp.MustCompile(`///\s*([\S]+)\s*([\S]+)\s+([\S]+)\s+` + "`([^`]+)`")
+var tableRegex = regexp.MustCompile(`///*\s*([^\n]+)\n*\s*type\s+([^\s]+)\sstruct{([^}]+)}`)
+var txtColRegex = regexp.MustCompile(`///*\s*([\S]+)\s*([\S]+)\s+([\S]+)\s+` + "`([^`]+)`")
 var txtPropRegex = regexp.MustCompile(`([\S]+?)\s*:\s*"(.+?)"`)
 
 /// 从文本中读取表信息
@@ -40,14 +39,27 @@ func ReadTables(txt string) ([]*Table, error) {
 	sub := tableRegex.FindAllStringSubmatch(txt, -1)
 	tables := make([]*Table, 0)
 	for i, v := range sub {
-		name := v[2]
+		structName := v[2]
+		// 解析表名和文档
+		tbTxt := strings.Split(v[1]," ")
+		tbName,tbDoc := "",""
+		if len(tbTxt) > 1{
+			// 如果设置了与结构名不同的表名
+			if tbTxt[0] != structName{
+				tbName = tbTxt[0]
+			}
+			tbDoc = tbTxt[1]
+		}else{
+			tbDoc = tbTxt[0]
+			tbName = keyFormat(structName)
+		}
 		tb := &Table{
 			Ordinal:    i,
-			Name:       KeyFormat(name),
+			Name:       tbName,
 			Prefix:     "",
-			Title:      name,
-			ShortTitle: name,
-			Comment:    v[1],
+			Title:      structName,
+			ShortTitle: structName,
+			Comment:    tbDoc,
 			Engine:     "",
 			Schema:     "",
 			Charset:    "utf8",
@@ -80,7 +92,7 @@ func readColumns(table *Table, txt string) {
 			Comment: v[1],
 			Length:  0,
 			Type:    ormType,
-			Render:  &config.PropRenderOptions{},
+			Render:  &PropRenderOptions{},
 		}
 		if col.IsPk {
 			table.Pk = col.Name
@@ -90,7 +102,7 @@ func readColumns(table *Table, txt string) {
 				if !strings.HasSuffix(prefix, "_") {
 					prefix += "_"
 				}
-				table.Name = KeyFormat(prefix + table.Name)
+				table.Name = keyFormat(prefix + table.Name)
 				table.Prefix = prefix[:len(prefix)-1]
 			}
 		}
@@ -108,7 +120,7 @@ func parseColumnProps(s string) map[string]string {
 	return props
 }
 
-func KeyFormat(s string) string {
+func keyFormat(s string) string {
 	dst := make([]byte, 0)
 	for i, b := range strings.TrimSpace(s) {
 		if unicode.IsUpper(b) {

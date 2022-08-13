@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/ixre/gof/db/db"
-	"github.com/ixre/tto/config"
 )
 
 // BuildVersion 版本号
@@ -71,7 +70,7 @@ type Column struct {
 	// Go类型
 	Type int
 	// 输出选项
-	Render *config.PropRenderOptions
+	Render *PropRenderOptions
 }
 
 type LANG = string
@@ -151,4 +150,36 @@ func getLangByPath(path string) LANG {
 		}
 	}
 	return L_Unknown
+}
+
+
+
+type TableConfig struct {
+	// 结构元数据
+	Struct *TableMeta `json:"struct"`
+	// 字段元数据
+	Fields map[string]*ColumnMeta `json:"field"`
+}
+
+
+// TableMeta
+type TableMeta struct {
+}
+
+// ColumnMeta
+type ColumnMeta struct {
+	// 标题
+	Title string `json:"title"`
+	// 显示设置
+	Render *PropRenderOptions `json:"render"`
+}
+
+// PropRenderOptions
+type PropRenderOptions struct {
+	// 是否可见
+	Visible bool `json:"visible"`
+	// 显示元素
+	Element string `json:"element"`
+	// 如果Element为select,radio时可用
+	Options map[string]string `json:"options"`
 }

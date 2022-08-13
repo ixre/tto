@@ -14,7 +14,7 @@ import (
 var (
 	driver     = "mysql"
 	dbName     = ""
-	dbPrefix   = "t_COPD_OrdMst"
+	dbPrefix   = "t_BOMM_GoodsMst"
 	connString = "root:@tcp(127.0.0.1:3306)/baozhang?charset=utf8"
 	genDir     = "./generated_code/"
 	tplDir     = "./templates/java/spring"
@@ -26,7 +26,7 @@ func TestGenAll(t *testing.T) {
 	connString = "postgres://postgres:123456@127.0.0.1:5432/go2o?sslmode=disable"
 
 	driver = "sqlserver"
-	connString = "sqlserver://sfDBUser:Jbmeon@008@192.168.16.9:1433?database=DCF19_ERP_TEST_B&encrypt=disable"
+	connString = "sqlserver://sfDBUser:Jbmeon@008@192.168.16.119:1433?database=DCF19_ERP_TEST_B&encrypt=disable"
 
 	// 初始化生成器
 	conn, _ := db.NewConnector(driver, connString, nil, false)
@@ -84,6 +84,10 @@ func TestGenerateByReadedTables(t *testing.T) {
 	//txt, _ := ioutil.ReadFile("./templates/table.tb")
 	//tables, _ := ReadTables(string(txt), "user")
 	tables, _ := ReadModels("./templates")
+	if len(tables) == 0{
+		t.Log("no such tables")
+		t.FailNow()
+	}
 	// 生成自定义代码
 	opt := &Options{
 		TplDir:          tplDir,

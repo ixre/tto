@@ -19,9 +19,14 @@ import java.util.Map;
 {{/*　@DynamicInsert 排除值为null的字段　*/}} \
 @Table(name = "{{.table.Name}}", schema = "{{.table.Schema}}")
 public class {{$entity}} {
+    {{/* 将字段单独生成，以便做裁剪 */}}\
     {{range $i,$c := .columns}}{{$type := type "java" $c.Type}}
     {{$lowerProp := lower_title $c.Prop}} \
-    private {{$type}} {{$lowerProp}};
+    private {{$type}} {{$lowerProp}}; // {{$c.Comment}}\
+    {{end}}
+    
+    {{range $i,$c := .columns}}{{$type := type "java" $c.Type}}
+    {{$lowerProp := lower_title $c.Prop}} \
     public {{$entity}} set{{$c.Prop}}({{$type}} {{$lowerProp}}){
         this.{{$lowerProp}} = {{$lowerProp}};
         return this;

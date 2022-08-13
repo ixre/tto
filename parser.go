@@ -10,7 +10,6 @@ import (
 	"github.com/ixre/gof/db/db"
 	"github.com/ixre/gof/log"
 	"github.com/ixre/gof/util"
-	"github.com/ixre/tto/config"
 )
 
 // 获取表结构,userMeta 是否使用用户的元数据
@@ -73,7 +72,7 @@ func parseTable(ordinal int, tb *db.Table, shortUpper bool, userMeta bool) *Tabl
 
 // 读取并更新元数据
 func loadUserMeta(t *Table, userMeta bool) *Table {
-	cfg := &config.TableConfig{}
+	cfg := &TableConfig{}
 	dstPath := fmt.Sprintf("./meta-settings/%s.json", t.Name)
 	if userMeta {
 		f, err := os.Open(dstPath)
@@ -130,7 +129,7 @@ func loadUserMeta(t *Table, userMeta bool) *Table {
 	return t
 }
 
-func flushCfgFile(cfg *config.TableConfig, dstFile string) {
+func flushCfgFile(cfg *TableConfig, dstFile string) {
 	bytes, err := json.MarshalIndent(cfg, "", " ")
 	if err == nil {
 		err = util.BytesToFile(bytes, dstFile)
@@ -141,10 +140,10 @@ func flushCfgFile(cfg *config.TableConfig, dstFile string) {
 	}
 }
 
-func defaultMetaInfo(t *Table) *config.TableConfig {
-	cfg := &config.TableConfig{
-		Struct: &config.TableMeta{},
-		Fields: make(map[string]*config.ColumnMeta, 0),
+func defaultMetaInfo(t *Table) *TableConfig {
+	cfg := &TableConfig{
+		Struct: &TableMeta{},
+		Fields: make(map[string]*ColumnMeta, 0),
 	}
 	for _, c := range t.Columns {
 		f := smartField(c)
@@ -155,10 +154,10 @@ func defaultMetaInfo(t *Table) *config.TableConfig {
 }
 
 // 返回自动生成的字段
-func smartField(c *Column) *config.ColumnMeta {
+func smartField(c *Column) *ColumnMeta {
 	ele, options := smartElement(c)
-	fd := &config.ColumnMeta{
-		Render: &config.PropRenderOptions{
+	fd := &ColumnMeta{
+		Render: &PropRenderOptions{
 			Visible: true,
 			Element: ele,
 			Options: options,

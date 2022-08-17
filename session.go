@@ -285,7 +285,7 @@ func (s *sessionImpl) predefineTargetPath(tpl *CodeTemplate, table *Table) (stri
 // 连接文件路径
 func (s *sessionImpl) defaultTargetPath(tplFilePath string, table *Table) string {
 	if table == nil {
-		return tplFilePath
+		return strings.ReplaceAll(tplFilePath, ".tpl", "")
 	}
 	i := strings.Index(tplFilePath, ".")
 	if i != -1 {

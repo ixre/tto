@@ -26,7 +26,7 @@ func TestGenAll(t *testing.T) {
 	connString = "postgres://postgres:123456@127.0.0.1:5432/go2o?sslmode=disable"
 
 	driver = "sqlserver"
-	connString = "sqlserver://sfDBUser:Jbmeon@008@192.168.16.119:1433?database=DCF19_ERP_TEST_B&encrypt=disable"
+	connString = "sqlserver://sfDBUser:Jbmeon@008@192.168.16.9:1433?database=DCF19_ERP_TEST_B&encrypt=disable"
 
 	// 初始化生成器
 	conn, _ := db.NewConnector(driver, connString, nil, false)

@@ -70,7 +70,7 @@ func generate() {
 
 	flag.StringVar(&genDir, "o", "./output", "path of output directory")
 	flag.StringVar(&tplDir, "t", "./templates", "path of code templates directory")
-	flag.StringVar(&majorLang, "m", "go", "major code lang like java or go")
+	flag.StringVar(&majorLang, "lang", "go", "major code lang like java or go")
 	flag.StringVar(&modelPath, "model", "", "path to model directory")
 	flag.StringVar(&pkgName, "pkg", "", "the package like 'net.fze.web',it will override file config")
 	flag.StringVar(&confPath, "conf", "./tto.conf", "config path")
@@ -100,6 +100,7 @@ func generate() {
 		buf := bytes.NewBuffer(nil)
 		buf.WriteString(fmt.Sprintf("package: %s \n",pkgName))
 		buf.WriteString(fmt.Sprintf("table : %s \n", table))
+		buf.WriteString(fmt.Sprintf("main program language : %s \n", majorLang))
 		fmt.Println(buf.String())
 	}
 

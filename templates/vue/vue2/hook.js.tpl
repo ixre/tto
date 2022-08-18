@@ -1,4 +1,5 @@
-#!kind:2#!target:vue2/form_fx.js
+#!kind:2#!target:vue2/hook.js
+import axios from "axios";
 
 // parse multiple kind response to standard result like 
 // {errCode:1,errMsg:"success"}
@@ -16,3 +17,8 @@ export function parseResult(data) {
         errMsg: "success"
     }
 }
+
+export const request = axios.create({
+    baseURL: '',
+    timeout: 5000
+})

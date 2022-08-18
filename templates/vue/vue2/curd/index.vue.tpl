@@ -96,7 +96,7 @@ import {onMounted, reactive, ref} from "vue";
 import Pagination from '@/components/Pagination/index.vue';
 import {getPaging{{$Class}},delete{{$Class}},batchDelete{{$Class}} } from './api';
 import {{$Class}}Form from './modal.vue';
-import {parseResult} from "@/form_fx";
+import {parseResult} from "@/hook";
 
 // {{.table.Comment}}数据映射类
 class ListModel {
@@ -249,7 +249,3 @@ const batchDelete = ()=>{
     }).catch(() => { });
 }
 </script>
-
-<style scoped>
-/** 页面内的样式定义在这里 */
-</style>

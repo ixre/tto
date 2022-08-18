@@ -72,7 +72,7 @@ Usage of tto:
         exclude tables by prefix; multiple use ',' to split
   -local
         don't update any new version
-  -m string
+  -lang string
         major code lang like java or go (default "go")
   -o string
         path of output directory (default "./output")

@@ -52,7 +52,7 @@
 import {onMounted, reactive, ref} from "vue";
 import {Message,MessageBox} from "element-ui"
 import {{`{`}}{{$Class}},get{{$Class}},create{{$Class}},update{{$Class}} } from "./api"
-import {parseResult} from "@/form_fx";
+import {parseResult} from "@/hook";
 
 /** #! 定义属性,接收父组件的参数 */
 const props = defineProps({
@@ -106,7 +106,7 @@ const submitForm = ()=> {
   formRef.value.validate(async valid => {
     if (valid) {
       if(requesting.value)return;requesting.value = true;
-      let ret = await (value?update{{$Class}}(value,formData.value):create{{$Class}}(formData.value))
+      let ret = await (props.value?update{{$Class}}(props.value,formData.value):create{{$Class}}(formData.value))
         .catch((ex)=>MessageBox.alert(ex.message,"错误"))
         .finally(()=>requesting.value=false);
       const {errCode,errMsg} = parseResult(ret.data);
@@ -123,5 +123,3 @@ const submitForm = ()=> {
 }
 </script>
 
-<style scoped>
-</style>

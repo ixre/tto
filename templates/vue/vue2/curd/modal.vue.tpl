@@ -98,7 +98,7 @@ const fetchFormData = async(id) =>{
     formData = data;
   } catch (err) {
     console.error(err);
-    Message.message({type:"warning",message:"数据加载失败:"+err.message})
+    Message.warning("数据加载失败:"+err.message)
   }
 }
 
@@ -106,7 +106,7 @@ const submitForm = ()=> {
   formRef.value.validate(async valid => {
     if (valid) {
       if(requesting.value)return;requesting.value = true;
-      let ret = await (props.value?update{{$Class}}(props.value,formData.value):create{{$Class}}(formData.value))
+      let ret = await (props.value?update{{$Class}}(props.value,formData):create{{$Class}}(formData))
         .catch((ex)=>MessageBox.alert(ex.message,"错误"))
         .finally(()=>requesting.value=false);
       const {errCode,errMsg} = parseResult(ret.data);

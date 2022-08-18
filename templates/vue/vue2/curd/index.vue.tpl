@@ -6,15 +6,15 @@
 <template>
 <div class="app-container mod-grid-container">
     <!-- 查询和其他操作 -->
-    <div class="filter-container mod-grid-bar">
-        <div class="it mod-grid-bar-back" v-show="false">
+    <div class="filter-container mod-grid-header">
+        <div class="it mod-grid-header-back" v-show="false">
             <el-button class="filter-item" @click="handleBack">返回</el-button>
         </div>
-        <div class="it mod-grid-bar-filter">
+        <div class="it mod-grid-header-filter">
           <el-form :inline="true">
             <el-form-item label="状态:" class="filter-item">
               <el-select v-model="queryParams.state" class="filter-select"
-                         @change="fetchData">
+                         @change="queryPagingData">
                 <el-option v-for="(it,i) in stateOptions" :key="i" :label="it.key" :value="it.value"/>
               </el-select>
             </el-form-item>
@@ -32,17 +32,18 @@
             </el-form-item>
           </el-form>
         </div>
-        <div class="it mod-grid-bar-create">
+        <div class="it mod-grid-header-create">
             <el-button v-permission="['admin']" class="filter-item" icon="el-icon-plus" @click="handleCreate">新增</el-button>
         </div>
-        <div class="it mod-grid-bar-del">
+        <div class="it mod-grid-header-del">
             <el-button v-show="selectedRows.length > 0" v-permission="['admin']" class="filter-item" type="danger" @click="batchDelete">删除</el-button>
         </div>
     </div>
+    <div class="mod-grid-body">
     <!-- 表单数据 -->
-    <el-table ref="table" v-loading="list.loading" :data="list.data" :height="tableHeight"
+    <el-table ref="table" v-loading="list.loading" :data="list.data" height="100%"
               fit :highlight-current-row="false" row-key="{{$Pk}}" border
-              @selection-change="handleSelectionChange" class="mod-grid-table">
+              @selection-change="handleSelectionChange">
         <el-table-column align="center" type="selection" width="45" />
         {{range $i,$c := .columns}} \
         {{if ends_with $c.Name "_time"}} \
@@ -78,11 +79,13 @@
             </template>
         </el-table-column>
     </el-table>
-
+    </div>
+    <div class="mod-grid-footer">
     <!-- 分页 -->
-    <pagination class="mod-grid-pagination" v-show="list.total>0" :total="list.total" :page.sync="list.page"
-                :limit.sync="list.rows" @pagination="fetchData"/>
-
+        <!-- <pagination class="mod-grid-pagination" v-show="list.total>0" :total="list.total" :page.sync="list.page"
+                      :limit.sync="list.rows" @pagination="fetchData"/>
+      -->
+    </div>
     <!-- 弹出操作框 -->
     <el-dialog width="75%" class="mod-dialog" :title="dialog.title" :visible.sync="dialog.open"  :close-on-click-modal="false" @close="()=>dialog.modal=null">
         <component v-bind:is="dialog.modal" v-model="dialog.params" @callback="refresh"></component>
@@ -92,10 +95,10 @@
 </template>
 <script setup>
 import {onMounted, reactive, ref} from "vue";
-
-import Pagination from '@/components/Pagination/index.vue';
+import {Message,MessageBox} from "element-ui"
+//import Pagination from '@/components/Pagination/index.vue';
 import {getPaging{{$Class}},delete{{$Class}},batchDelete{{$Class}} } from './api';
-import {{$Class}}Form from './modal.vue';
+import {{$Class}}Modal from './modal.vue';
 import {parseResult} from "@/hook";
 
 // {{.table.Comment}}数据映射类
@@ -107,12 +110,12 @@ class ListModel {
     }
 }
 
-let dialog = ref({title:"Form",open:false,params:0,modal: null});
+let list = reactive({loading:false,total:0, page: 1, rows: 10,data:[]});
+let dialog = reactive({title:"Form",open:false,params:0,modal: null});
 let requesting = ref(false);
 let tableHeight = ref(0);
 let selectedIds = ref([]);
 let selectedRows = ref([]);
-let list = ref({loading:false,total:0, page: 1, rows: 10,data:[]});
 
 /** 定义排序条件 */
 let sortOptions = [
@@ -136,23 +139,16 @@ let queryParams = {
 };
 
 onMounted(()=>{
-    fetchData();
-    /*
-    // 监听窗口大小变化
-    this.$nextTick(()=>{
-        const offset = ((this.$refs.table as Vue).$el as HTMLDivElement).offsetTop + 125;
-        this.tableHeight = window.innerHeight - offset;
-        window.onresize =()=> this.tableHeight = window.innerHeight - offset;
-    });
-    */
+    queryPagingData();
 })
 
 // 读取分页数据
-const fetchData = async (args)=> {
-    const { data } = await getPaging{{$Class}}(list.page,list.rows,queryParams);
+const queryPagingData = async (args)=> {
+    const { data } = await getPaging{{$Class}}(list.page,list.rows,queryParams)
+      .catch((ex)=>Message.warning("数据加载失败:"+ex.message))
+      .finally(()=>list.loading=false);
     list.data = data.rows;
     if(data.total > 0)list.total = data.total;
-    setTimeout(()=>list.loading = false,300);
 }
 
 
@@ -194,13 +190,11 @@ const handleEdit = (row)=>{
 
 // 打开模态表单
 const modalForm = (row,title)=>{
-  /** 关闭模态框时需要重置模态组件的内容 */
-  dialog.value = {
-    open:true,
-    title:title,
-    params:row?row.{{.table.Pk}}:0,
-    modal:{{$Class}}Form
-  };
+  /** #! 关闭模态框时需要重置模态组件的内容 */
+  dialog.open = true
+  dialog.title = title
+  dialog.params = row?row.{{.table.Pk}}:0
+  dialog.modal = {{$Class}}Modal
 }
 
 // 参数state为true时,重置模态框并刷新数据,args接受传入的参数
@@ -249,3 +243,20 @@ const batchDelete = ()=>{
     }).catch(() => { });
 }
 </script>
+
+<style scoped>
+.mod-grid-container{
+  height: calc(100% - 80px);
+  display:flex;flex-flow:row wrap;
+}
+.mod-grid-header{
+  display:flex;flex-flow:row wrap; max-width: 100%;
+}
+.mod-grid-header,.mod-grid-footer{
+  flex-shrink: 0;
+}
+.mod-grid-body{
+  max-width: 100%;
+  background:red; 
+}
+</style>

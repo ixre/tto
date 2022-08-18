@@ -5,7 +5,7 @@ import request from '@/utils/request'
 {{$path := join .global.base_path (name_path .table.Name) "/"}}\
 
 // {{.table.Comment}}对象
-class {{.table.Title}} {
+export class {{.table.Title}} {
     constructor({
      {{range $i,$c := .columns}}{{$c.Prop}} = {{default "ts" $c.Type}}\
      {{if eq $c.Render.Element "radio"}} + 1{{end}} \

@@ -1,4 +1,4 @@
-#!kind:2#!target:ts/feature/{{.prefix}}/route.ts
+#!kind:2#!target:vue2/{{.prefix}}/route.ts
 import Layout from '@/layout/index.vue'
 import { RouteConfig } from 'vue-router'
 {{$tables := .tables}}

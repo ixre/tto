@@ -84,7 +84,7 @@
                 :limit.sync="list.rows" @pagination="fetchData"/>
 
     <!-- 弹出操作框 -->
-    <el-dialog width="35%" class="mod-dialog" :title="dialog.title" :visible.sync="dialog.open"  :close-on-click-modal="false" @close="()=>dialog.modal=null">
+    <el-dialog width="75%" class="mod-dialog" :title="dialog.title" :visible.sync="dialog.open"  :close-on-click-modal="false" @close="()=>dialog.modal=null">
         <component v-bind:is="dialog.modal" v-model="dialog.params" @callback="refresh"></component>
     </el-dialog>
 
@@ -95,7 +95,7 @@ import {onMounted, reactive, ref} from "vue";
 
 import Pagination from '@/components/Pagination/index.vue';
 import {getPaging{{$Class}},delete{{$Class}},batchDelete{{$Class}} } from './api';
-import {{$Class}}Form from './form.vue';
+import {{$Class}}Form from './modal.vue';
 import {parseResult} from "@/form_fx";
 
 // {{.table.Comment}}数据映射类
@@ -131,12 +131,12 @@ let stateOptions = [
 let queryParams = {
   keyword: "",
   where: "0=0",
-  state: this.stateOptions[0].value,
-  order_by: this.sortOptions[0].value,
+  state: stateOptions[0].value,
+  order_by: sortOptions[0].value,
 };
 
 onMounted(()=>{
-    this.fetchData();
+    fetchData();
     /*
     // 监听窗口大小变化
     this.$nextTick(()=>{
@@ -149,10 +149,10 @@ onMounted(()=>{
 
 // 读取分页数据
 const fetchData = async (args)=> {
-    const { data } = await getPaging{{$Class}}(this.list.page,this.list.rows,this.queryParams);
-    this.list.data = data.rows;
-    if(data.total > 0)this.list.total = data.total;
-    setTimeout(()=>this.list.loading = false,300);
+    const { data } = await getPaging{{$Class}}(list.page,list.rows,queryParams);
+    list.data = data.rows;
+    if(data.total > 0)list.total = data.total;
+    setTimeout(()=>list.loading = false,300);
 }
 
 
@@ -189,13 +189,13 @@ const handleEdit = (row)=>{
       {{$Class}}Form);
     this.$router.push({path,query:{id}});
     */
-    this.modalForm(row,"编辑{{.table.Comment}}");
+    modalForm(row,"编辑{{.table.Comment}}");
 }
 
 // 打开模态表单
 const modalForm = (row,title)=>{
   /** 关闭模态框时需要重置模态组件的内容 */
-  this.dialog = {
+  dialog.value = {
     open:true,
     title:title,
     params:row?row.{{.table.Pk}}:0,
@@ -205,8 +205,8 @@ const modalForm = (row,title)=>{
 
 // 参数state为true时,重置模态框并刷新数据,args接受传入的参数
 const refresh = ({state = 0,close = true,args = {}})=>{
-    if(close)this.dialog.open = false;
-    if(state)this.fetchData(args);
+    if(close)dialog.open = false;
+    if(state)fetchData(args);
 }
 
 const notifyResult = async({errCode, errMsg})=> {

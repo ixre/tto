@@ -1,5 +1,5 @@
 #!lang:ts＃!name:全功能界面
-#!lang:ts#!target:vue2/{{name_path .table.Name}}/index.vue
+#!lang:ts#!target:vue/{{name_path .table.Name}}/index.vue
 {{$Class := .table.Title}}
 {{$PkType := .table.PkType}}
 {{$Pk := .table.Pk}}
@@ -36,12 +36,12 @@
             <el-button v-permission="['admin']" class="filter-item" icon="el-icon-plus" @click="handleCreate">新增</el-button>
         </div>
         <div class="it mod-grid-header-del">
-            <el-button v-show="selectedRows.length > 0" v-permission="['admin']" class="filter-item" type="danger" @click="batchDelete">删除</el-button>
+            <el-button v-show="selectedRows.length > 0" v-permission="['admin']" class="filter-item" type="danger" @click="handleDelete">删除</el-button>
         </div>
     </div>
     <div class="mod-grid-body">
     <!-- 表单数据 -->
-    <el-table ref="table" v-loading="list.loading" :data="list.data" height="100%"
+    <el-table ref="table" v-loading="list.loading" :data="list.data" :height="tableHeight"
               fit :highlight-current-row="false" row-key="{{$Pk}}" border
               @selection-change="handleSelectionChange">
         <el-table-column align="center" type="selection" width="45" />
@@ -82,24 +82,22 @@
     </div>
     <div class="mod-grid-footer">
     <!-- 分页 -->
-        <!-- <pagination class="mod-grid-pagination" v-show="list.total>0" :total="list.total" :page.sync="list.page"
-                      :limit.sync="list.rows" @pagination="fetchData"/>
-      -->
+      <el-pagination v-show="list.total>0" :total="list.total" :page-size.sync="list.rows"
+        :current-page.sync="list.page" :page-sizes="[10, 20, 50, 100]"
+        @current-change="queryPagingData" @size-change="(v)=>list.rows = v"
+        background layout="prev, pager, next,sizes,jumper,total"></el-pagination>
     </div>
     <!-- 弹出操作框 -->
     <el-dialog width="75%" class="mod-dialog" :title="dialog.title" :visible.sync="dialog.open"  :close-on-click-modal="false" @close="()=>dialog.modal=null">
         <component v-bind:is="dialog.modal" v-model="dialog.params" @callback="refresh"></component>
     </el-dialog>
-
 </div>
 </template>
 <script setup>
-import {onMounted, reactive, ref} from "vue";
-import {Message,MessageBox} from "element-ui"
-//import Pagination from '@/components/Pagination/index.vue';
+import {onMounted, reactive, ref, nextTick} from "vue";
 import {getPaging{{$Class}},delete{{$Class}},batchDelete{{$Class}} } from './api';
 import {{$Class}}Modal from './modal.vue';
-import {parseResult} from "@/hook";
+import {parseResult,Message,MessageBox} from "@/adapter";
 
 // {{.table.Comment}}数据映射类
 class ListModel {
@@ -113,9 +111,10 @@ class ListModel {
 let list = reactive({loading:false,total:0, page: 1, rows: 10,data:[]});
 let dialog = reactive({title:"Form",open:false,params:0,modal: null});
 let requesting = ref(false);
-let tableHeight = ref(0);
 let selectedIds = ref([]);
 let selectedRows = ref([]);
+let table = ref(null);
+let tableHeight = ref(0);
 
 /** 定义排序条件 */
 let sortOptions = [
@@ -131,15 +130,19 @@ let stateOptions = [
 ];
 
 /** 定义查询参数 */
-let queryParams = {
+let queryParams = reactive({
   keyword: "",
   where: "0=0",
   state: stateOptions[0].value,
   order_by: sortOptions[0].value,
-};
+});
 
 onMounted(()=>{
     queryPagingData();
+    nextTick(()=>{
+      const rec = table.value.$el.getBoundingClientRect();
+      tableHeight.value = document.body.clientHeight - rec.top - 30;
+    })
 })
 
 // 读取分页数据
@@ -151,16 +154,15 @@ const queryPagingData = async (args)=> {
     if(data.total > 0)list.total = data.total;
 }
 
-
 const handleFilter = ()=>{
   list.value.page = 1;
-  fetchData();
+  queryPagingData();
 }
 
 const handleSelectionChange = (rows)=> {
-    selectedRows = rows;
-    selectedIds = [];
-    rows.map(row=> selectedIds.push(row.{{.table.Pk}}));
+    selectedRows.value = rows;
+    selectedIds.value = [];
+    rows.map(row=> selectedIds.value.push(row.{{.table.Pk}}));
 }
 
 // 返回
@@ -168,7 +170,6 @@ const handleBack = ()=>{
     this.$store.dispatch('delView', this.$route)
     this.$router.back();
 }
-
 
 // 新增数据
 const handleCreate = ()=> {
@@ -179,10 +180,8 @@ const handleCreate = ()=> {
 const handleEdit = (row)=>{
     /** // 在新的tab页上打开临时页面
     const id = row.{{.table.Pk}}.toString();
-    const path = addTempRoute(this.$router,
-      `{{name_path .table.Name}}/details$${id}`,
-      "{{.table.Comment}}详情:"+row.name,
-      {{$Class}}Form);
+    const path = addTempRoute(this.$router,`{{name_path .table.Name}}/details$${id}`,
+      "{{.table.Comment}}详情:"+row.name,{{$Class}}Modal);
     this.$router.push({path,query:{id}});
     */
     modalForm(row,"编辑{{.table.Comment}}");
@@ -200,63 +199,28 @@ const modalForm = (row,title)=>{
 // 参数state为true时,重置模态框并刷新数据,args接受传入的参数
 const refresh = ({state = 0,close = true,args = {}})=>{
     if(close)dialog.open = false;
-    if(state)fetchData(args);
-}
-
-const notifyResult = async({errCode, errMsg})=> {
-  if (errCode === 0) {
-    this.$notify.success({title: '提示', message: errMsg ? errMsg : '操作成功', duration: 2000});
-  } else {
-    await this.$alert( errMsg ? errMsg : '操作失败', "提示");
-  }
+    if(state)queryPagingData(args);
 }
 
 const handleDelete = (row) => {
-    this.$confirm('执行此操作数据无法恢复,是否继续?', '提示', {
+    MessageBox.confirm('执行此操作数据无法恢复,是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
     }).then(async () => {
-        if(this.requesting)return;this.requesting=true;
-        let ret = await delete{{$Class}}(row.{{.table.Pk}}).finally(()=>this.requesting=false);
-        let result = parseResult(ret.data);
-        await this.notifyResult(result);
-        if (result.errCode === 0) {
-          await this.fetchData();
+        if(requesting.value)return;requesting.value=true;
+        let ret = await (row != null?
+          delete{{$Class}}(row.{{.table.Pk}}):
+          batchDelete{{$Class}}(selectedIds.value))
+          .finally(()=>requesting.value=false);
+        let {errCode,errMsg} = parseResult(ret.data);
+        if (errCode === 0) {
+          Message.success({message:'删除成功',duration:2000,onClose:queryPagingData});
+        }else{
+          MessageBox.alert(errMsg,"提示")
         }
-    }).catch(() => { });
-}
-
-const batchDelete = ()=>{
-    this.$confirm('执行此操作数据无法恢复,是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-    }).then(async () => {
-        if(this.requesting)return;this.requesting=true;
-        let ret = await batchDelete{{$Class}}(this.selectedIds).finally(()=>this.requesting=false);
-        let result = parseResult(ret.data);
-        await this.notifyResult(result);
-        if (result.errCode === 0) {
-          await this.fetchData();
-        }
-    }).catch(() => { });
+    }).catch((ex) => {
+      ex !=="cancel" && MessageBox.alert(ex.message,"错误")
+    });
 }
 </script>
-
-<style scoped>
-.mod-grid-container{
-  height: calc(100% - 80px);
-  display:flex;flex-flow:row wrap;
-}
-.mod-grid-header{
-  display:flex;flex-flow:row wrap; max-width: 100%;
-}
-.mod-grid-header,.mod-grid-footer{
-  flex-shrink: 0;
-}
-.mod-grid-body{
-  max-width: 100%;
-  background:red; 
-}
-</style>

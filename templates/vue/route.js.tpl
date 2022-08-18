@@ -1,13 +1,10 @@
-#!kind:2#!target:vue2/{{.prefix}}/route.ts
-import Layout from '@/layout/index.vue'
-import { RouteConfig } from 'vue-router'
+#!kind:2#!target:vue/{{.prefix}}/route.js
 {{$tables := .tables}}
 {{$first := get_n .tables 0}}\
 {{$first_path := substr_n $first.Name "_" 1}}\
 /** 如果新增编辑在新的窗口打开, 去掉create/edit/list 的hidden属性 */
-export const {{$first.Prefix}}Routes : RouteConfig = {
+export const {{$first.Prefix}}Routes = {
   path: '/{{$first.Prefix}}/',
-  component: Layout,
   redirect: '{{$first_path}}/index',
   meta: {
     // roles: ["admin"],

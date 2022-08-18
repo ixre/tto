@@ -1,6 +1,6 @@
 #!lang:ts＃!name:API和定义文件
-#!target:vue2/{{name_path .table.Name}}/api.js
-import {request} from '@/hook'
+#!target:vue/{{name_path .table.Name}}/api.js
+import {request} from '@/adapter'
 {{$columns := .columns}}
 {{$path := join .global.base_path (name_path .table.Name) "/"}}\
 

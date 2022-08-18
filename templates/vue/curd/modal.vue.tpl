@@ -1,5 +1,5 @@
 #!lang:ts＃!name:表单界面
-#!target:vue2/{{name_path .table.Name}}/modal.vue
+#!target:vue/{{name_path .table.Name}}/modal.vue
 <template>
   <div class="mod-form-container">
     <el-form ref="formRef" class="mod-form" size="small"
@@ -49,10 +49,9 @@
 {{$validateColumns := exclude .columns .table.Pk "create_time" "update_time" "state"}}
 
 <script setup>
-import {onMounted, reactive, ref} from "vue";
-import {Message,MessageBox} from "element-ui"
+import {onMounted,ref} from "vue";
 import {{`{`}}{{$Class}},get{{$Class}},create{{$Class}},update{{$Class}} } from "./api"
-import {parseResult} from "@/hook";
+import {parseResult,Message,MessageBox} from "@/adapter";
 
 /** #! 定义属性,接收父组件的参数 */
 const props = defineProps({
@@ -63,7 +62,7 @@ const props = defineProps({
 const emit = defineEmits(['callback']);
 
 const formRef = ref(null); /* #! formRef关联表单ref属性 */
-let formData  = reactive(new {{$Class}}()); /** #! 表单数据 */
+let formData  = ref(new {{$Class}}()); /** #! 表单数据 */
 let requesting = ref(false);
 
 // 设置验证表单字段的规则,取消验证请注释对应的规则
@@ -95,7 +94,7 @@ const callback = (arg)=>emit("callback",arg);
 const fetchFormData = async(id) =>{
   try {
     const { data } = await get{{$Class}}(id, { /* Your params here */ });
-    formData = data;
+    formData.value = data;
   } catch (err) {
     console.error(err);
     Message.warning("数据加载失败:"+err.message)
@@ -106,7 +105,7 @@ const submitForm = ()=> {
   formRef.value.validate(async valid => {
     if (valid) {
       if(requesting.value)return;requesting.value = true;
-      let ret = await (props.value?update{{$Class}}(props.value,formData):create{{$Class}}(formData))
+      let ret = await (props.value?update{{$Class}}(props.value,formData.value):create{{$Class}}(formData.value))
         .catch((ex)=>MessageBox.alert(ex.message,"错误"))
         .finally(()=>requesting.value=false);
       const {errCode,errMsg} = parseResult(ret.data);

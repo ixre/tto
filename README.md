@@ -4,11 +4,13 @@
 
 特点:
 
+- 支持windows,macos,linux操作系统
 - 支持mysql/mariadb、postgresql和sqlserver数据库
-- 支持Go,JAVA,Kotlin,Thrift,Protobuf,Python,Ts/Js,C#,Html等多种语言
+- 支持Go,JAVA,Kotlin,Thrift,Protobuf,Python,Js,C#,Html等多种语言
 - 支持代码模板, 提供模板函数,可自定义生成格式；安装包内置多种语言模板
 - 支持根据模型文件逆向生成数据库及代码
-- 支持版本自动更新
+- 支持生成前端代码,内置vue2/vue3模板
+- 自带版本升级和自动更新功能
 
 ## 安装
 

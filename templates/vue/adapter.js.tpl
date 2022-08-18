@@ -1,5 +1,9 @@
-#!kind:2#!target:vue2/hook.js
+#!kind:2#!target:vue/adapter.js
+
+/** 您可以编辑此文件,并进行适配 */
+
 import axios from "axios";
+export {Message,MessageBox} from "element-ui"
 
 // parse multiple kind response to standard result like 
 // {errCode:1,errMsg:"success"}

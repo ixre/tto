@@ -1,12 +1,15 @@
 # 说明
+
+*此模板仅支持vue2, vue3版本请使用模板: vue*
+
 模板设置接口前缀,在配置文件中设置`base_path`
 ```
 [global]
 base_path ="/qkto/admin"
 ```
-生成适用于Java程序的代码,指定参数:`-m java`
+生成适用于Java程序的代码,指定参数:`-lang java`
 ```
-tto -m java -conf app.conf
+tto -lang java -conf app.conf
 ```
 
 # 依赖文件

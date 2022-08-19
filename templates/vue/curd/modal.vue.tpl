@@ -8,7 +8,7 @@
         {{range $i,$c := exclude .columns "create_time" "update_time"}}\
         {{if not $c.IsPk}}{{$name:= $c.Prop}}{{$ele:= $c.Render.Element}}\
           <el-col :md="12" :xs="24">
-            <el-form-item class="mod-form-item" label-width="85px" label="{{$c.Comment}}:" prop="{{$name}}">
+            <el-form-item class="mod-form-item" label-position="left" label-width="85px" label="{{$c.Comment}}:" prop="{{$name}}">
             {{if eq $ele "radio"}}\
               <el-switch v-model="formData.{{$name}}"
                          active-text=""
@@ -64,6 +64,7 @@ const emit = defineEmits(['callback']);
 const formRef = ref(null); /* #! formRef关联表单ref属性 */
 let formData  = ref(new {{$Class}}()); /** #! 表单数据 */
 let requesting = ref(false);
+let isModal = props.value;
 
 // 设置验证表单字段的规则,取消验证请注释对应的规则
 /** #! 验证规则会反应到组件,比如required,所以不用在组件上再加required */
@@ -90,7 +91,7 @@ onMounted(()=>{
   if(props.value)fetchFormData(props.value);
 })
 
-const callback = (arg)=>emit("callback",arg);
+const callback = (arg)=> (isModal && emit("callback",arg)) || router.go(-1)
 
 const fetchFormData = async(id) =>{
   try {
@@ -112,7 +113,7 @@ const submitForm = ()=> {
       const {errCode,errMsg} = parseResult(ret.data);
       if(errCode === 0){
         Message.success({message:'操作成功',duration:2000});
-        callback({state:1,close:true,args:{}});
+        callback({state:1,close:true});
       }else{
         MessageBox.alert(errMsg,"错误");
       }

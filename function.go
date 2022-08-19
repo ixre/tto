@@ -2,12 +2,14 @@ package tto
 
 import (
 	"fmt"
-	"github.com/ixre/gof/types/typeconv"
-	lang2 "github.com/ixre/tto/lang"
 	"os"
 	"reflect"
 	"strings"
 	ht "text/template"
+
+	"github.com/ixre/gof/db/db"
+	"github.com/ixre/gof/types/typeconv"
+	lang2 "github.com/ixre/tto/lang"
 )
 
 type internalFunc struct {
@@ -39,6 +41,8 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	fm["sql_type"] = t.ormType
 	// 返回主键代码类型
 	fm["pk_type"] = t.langPkType
+	// 判断是否为数字类型
+	fm["num_type"] = t.isMatchNumberField
 	// 包: {{pkg "go" "com/tto/pkg"}}
 	fm["pkg"] = t.langPkg
 	// 包名: {{pkg "go" "github/com/ixre"}} => github.com/ixre
@@ -134,6 +138,19 @@ func (t *internalFunc) langPkType(lang string, typeId int) string {
 // 返回SQL/ORM类型
 func (t *internalFunc) ormType(lang string, typeId int, len int) string {
 	return lang2.Get(lang).SqlMapType(typeId, len)
+}
+
+// 是否为数字字段
+func (t *internalFunc) isMatchNumberField(typeId interface{}) bool {
+	v, ok := typeId.(int)
+	if ok {
+		for _, val := range []int{db.TypeInt16, db.TypeInt32, db.TypeInt64} {
+			if val == v {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // 将包名替换为.分割, 通常C#,JAVA语言使用"."分割包名

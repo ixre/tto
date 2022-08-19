@@ -37,17 +37,17 @@ public class {{.table.Title}}Service {
     public Error save{{$shortTitle}}({{$tableTitle}}{{.global.entity_suffix}} e){
          return Standard.std.tryCatch(()-> {
             {{$tableTitle}}{{.global.entity_suffix}} dst;
-            {{if equal_any .table.PkType 3 4 5}}\
+            {{if num_type .table.PkType}}\
             if (e.get{{$pkProp}}() > 0) {
             {{else}}
             if (e.get{{$pkProp}}() != "") {
             {{end}}
                 dst = this.repo.findById(e.get{{$pkProp}}()).orElse(null);
-                if(dst == null)throw new IllegalArgumentException("");
+                if(dst == null)throw new IllegalArgumentException("no such data");
             } else {
                 dst = {{$tableTitle}}{{.global.entity_suffix}}.createDefault();
                 {{$c := try_get .columns "create_time"}}\
-                {{if $c}}{{if equal_any $c.Type 3 4 5 }}\
+                {{if $c}}{{if num_type $c.Type }}\
                 dst.setCreateTime(Times.unix());
                 {{else}}\
                 dst.setCreateTime(new java.util.Date());{{end}}{{end}}
@@ -55,7 +55,7 @@ public class {{.table.Title}}Service {
             {{range $i,$c := exclude .columns $pkName "create_time" "update_time"}}
             dst.set{{$c.Prop}}(e.get{{$c.Prop}}());{{end}}\
             {{$c := try_get .columns "update_time"}}
-            {{if $c}}{{if equal_any $c.Type 3 4 5 }}\
+            {{if $c}}{{if num_type $c.Type }}\
             dst.setUpdateTime(Times.unix());
             {{else}}\
             dst.setUpdateTime(new java.util.Date());{{end}}{{end}}

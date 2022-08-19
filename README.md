@@ -145,6 +145,10 @@ Usage of tto:
 ```
 {{sql_type "py" .columns[0].Type .columns[0].Length}}
 ```
+是否为数值类型
+```
+{{num_type .table.PkType}}
+```
 
 包函数: pkg, 用于获取包的路径
 

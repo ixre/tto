@@ -1,10 +1,3 @@
-
-## 表名大小写敏感
-添加配置：
-```
-spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-```
-
 # 数据查询组件
 
 文件(JAVA版):`ReportComponent.java`
@@ -12,21 +5,23 @@ spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.Ph
 ```java
 import net.fze.common.Standard;
 import net.fze.extras.report.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashMap;
-
-import javax.inject.Inject;
 import javax.sql.DataSource;
 
 @Component
 public class ReportComponent implements IDbProvider {
     private final HashMap<String, ExportHub> exportHubMap = new HashMap<>();
 
-    @Inject private DataSource ds;
+    private final DataSource ds;
 
+    public ReportComponent(@Inject DataSource ds) {
+        this.ds = ds;
+    }
+
+    @NotNull
     @Override
     public Connection getDB() {
         try {
@@ -40,11 +35,7 @@ public class ReportComponent implements IDbProvider {
 
     private void lazyInit() {
         String rootPath = "/query";
-        exportHubMap.put("default",
-                new ExportHub(
-                        this,
-                        rootPath + "/default@query", !Standard.dev()
-                ));
+        exportHubMap.put("default",new ExportHub(this, rootPath, !Standard.dev()));
     }
 
 

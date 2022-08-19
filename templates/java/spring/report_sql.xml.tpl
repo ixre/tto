@@ -7,14 +7,15 @@
     <Query>
         <![CDATA[
         SELECT * FROM {{.table.Name}}
-        ORDER BY {{.table.Pk }} DESC
+        WHERE {where}
+        ORDER BY {sort_by}
         LIMIT {{if eq .global.db "pgsql"}}{page_size} OFFSET {page_offset}{{else}}{page_offset},{page_size}{{end}}
      ]]>
     </Query>
     <Import><![CDATA[]]></Import>
     <Total>
         <![CDATA[
-            SELECT COUNT(0) FROM {{.table.Name}}
+            SELECT COUNT(0) FROM {{.table.Name}} WHERE {where}
         ]]>
     </Total>
 </ExportItemConfig>

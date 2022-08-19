@@ -28,7 +28,7 @@
                 <el-date-picker v-model="formData.{{$name}}" type="date" value-format="timestamp" class="mod-form-input"
                     placeholder="选择日期" format="yyyy 年 MM 月 dd 日" >
                 </el-date-picker>
-            {{else if equal_any $c.Type 3 4 5}}\
+            {{else if num_type $c.Type }}\
                 <el-input v-model.number="formData.{{$name}}" class="mod-form-input" autosize placeholder="请输入{{$c.Comment}}"/>
             {{else}}\
                 <el-input v-model="formData.{{$name}}" class="mod-form-input" autosize placeholder="请输入{{$c.Comment}}"/>
@@ -51,7 +51,7 @@
 <script setup>
 import {onMounted,ref} from "vue";
 import {{`{`}}{{$Class}},get{{$Class}},create{{$Class}},update{{$Class}} } from "./api"
-import {parseResult,Message,MessageBox} from "@/adapter";
+import {Message,MessageBox,router,parseResult} from "@/adapter";
 
 /** #! 定义属性,接收父组件的参数 */
 const props = defineProps({
@@ -75,7 +75,7 @@ let rules = {
   //   if (value === '') { callback(new Error(label + '为必填字段'))} else {callback()}
   // } \
   {{range $i,$c := $validateColumns}}{{if ne $c.IsPk true}}
-  {{if equal_any $c.Type 3 4 5}}\
+  {{if num_type $c.Type }}\
   {{$c.Prop}}: [{required: true, message:"{{$c.Comment}}不能为空"}, \
       {type:"number", message:"{{$c.Comment}}必须为数字值"}], \
   {{else if $c.NotNull}}\
@@ -85,7 +85,8 @@ let rules = {
 };
 
 onMounted(()=>{
-  {{/*if(props.value == null)props.value = this.$route.query.id;*/}} 
+  const {{`{`}}{{.table.Pk}}{{`}`}} = router.currentRoute.query;
+  if(id)props.value = {{if num_type .table.PkType }}parseInt({{.table.Pk}}){{else}}{{.table.Pk}}{{end}};
   if(props.value)fetchFormData(props.value);
 })
 

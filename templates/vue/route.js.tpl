@@ -13,7 +13,7 @@ export const {{$first.Prefix}}Routes = {
   },
   children: [\
   {{range $i,$table := .tables}}\
-  {{$path := substr_n $table.Name "_" 1}}
+  {{$path := name_path $table.Name}}
     {
       path: '{{$path}}/index',
       name: '{{$table.Title}}Index',
@@ -23,7 +23,18 @@ export const {{$first.Prefix}}Routes = {
         title: '{{$table.Comment}}',
         icon: 'list'
       }
-    }{{if not (is_last $i $tables)}},{{end}}
+    },
+    {
+      path: '{{$path}}/detail',
+      name: '{{$table.Title}}Detail',
+      component: () => import(/* webpackChunkName: "{{$table.Name}}-detail" */ './{{$path}}/modal.vue'),
+      meta: {
+        // roles: ["admin"],
+        title: '{{$table.Comment}}',
+        hidden: true
+      }
+    } \
+    {{if not (is_last $i $tables)}},{{end}}
   {{end}}\
   ]
 }

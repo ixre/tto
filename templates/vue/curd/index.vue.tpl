@@ -97,7 +97,7 @@
 import {onMounted, reactive, ref, nextTick} from "vue";
 import {getPaging{{$Class}},delete{{$Class}},batchDelete{{$Class}} } from './api';
 import {{$Class}}Modal from './modal.vue';
-import {parseResult,Message,MessageBox} from "@/adapter";
+import {Message,MessageBox,router,parseResult} from "@/adapter";
 
 // {{.table.Comment}}数据映射类
 class ListModel {
@@ -155,7 +155,7 @@ const queryPagingData = async (args)=> {
 }
 
 const handleFilter = ()=>{
-  list.value.page = 1;
+  list.page = 1;
   queryPagingData();
 }
 
@@ -172,27 +172,21 @@ const handleBack = ()=>{
 }
 
 // 新增数据
-const handleCreate = ()=> {
-    modalForm(null,"新增{{.table.Comment}}");
-}
+const handleCreate = ()=> openForm(null,"新增{{.table.Comment}}")
 
 // 编辑数据
-const handleEdit = (row)=>{
-    /** // 在新的tab页上打开临时页面
-    const id = row.{{.table.Pk}}.toString();
-    const path = addTempRoute(this.$router,`{{name_path .table.Name}}/details$${id}`,
-      "{{.table.Comment}}详情:"+row.name,{{$Class}}Modal);
-    this.$router.push({path,query:{id}});
-    */
-    modalForm(row,"编辑{{.table.Comment}}");
-}
+const handleEdit = (row)=>openForm(row,"编辑{{.table.Comment}}")
 
-// 打开模态表单
-const modalForm = (row,title)=>{
-  /** #! 关闭模态框时需要重置模态组件的内容 */
+// 打开表单
+const openForm = (row,title)=>{
+  const {{.table.Pk}} = row?row.{{.table.Pk}}:{{default "ts" .table.PkType}}
+  /** #! 在新的tab页上打开临时页面 */
+  // router.push({path:"../{{name_path .table.Name}}/detail",query:{title,{{.table.Pk}}}});
+
+  // 使用模态框以编辑数据
   dialog.open = true
   dialog.title = title
-  dialog.params = row?row.{{.table.Pk}}:0
+  dialog.params = {{.table.Pk}}
   dialog.modal = {{$Class}}Modal
 }
 

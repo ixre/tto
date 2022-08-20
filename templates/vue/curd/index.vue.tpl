@@ -44,7 +44,7 @@
     <el-table ref="table" v-loading="list.loading" :data="list.data" :height="tableHeight"
               fit :highlight-current-row="false" row-key="{{$Pk}}" border
               @selection-change="handleSelectionChange">
-        <el-table-column align="center" type="selection" width="45" />
+        <el-table-column align="center" type="selection" width="45" fixed="left"/>
         {{range $i,$c := .columns}} \
         {{if ends_with $c.Name "_time"}} \
         <el-table-column width="160" align="left" label="{{$c.Comment}}">

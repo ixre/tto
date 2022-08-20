@@ -3,7 +3,7 @@ package {{pkg "kotlin" .global.pkg}}.restful
 
 import {{pkg "kotlin" .global.pkg}}.entity.{{.table.Title}}{{.global.entity_suffix}}
 import {{pkg "kotlin" .global.pkg}}.service.{{.table.Prefix}}.{{.table.Title}}Service
-import {{pkg "kotlin" .global.pkg}}.component.ReportComponent
+import {{pkg "kotlin" .global.pkg}}.component.ReportDataSource
 import net.fze.annotation.Resource
 import net.fze.common.Result
 import net.fze.extras.report.DataResult
@@ -24,7 +24,7 @@ import javax.inject.Inject
 @RequestMapping("{{$basePath}}")
 class {{.table.Title}}Resource {
     @Inject private lateinit var service:{{.table.Title}}Service
-    @Inject private lateinit var reportComponent: ReportComponent
+    @Inject private lateinit var reportDs: ReportDataSource
 
     /** 获取{{.table.Comment}} */
     @GetMapping("/{id}")
@@ -78,7 +78,7 @@ class {{.table.Title}}Resource {
                @RequestParam("rows") rows:String
     ): DataResult {
         val p = ReportUtils.parseParams(params)
-        return this.reportComponent.fetchData("default",
+        return this.reportDs.fetchData("default",
                 "{{.table.Prefix}}/{{substr_n .table.Name "_" 1}}_list", p, page, rows)
     }
 }

@@ -3,7 +3,7 @@ package {{pkg "kotlin" .global.pkg}}.restful;
 
 import {{pkg "kotlin" .global.pkg}}.entity.{{.table.Title}}{{.global.entity_suffix}};
 import {{pkg "kotlin" .global.pkg}}.service.{{.table.Prefix}}.{{.table.Title}}Service;
-import {{pkg "kotlin" .global.pkg}}.component.ReportComponent;
+import {{pkg "kotlin" .global.pkg}}.component.ReportDataSource;
 import net.fze.annotation.Resource;
 import net.fze.common.Result;
 import net.fze.extras.report.DataResult;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 @RequestMapping("{{$basePath}}")
 public class {{.table.Title}}Resource {
     @Inject private {{.table.Title}}Service service;
-    @Inject private ReportComponent reportComponent;
+    @Inject private ReportDataSource reportDs;
 
     /** 获取{{.table.Comment}} */
     @GetMapping("/{id}")
@@ -79,7 +79,7 @@ public class {{.table.Title}}Resource {
                @RequestParam("page") String page,
                @RequestParam("rows") String rows){
         Params p = ReportUtils.parseParams(params);
-        return this.reportComponent.fetchData("default",
+        return this.reportDs.fetchData("default",
                 "{{.table.Prefix}}/{{substr_n .table.Name "_" 1}}_list", p, page, rows);
     }
 }

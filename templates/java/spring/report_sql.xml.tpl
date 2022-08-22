@@ -8,7 +8,7 @@
         <![CDATA[
         SELECT * FROM {{.table.Name}}
         WHERE {where}
-        ORDER BY {sort_by}
+        ORDER BY {order_by}
         LIMIT {{if eq .global.db "pgsql"}}{page_size} OFFSET {page_offset}{{else}}{page_offset},{page_size}{{end}}
      ]]>
     </Query>

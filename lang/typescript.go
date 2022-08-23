@@ -2,6 +2,8 @@ package lang
 
 import "github.com/ixre/gof/db/db"
 
+var _ Lang = new(Typescript)
+
 type Typescript struct {
 }
 

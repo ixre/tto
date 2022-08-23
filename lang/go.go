@@ -6,31 +6,31 @@ import (
 	"github.com/ixre/gof/db/db"
 )
 
-var _ Lang = new(GoLang)
+var _ Lang = new(goLang)
 
 var pkgRegex = regexp.MustCompile("/(com|net|io|cn|org|info)/")
 
-type GoLang struct {
+type goLang struct {
 }
 
-func (g GoLang) SqlMapType(typeId int, len int) string {
+func (g goLang) SqlMapType(typeId int, len int) string {
 	return g.ParseType(typeId)
 }
 
-func (g GoLang) PkgPath(pkg string) string {
+func (g goLang) PkgPath(pkg string) string {
 	//return strings.Replace(pkg,".","/")
 	return pkgRegex.ReplaceAllString(pkg, ".$1/")
 }
 
-func (g GoLang) PkgName(pkg string) string {
+func (g goLang) PkgName(pkg string) string {
 	return PkgStyleLikeGo(pkg)
 }
 
-func (g GoLang) ParseType(typeId int) string {
+func (g goLang) ParseType(typeId int) string {
 	return GoTypes(typeId)
 }
 
-func (g GoLang) DefaultValue(typeId int) string {
+func (g goLang) DefaultValue(typeId int) string {
 	return GoValues(typeId)
 }
 

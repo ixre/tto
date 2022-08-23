@@ -145,6 +145,11 @@ Usage of tto:
 ```
 {{sql_type "py" .columns[0].Type .columns[0].Length}}
 ```
+返回ORM字段类型,通常在Java中使用
+```
+{{orm_type "java" 3 }}  // 输出: Integer
+```
+
 是否为数值类型
 ```
 {{num_type .table.PkType}}

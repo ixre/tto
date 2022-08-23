@@ -84,7 +84,7 @@ func TestGenerateByReadedTables(t *testing.T) {
 	//txt, _ := ioutil.ReadFile("./templates/table.tb")
 	//tables, _ := ReadTables(string(txt), "user")
 	tables, _ := ReadModels("./templates")
-	if len(tables) == 0{
+	if len(tables) == 0 {
 		t.Log("no such tables")
 		t.FailNow()
 	}

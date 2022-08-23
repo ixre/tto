@@ -61,7 +61,7 @@ func parseTable(ordinal int, tb *db.Table, shortUpper bool, userMeta bool) *Tabl
 		n.Columns[i] = c
 	}
 	// 如果未设置主键，则默认第一个列
-	if n.Pk == ""{
+	if n.Pk == "" {
 		fc := tb.Columns[0]
 		n.Pk = fc.Name
 		n.PkProp = title(fc.Name, shortUpper)

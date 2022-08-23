@@ -21,12 +21,12 @@ type Lang interface {
 }
 
 var langMap = map[string]Lang{
-	"go":         &GoLang{},
-	"java":       &JavaLang{},
-	"kotlin":     &KotlinLang{},
-	"python":     &PythonLang{},
+	"go":         &goLang{},
+	"java":       &Java{},
+	"kotlin":     &kotlin{},
+	"python":     &Python{},
 	"typescript": &Typescript{},
-	"csharp":     &CSharpLang{},
+	"csharp":     &cSharp{},
 	"protobuf":   &Protobuf{},
 	"thrift":     &Thrift{},
 	"dart":       &dart{},

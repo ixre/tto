@@ -6,21 +6,23 @@ import (
 	"github.com/ixre/gof/db/db"
 )
 
-type CSharpLang struct {
+var _ Lang = new(cSharp)
+
+type cSharp struct {
 }
 
-func (j CSharpLang) SqlMapType(typeId int, len int) string {
+func (j cSharp) SqlMapType(typeId int, len int) string {
 	return j.ParseType(typeId)
 }
 
-func (j CSharpLang) PkgName(pkg string) string {
+func (j cSharp) PkgName(pkg string) string {
 	return j.PkgPath(pkg)
 }
-func (j CSharpLang) PkgPath(pkg string) string {
+func (j cSharp) PkgPath(pkg string) string {
 	return PkgStyleLikeJava(pkg)
 }
 
-func (j CSharpLang) ParseType(typeId int) string {
+func (j cSharp) ParseType(typeId int) string {
 	switch typeId {
 	case db.TypeBoolean:
 		return "bool"
@@ -44,7 +46,7 @@ func (j CSharpLang) ParseType(typeId int) string {
 	return fmt.Sprintf("Unknown type id:%d", typeId)
 }
 
-func (j CSharpLang) DefaultValue(typeId int) string {
+func (j cSharp) DefaultValue(typeId int) string {
 	switch typeId {
 	case db.TypeBoolean:
 		return "false"
@@ -66,7 +68,7 @@ func (j CSharpLang) DefaultValue(typeId int) string {
 	return fmt.Sprintf("Unknown type id:%d", typeId)
 }
 
-func (j CSharpLang) ParsePkType(typeId int) string {
+func (j cSharp) ParsePkType(typeId int) string {
 	switch typeId {
 	case db.TypeBoolean:
 		return "bool"
@@ -90,4 +92,4 @@ func (j CSharpLang) ParsePkType(typeId int) string {
 	return fmt.Sprintf("Unknown type id:%d", typeId)
 }
 
-var _ Lang = new(CSharpLang)
+var _ Lang = new(cSharp)

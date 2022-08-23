@@ -20,12 +20,12 @@ import java.util.Map;
 @Table(name = "{{.table.Name}}", schema = "{{.table.Schema}}")
 public class {{$entity}} {
     {{/* 将字段单独生成，以便做裁剪 */}}\
-    {{range $i,$c := .columns}}{{$type := type "java" $c.Type}}
+    {{range $i,$c := .columns}}{{$type := orm_type "java" $c.Type}}
     {{$lowerProp := lower_title $c.Prop}} \
     private {{$type}} {{$lowerProp}}; // {{$c.Comment}}\
     {{end}}
     
-    {{range $i,$c := .columns}}{{$type := type "java" $c.Type}}
+    {{range $i,$c := .columns}}{{$type := type "java" $c.Type}}{{$ormType := orm_type "java" $c.Type}}
     {{$lowerProp := lower_title $c.Prop}} \
     public {{$entity}} set{{$c.Prop}}({{$type}} {{$lowerProp}}){
         this.{{$lowerProp}} = {{$lowerProp}};
@@ -37,7 +37,7 @@ public class {{$entity}} {
     @GeneratedValue(strategy = GenerationType.IDENTITY){{else}}
     @Basic{{end}}
     @Column(name = "{{$c.Name}}"{{if not $c.NotNull}}, nullable = true{{end}} {{if ne $c.Length 0}},length = {{$c.Length}}{{end}})
-    public {{$type}} get{{$c.Prop}}() {
+    public {{$ormType}} get{{$c.Prop}}() {
         return this.{{$lowerProp}};
     }
     {{end}}

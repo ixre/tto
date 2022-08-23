@@ -37,22 +37,22 @@ export function parseResult(data) {
     }
 }
 
-
 // Parse the time to string
 export const parseTime = (time, format) => {
-    if (time === undefined) {
-        return null
-    }
-    const fmt = format || '{y}-{m}-{d} {h}:{i}:{s}'
+    if (time === undefined || time === 0 || time==="")return "";
+    const fmt = format || '{y}-{m}-{d} {h}:{i}'
     let date = time;
     if (typeof time === 'string') {
-        time = /^[0-9]+$/.test(time)?parseInt(time): time.replace(new RegExp(/-/gm), '/')
+        if(/^[0-9]+$/.test(time)){
+            time = parseInt(time)
+        }else{
+            time = time.replace(new RegExp(/-/gm), '/').replace(/^(\d{4}\/\d{2}\/\d{2})[^\d]*(\d{2}:\d{2}:\d{2}).+?$/,'$1 $2')
+        }
         date = new Date(time)
     }
     if (typeof time === 'number') {
         date = new Date(time.toString().length === 10?time * 1000:time)
     }
-
     const formatObj = {
         y: date.getFullYear(),
         m: date.getMonth() + 1,

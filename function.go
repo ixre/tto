@@ -38,9 +38,11 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	// 类型: 如:{{type "go" .columns[0].AdType}}
 	fm["type"] = t.langType
 	// 返回SQL/ORM类型, 如：{{sql_type "py" .columns[0].AdType}}
-	fm["sql_type"] = t.ormType
+	fm["sql_type"] = t.ormSqlType
 	// 返回主键代码类型
-	fm["pk_type"] = t.langPkType
+	fm["pk_type"] = t.ormLangType
+	// 返回ORM的类型
+	fm["orm_type"] = t.ormLangType
 	// 判断是否为数字类型
 	fm["num_type"] = t.isMatchNumberField
 	// 包: {{pkg "go" "com/tto/pkg"}}
@@ -127,16 +129,16 @@ func (t *internalFunc) langType(lang string, typeId int) string {
 	//return strconv.Itoa(typeId)
 }
 
-func (t *internalFunc) langPkType(lang string, typeId int) string {
+func (t *internalFunc) ormLangType(lang string, typeId int) string {
 	// JAVA ORM框架要求为包装类
 	if lang == "java" {
-		return (lang2.JavaLang{}).ParsePkType(typeId)
+		return (lang2.Java{}).ParsePkType(typeId)
 	}
 	return lang2.Get(lang).ParseType(typeId)
 }
 
 // 返回SQL/ORM类型
-func (t *internalFunc) ormType(lang string, typeId int, len int) string {
+func (t *internalFunc) ormSqlType(lang string, typeId int, len int) string {
 	return lang2.Get(lang).SqlMapType(typeId, len)
 }
 

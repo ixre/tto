@@ -6,30 +6,32 @@ import (
 	"github.com/ixre/gof/db/db"
 )
 
-type KotlinLang struct {
+var _ Lang = new(kotlin)
+
+type kotlin struct {
 }
 
-func (k KotlinLang) SqlMapType(typeId int, len int) string {
+func (k kotlin) SqlMapType(typeId int, len int) string {
 	return k.ParseType(typeId)
 }
 
-func (k KotlinLang) PkgName(pkg string) string {
+func (k kotlin) PkgName(pkg string) string {
 	return k.PkgPath(pkg)
 }
 
-func (k KotlinLang) PkgPath(pkg string) string {
+func (k kotlin) PkgPath(pkg string) string {
 	return PkgStyleLikeJava(pkg)
 }
 
-func (k KotlinLang) ParseType(typeId int) string {
+func (k kotlin) ParseType(typeId int) string {
 	return KotlinTypes(typeId)
 }
 
-func (k KotlinLang) DefaultValue(typeId int) string {
+func (k kotlin) DefaultValue(typeId int) string {
 	return KotlinValues(typeId)
 }
 
-var _ Lang = new(KotlinLang)
+var _ Lang = new(kotlin)
 
 func KotlinTypes(typeId int) string {
 	switch typeId {

@@ -152,15 +152,12 @@ func getLangByPath(path string) LANG {
 	return L_Unknown
 }
 
-
-
 type TableConfig struct {
 	// 结构元数据
 	Struct *TableMeta `json:"struct"`
 	// 字段元数据
 	Fields map[string]*ColumnMeta `json:"field"`
 }
-
 
 // TableMeta
 type TableMeta struct {

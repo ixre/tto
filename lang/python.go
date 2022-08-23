@@ -6,11 +6,13 @@ import (
 	"github.com/ixre/gof/db/db"
 )
 
-type PythonLang struct {
+var _ Lang = new(Python)
+
+type Python struct {
 }
 
 // python SQL ORM 类型与python类型不一样,需单独处理
-func (p PythonLang) SqlMapType(typeId int, len int) string {
+func (p Python) SqlMapType(typeId int, len int) string {
 	switch typeId {
 	case db.TypeString:
 		if len > 0 {
@@ -38,23 +40,23 @@ func (p PythonLang) SqlMapType(typeId int, len int) string {
 	return "String"
 }
 
-func (p PythonLang) PkgName(pkg string) string {
+func (p Python) PkgName(pkg string) string {
 	return PkgStyleLikeGo(pkg)
 }
 
-func (p PythonLang) PkgPath(pkg string) string {
+func (p Python) PkgPath(pkg string) string {
 	return pkg
 }
 
-func (p PythonLang) ParseType(typeId int) string {
+func (p Python) ParseType(typeId int) string {
 	return PythonValues(typeId)
 }
 
-func (p PythonLang) DefaultValue(typeId int) string {
+func (p Python) DefaultValue(typeId int) string {
 	return PythonValues(typeId)
 }
 
-var _ Lang = new(PythonLang)
+var _ Lang = new(Python)
 
 func PyTypes(typeId int) string {
 	switch typeId {

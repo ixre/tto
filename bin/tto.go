@@ -98,7 +98,7 @@ func generate() {
 	}
 	if debug {
 		buf := bytes.NewBuffer(nil)
-		buf.WriteString(fmt.Sprintf("package: %s \n",pkgName))
+		buf.WriteString(fmt.Sprintf("package: %s \n", pkgName))
 		buf.WriteString(fmt.Sprintf("table : %s \n", table))
 		buf.WriteString(fmt.Sprintf("main program language : %s \n", majorLang))
 		fmt.Println(buf.String())
@@ -111,11 +111,11 @@ func generate() {
 		tto.CompactMode = true
 	}
 	// 获取包名
-	
+
 	if len(strings.TrimSpace(pkgName)) == 0 {
 		if re.Contains("code.pkg") {
 			pkgName = re.GetString("code.pkg")
-		}else{	
+		} else {
 			pkgName = "com.tto.pkg"
 		}
 	}

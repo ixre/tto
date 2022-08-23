@@ -191,9 +191,9 @@ const openForm = (row,title)=>{
 }
 
 // 参数state为true时,重置模态框并刷新数据,args接受传入的参数
-const refresh = ({state = 0,close = true,args = {}})=>{
+const refresh = ({state = 0,close = true,data = {}})=>{
     if(close)dialog.open = false;
-    if(state)queryPagingData(args);
+    if(state)queryPagingData(data);
 }
 
 const handleDelete = (row) => {

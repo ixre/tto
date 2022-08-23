@@ -41,15 +41,15 @@ func ReadTables(txt string) ([]*Table, error) {
 	for i, v := range sub {
 		structName := v[2]
 		// 解析表名和文档
-		tbTxt := strings.Split(v[1]," ")
-		tbName,tbDoc := "",""
-		if len(tbTxt) > 1{
+		tbTxt := strings.Split(v[1], " ")
+		tbName, tbDoc := "", ""
+		if len(tbTxt) > 1 {
 			// 如果设置了与结构名不同的表名
-			if tbTxt[0] != structName{
+			if tbTxt[0] != structName {
 				tbName = tbTxt[0]
 			}
 			tbDoc = tbTxt[1]
-		}else{
+		} else {
 			tbDoc = tbTxt[0]
 			tbName = keyFormat(structName)
 		}
@@ -70,7 +70,7 @@ func ReadTables(txt string) ([]*Table, error) {
 		}
 		readColumns(tb, v[3])
 		tables = append(tables, tb)
-		log.Println("[ reverse]: find model ", tb.Name,":", tb.Comment)
+		log.Println("[ reverse]: find model ", tb.Name, ":", tb.Comment)
 	}
 
 	return tables, nil

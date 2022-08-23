@@ -13,7 +13,7 @@ using System.Data;
 {{$allColumns := .columns}}
 
 namespace {{pkg "csharp" .global.pkg}}.Repository{
-    {{$pkType := pk_type "csharp" .table.PkType}}
+    {{$pkType := orm_type "csharp" .table.PkType}}
     /** {{.table.Comment}}仓储接口 */
     public class {{.table.Title}}RepositoryImpl : I{{.table.Title}}Repository{
     

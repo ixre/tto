@@ -8,36 +8,39 @@ find output/java -name "*.java" | xargs sed -i 's/ float / Float /g'
 
 import (
 	"fmt"
+
 	"github.com/ixre/gof/db/db"
 )
 
-type JavaLang struct {
+var _ Lang = new(Java)
+
+type Java struct {
 }
 
-func (j JavaLang) SqlMapType(typeId int, len int) string {
+func (j Java) SqlMapType(typeId int, len int) string {
 	return j.ParseType(typeId)
 }
 
-func (j JavaLang) PkgName(pkg string) string {
+func (j Java) PkgName(pkg string) string {
 	return j.PkgPath(pkg)
 }
-func (j JavaLang) PkgPath(pkg string) string {
+func (j Java) PkgPath(pkg string) string {
 	return PkgStyleLikeJava(pkg)
 }
 
-func (j JavaLang) ParseType(typeId int) string {
+func (j Java) ParseType(typeId int) string {
 	return javaTypes(typeId)
 }
 
-func (j JavaLang) DefaultValue(typeId int) string {
+func (j Java) DefaultValue(typeId int) string {
 	return javaValues(typeId)
 }
 
-func (j JavaLang) ParsePkType(typeId int) string {
+func (j Java) ParsePkType(typeId int) string {
 	return javaPkTypes(typeId)
 }
 
-var _ Lang = new(JavaLang)
+var _ Lang = new(Java)
 
 func javaTypes(typeId int) string {
 	switch typeId {

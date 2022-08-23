@@ -6,6 +6,8 @@ import (
 	"github.com/ixre/gof/db/db"
 )
 
+var _ Lang = new(Protobuf)
+
 type Protobuf struct {
 }
 

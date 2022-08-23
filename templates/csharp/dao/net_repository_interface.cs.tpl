@@ -3,7 +3,7 @@ using {{pkg "csharp" .global.pkg}}.Entity.{{.table.Title}}{{.global.entity_suffi
 using System.Collections.Generic;
 {{$entityName := join .table.Title .global.entity_suffix}}
 namespace {{pkg "csharp" .global.pkg}}.Repository{
-    {{$pkType := pk_type "csharp" .table.PkType}}
+    {{$pkType := orm_type "csharp" .table.PkType}}
     /** {{.table.Comment}}仓储接口 */
     public interface I{{.table.Title}}Repository{
 

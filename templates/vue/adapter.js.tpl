@@ -37,6 +37,8 @@ export function parseResult(data) {
     }
 }
 
+export const parseDate = (time)=>parseTime(time,"{y}-{m}-{d}")
+
 // Parse the time to string
 export const parseTime = (time, format) => {
     if (time === undefined || time === 0 || time==="")return "";

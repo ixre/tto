@@ -74,8 +74,8 @@
 
         <el-table-column align="center" width="160" label="操作" fixed="right">
             <template slot-scope="scope">
-              <el-button type="text" icon="el-icon-edit-outline" title="编辑" @click="handleEdit(scope.row)">编辑</el-button>
-              <el-button type="text" icon="el-icon-delete" title="删除" v-loading="requesting" @click="handleDelete(scope.row)">删除</el-button>
+              <el-button type="text" icon="el-icon-edit-outline" @click="handleEdit(scope.row)">编辑</el-button>
+              <el-button type="text" icon="el-icon-delete" v-loading="requesting" @click="handleDelete(scope.row)">删除</el-button>
             </template>
         </el-table-column>
     </el-table>
@@ -148,7 +148,6 @@ onMounted(()=>{
 // 读取分页数据
 const queryPagingData = async (args)=> {
     const { data } = await getPaging{{$Class}}(list.page,list.rows,queryParams)
-      .catch((ex)=>Message.warning("数据加载失败:"+ex.message))
       .finally(()=>list.loading=false);
     list.data = data.rows;
     if(data.total > 0)list.total = data.total;

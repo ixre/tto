@@ -78,7 +78,7 @@ let rules = {
   {{range $i,$c := $validateColumns}}{{if ne $c.IsPk true}}
   {{if num_type $c.Type }}\
   {{$c.Prop}}: [{required: true, message:"{{$c.Comment}}不能为空"}, \
-      {type:"number", message:"{{$c.Comment}}必须为数字值"}], \
+      {type:"number", message:"{{$c.Comment}}必须为数字"}], \
   {{else if $c.NotNull}}\
   {{$c.Prop}}: [{required: true, message:"{{$c.Comment}}不能为空"}], \
   {{end}}\
@@ -108,7 +108,6 @@ const submitForm = ()=> {
     if (valid) {
       if(requesting.value)return;requesting.value = true;
       let ret = await (props.value?update{{$Class}}(props.value,formData.value):create{{$Class}}(formData.value))
-        .catch((ex)=>MessageBox.alert(ex.message,"错误"))
         .finally(()=>requesting.value=false);
       const {errCode,errMsg} = parseResult(ret.data);
       if(errCode === 0){

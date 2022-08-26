@@ -31,14 +31,14 @@ public class {{.table.Title}}Resource {
     /** 获取{{.table.Comment}} */
     @GetMapping("/{id}")
     @Resource(key = "{{$resPrefix}}:get",name="获取{{.table.Comment}}")
-    public {{.table.Title}}{{.global.entity_suffix}} get(@PathVariable("id") {{$pkType}} id){
+    public {{.table.Title}}{{.global.entity_suffix}} get{{$shortTitle}}(@PathVariable("id") {{$pkType}} id){
         return this.service.find{{$shortTitle}}ById(id);
     }
 
     /** 创建{{.table.Comment}} */
     @PostMapping
     @Resource(key = "{{$resPrefix}}:create",name="创建{{.table.Comment}}")
-    public Result create(@RequestBody {{.table.Title}}{{.global.entity_suffix}} entity){
+    public Result create{{$shortTitle}}(@RequestBody {{.table.Title}}{{.global.entity_suffix}} entity){
         Error err = this.service.save{{$shortTitle}}(entity);
         if(err != null)return Result.error(1,err.getMessage());
         return Result.OK;
@@ -47,7 +47,7 @@ public class {{.table.Title}}Resource {
     /** 更新{{.table.Comment}} */
     @PutMapping("/{id}")
     @Resource(key = "{{$resPrefix}}:update",name="更新{{.table.Comment}}")
-    public Result update(@PathVariable("id") {{$pkType}} id,@RequestBody {{.table.Title}}{{.global.entity_suffix}} entity) {
+    public Result update{{$shortTitle}}(@PathVariable("id") {{$pkType}} id,@RequestBody {{.table.Title}}{{.global.entity_suffix}} entity) {
         entity.set{{.table.PkProp}}(id);
         Error err = this.service.save{{$shortTitle}}(entity);
         if(err != null) return Result.error(1,err.getMessage());
@@ -58,28 +58,40 @@ public class {{.table.Title}}Resource {
     /** 删除{{.table.Comment}} */
     @DeleteMapping("/{id}")
     @Resource(key = "{{$resPrefix}}:delete",name="删除{{.table.Comment}}")
-    public Result delete(@PathVariable("id") {{$pkType}} id){
+    public Result delete{{$shortTitle}}(@PathVariable("id") {{$pkType}} id){
         Error err = this.service.delete{{$shortTitle}}ById(id);
         if(err != null) return Result.error(1,err.getMessage());
         return Result.OK;
     }
 
-    /** {{.table.Comment}}列表 */
+    /** {{.table.Comment}}分页数据 */
+    @GetMapping("/paging")
+    @Resource(key = "{{$resPrefix}}:paging",name="查询{{.table.Comment}}分页数据")
+    public DataResult paging{{$shortTitle}}(@RequestParam(name ="params",defaultValue = "{}", required = false) String params,
+               @RequestParam("page") String page,
+               @RequestParam("rows") String rows){
+        Params p = ReportUtils.parseParams(params);
+        //String timeRangeSQL = ReportUtils.timeRangeSQLByJSONTime(p.get("create_time"), "create_time");
+        //p.set("create_time", timeRangeSQL);
+        return this.reportDs.fetchData("default",
+                "{{.table.Prefix}}/{{substr_n .table.Name "_" 1}}_list", p, page, rows);
+    }
+
+    /** 查询{{.table.Comment}}列表 */
     @GetMapping
     @Resource(key = "{{$resPrefix}}:list",name="查询{{.table.Comment}}")
-    public List<{{.table.Title}}{{.global.entity_suffix}}> list(@RequestParam(name="params",defaultValue="{}") String params) {
+    public List<{{.table.Title}}{{.global.entity_suffix}}> query{{$shortTitle}}(@RequestParam(name="params",defaultValue="{}") String params) {
         //val p = ReportUtils.parseParams(params).getValue();
         return this.service.findAll{{$shortTitle}}();
     }
 
-    /** {{.table.Comment}}分页数据 */
-    @GetMapping("/paging")
-    @Resource(key = "{{$resPrefix}}:paging",name="查询{{.table.Comment}}分页数据")
-    public DataResult paging(@RequestParam(name ="params",defaultValue = "{}", required = false) String params,
-               @RequestParam("page") String page,
-               @RequestParam("rows") String rows){
-        Params p = ReportUtils.parseParams(params);
-        return this.reportDs.fetchData("default",
-                "{{.table.Prefix}}/{{substr_n .table.Name "_" 1}}_list", p, page, rows);
+    /** 批量删除{{.table.Comment}} */
+    @DeleteMapping("")
+    @Resource(key = "{{$resPrefix}}:delete",name="删除{{.table.Comment}}")
+    public Result batchDelete{{$shortTitle}}(@RequestBody List<Long> id){
+        if(id.isEmpty())return Result.error(2,"没有要删除的行");
+        Error err = this.service.batchDelete{{$shortTitle}}(id);
+        if(err != null) return Result.error(1,err.getMessage());
+        return Result.OK;
     }
 }

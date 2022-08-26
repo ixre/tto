@@ -17,6 +17,8 @@ import java.util.List;
 {{$pkName := .table.Pk}}\
 {{$pkProp :=  .table.PkProp}}\
 {{$pkType := type "java" .table.PkType}}
+{{$warpPkType := orm_type "java" .table.PkType}}
+
 /** {{.table.Comment}}服务  */
 @Service("{{.table.Name}}_service")
 public class {{.table.Title}}Service {
@@ -99,4 +101,15 @@ public class {{.table.Title}}Service {
          }).error();
     }
 
+    /** 批量删除{{.table.Comment}} */
+    public Error batchDelete{{$shortTitle}}(List<{{$warpPkType}}> id){
+        return Standard.std.tryCatch(() -> {
+            List<{{$tableTitle}}{{.global.entity_suffix}}> all = this.repo.findAllById(id);
+            this.repo.deleteInBatch(all);
+            return null;
+        }).except(it -> {
+            it.printStackTrace();
+            return null;
+        }).error();
+    }
 }

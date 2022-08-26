@@ -15,7 +15,7 @@
     <Import><![CDATA[]]></Import>
     <Total>
         <![CDATA[
-            SELECT COUNT(0) FROM {{.table.Name}} WHERE {where}
+            SELECT COUNT(1) FROM {{.table.Name}} WHERE {where}
         ]]>
     </Total>
 </ExportItemConfig>

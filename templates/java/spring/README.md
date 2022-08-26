@@ -5,12 +5,12 @@
 ```java
 import net.fze.common.Standard;
 import net.fze.extras.report.DataResult;
-import net.fze.extras.report.ExportHub;
+import net.fze.extras.report.ReportHub;
 import net.fze.extras.report.Params;
 
 @Component
 public class ReportDataSource {
-    private final HashMap<String, ExportHub> exportHubMap = new HashMap<>();
+    private final HashMap<String, ReportHub> ReportHubMap = new HashMap<>();
 
     @Inject
     private DataSource ds;
@@ -29,17 +29,17 @@ public class ReportDataSource {
 
     private void lazyInit() {
         boolean cache = !Standard.dev();
-        exportHubMap.put("default", new ExportHub( ()->getDB("default"),"/query",cache ));
+        ReportHubMap.put("default", new ReportHub( ()->getDB("default"),"/query",cache ));
     }
 
-    private ExportHub getHub(String key) {
-        if (this.exportHubMap.isEmpty())this.lazyInit();
-        if(exportHubMap.containsKey(key))return exportHubMap.get(key);
-        return exportHubMap.get("default");
+    private ReportHub getHub(String key) {
+        if (this.ReportHubMap.isEmpty())this.lazyInit();
+        if(ReportHubMap.containsKey(key))return ReportHubMap.get(key);
+        return ReportHubMap.get("default");
     }
 
     public DataResult fetchData(String key, String portal, Params params, String page, String rows) {
-        ExportHub hub = this.getHub(key);
+        ReportHub hub = this.getHub(key);
         if (hub == null)throw new Error("datasource not exists");
         return hub.fetchData(portal, params, page, rows);
     }
@@ -58,7 +58,7 @@ import javax.sql.DataSource
 
 @Component
 class ReportComponent : IDbProvider {
-    private val exportHubMap: MutableMap<String, ExportHub> = mutableMapOf()
+    private val ReportHubMap: MutableMap<String, ReportHub> = mutableMapOf()
     private val rootPath = "/query"
 
     @Inject
@@ -74,18 +74,18 @@ class ReportComponent : IDbProvider {
     }
 
     private fun lazyInit() {
-        exportHubMap["default"] = ExportHub(
+        ReportHubMap["default"] = ReportHub(
             this,
             "$rootPath/default@query", !Standard.dev()
         )
     }
 
-    private fun getHub(key: String): ExportHub? {
-        if (this.exportHubMap.isEmpty()) {
+    private fun getHub(key: String): ReportHub? {
+        if (this.ReportHubMap.isEmpty()) {
             this.lazyInit()
         }
-        if (key.isEmpty()) return exportHubMap["default"]
-        return exportHubMap[key]
+        if (key.isEmpty()) return ReportHubMap["default"]
+        return ReportHubMap[key]
     }
 
     fun parseParams(params: String): Params {

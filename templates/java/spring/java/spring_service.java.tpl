@@ -37,7 +37,7 @@ public class {{.table.Title}}Service {
 
     /** 保存{{.table.Comment}} */
     public Error save{{$shortTitle}}({{$tableTitle}}{{.global.entity_suffix}} e){
-         return Standard.std.tryCatch(()-> {
+         return Standard.tryCatch(()-> {
             {{$tableTitle}}{{.global.entity_suffix}} dst;
             {{if num_type .table.PkType}}\
             if (e.get{{$pkProp}}() > 0) {
@@ -92,7 +92,7 @@ public class {{.table.Title}}Service {
 
     /** 删除{{.table.Comment}} */
     public Error delete{{$shortTitle}}ById({{$pkType}} id) {
-         return Standard.std.tryCatch(()-> {
+         return Standard.tryCatch(()-> {
              this.repo.deleteById(id);
              return null;
            }).except(it->{
@@ -103,7 +103,7 @@ public class {{.table.Title}}Service {
 
     /** 批量删除{{.table.Comment}} */
     public Error batchDelete{{$shortTitle}}(List<{{$warpPkType}}> id){
-        return Standard.std.tryCatch(() -> {
+        return Standard.tryCatch(() -> {
             List<{{$tableTitle}}{{.global.entity_suffix}}> all = this.repo.findAllById(id);
             this.repo.deleteInBatch(all);
             return null;

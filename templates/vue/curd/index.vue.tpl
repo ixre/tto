@@ -42,9 +42,10 @@
     <div class="mod-grid-body">
     <!-- 表单数据 -->
     <el-table ref="table" v-loading="list.loading" :data="list.data" :height="tableHeight"
-              fit :highlight-current-row="false" row-key="{{$Pk}}" border
-              @selection-change="handleSelectionChange">
+              fit :highlight-current-row="false" row-key="{{$Pk}}" border 
+              empty-text="暂无数据" @selection-change="handleSelectionChange">
         <el-table-column align="center" type="selection" width="45" fixed="left"/>
+        <el-table-column type="index" width="50" label="序号"></el-table-column>
         {{range $i,$c := .columns}} \
         {{if ends_with $c.Name "_time"}} \
         <el-table-column width="160" align="left" label="{{$c.Comment}}">
@@ -202,7 +203,7 @@ const handleDelete = (row) => {
         type: 'warning'
     }).then(async () => {
         if(requesting.value)return;requesting.value=true;
-        let ret = await (row != null?
+        let ret = await (row && row.{{.table.Pk}}?
           delete{{$Class}}(row.{{.table.Pk}}):
           batchDelete{{$Class}}(selectedIds.value))
           .finally(()=>requesting.value=false);

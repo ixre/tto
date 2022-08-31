@@ -105,19 +105,16 @@ const fetchFormData = async(id) =>{
 
 const submitForm = ()=> {
   formRef.value.validate(async valid => {
-    if (valid) {
-      if(requesting.value)return;requesting.value = true;
-      let ret = await (props.value?update{{$Class}}(props.value,formData.value):create{{$Class}}(formData.value))
-        .finally(()=>requesting.value=false);
-      const {errCode,errMsg} = parseResult(ret.data);
-      if(errCode === 0){
-        Message.success({message:'操作成功',duration:2000});
-        callback({state:1,close:true});
-      }else{
-        MessageBox.alert(errMsg,"错误");
-      }
-    } else {
-      return false
+    if (!valid)return;
+    if(requesting.value)return;requesting.value = true;
+    let ret = await (props.value?update{{$Class}}(props.value,formData.value):create{{$Class}}(formData.value))
+      .finally(()=>requesting.value=false);
+    const {errCode,errMsg} = parseResult(ret.data);
+    if(errCode === 0){
+      Message.success({message:'操作成功',duration:2000});
+      callback({state:1,close:true});
+    }else{
+      MessageBox.alert(errMsg,"错误");
     }
   })
 }

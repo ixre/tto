@@ -9,6 +9,8 @@ import net.fze.common.Result;
 import net.fze.extras.report.DataResult;
 import net.fze.extras.report.ReportUtils;
 import net.fze.extras.report.Params;
+import net.fze.util.Strings;
+import net.fze.util.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.inject.Inject;
@@ -17,7 +19,9 @@ import java.util.ArrayList;
 
 {{$tableTitle := .table.Title}}
 {{$shortTitle := .table.ShortTitle}}
+{{$entityType := join .table.Title .global.entity_suffix }}
 {{$pkType := type "java" .table.PkType}}
+{{$pkOrmType := orm_type "java" .table.PkType}}
 {{$resPrefix := replace (name_path .table.Name) "/" ":"}}
 {{$basePath := join .global.base_path (name_path .table.Name) "/"}}\
 
@@ -31,37 +35,48 @@ public class {{.table.Title}}Resource {
     /** 获取{{.table.Comment}} */
     @GetMapping("/{id}")
     @Resource(key = "{{$resPrefix}}:get",name="获取{{.table.Comment}}")
-    public {{.table.Title}}{{.global.entity_suffix}} get{{$shortTitle}}(@PathVariable("id") {{$pkType}} id){
+    public {{$entityType}} get{{$shortTitle}}(@PathVariable("id") {{$pkType}} id){
         return this.service.find{{$shortTitle}}ById(id);
     }
 
     /** 创建{{.table.Comment}} */
     @PostMapping
     @Resource(key = "{{$resPrefix}}:create",name="创建{{.table.Comment}}")
-    public Result create{{$shortTitle}}(@RequestBody {{.table.Title}}{{.global.entity_suffix}} entity){
-        Error err = this.service.save{{$shortTitle}}(entity);
-        if(err != null)return Result.error(1,err.getMessage());
-        return Result.OK;
+    public Result create{{$shortTitle}}(@RequestBody {{$entityType}} entity){
+        Error err = Standard.catchError(()->{
+            this.validate{{$shortTitle}}(entity);
+            Error err = this.service.save{{$shortTitle}}(entity);
+        });
+        return Result.of(err);
     }
 
     /** 更新{{.table.Comment}} */
     @PutMapping("/{id}")
     @Resource(key = "{{$resPrefix}}:update",name="更新{{.table.Comment}}")
-    public Result update{{$shortTitle}}(@PathVariable("id") {{$pkType}} id,@RequestBody {{.table.Title}}{{.global.entity_suffix}} entity) {
-        entity.set{{.table.PkProp}}(id);
-        Error err = this.service.save{{$shortTitle}}(entity);
-        if(err != null) return Result.error(1,err.getMessage());
-        return Result.OK;
+    public Result update{{$shortTitle}}(@PathVariable("id") {{$pkType}} id,@RequestBody {{$entityType}} entity) {
+        Error err = Standard.catchError(()->{
+            entity.set{{.table.PkProp}}(id);
+            this.validate{{$shortTitle}}(entity);
+            Error err = this.service.save{{$shortTitle}}(entity);
+        });
+        return Result.of(err);
     }
 
+    /** 验证实体 */
+    private void validate{{$shortTitle}}({{$entityType}} e){
+       {{$validateColumns := exclude .columns .table.Pk "create_time" "update_time" "state"}}
+       {{range $i,$c := $validateColumns}}
+       {{if $c.NotNull }}\
+        Assert.isNullOrEmpty(e.get{{$c.Prop}}(), "{{$c.Comment}}不能为空");\
+       {{end}}{{end}}
+    }
 
     /** 删除{{.table.Comment}} */
     @DeleteMapping("/{id}")
     @Resource(key = "{{$resPrefix}}:delete",name="删除{{.table.Comment}}")
     public Result delete{{$shortTitle}}(@PathVariable("id") {{$pkType}} id){
         Error err = this.service.delete{{$shortTitle}}ById(id);
-        if(err != null) return Result.error(1,err.getMessage());
-        return Result.OK;
+        return Result.of(err);
     }
 
     /** {{.table.Comment}}分页数据 */
@@ -88,10 +103,9 @@ public class {{.table.Title}}Resource {
     /** 批量删除{{.table.Comment}} */
     @DeleteMapping("")
     @Resource(key = "{{$resPrefix}}:delete",name="删除{{.table.Comment}}")
-    public Result batchDelete{{$shortTitle}}(@RequestBody List<Long> id){
+    public Result batchDelete{{$shortTitle}}(@RequestBody List<{{$pkOrmType}}> id){
         if(id.isEmpty())return Result.error(2,"没有要删除的行");
         Error err = this.service.batchDelete{{$shortTitle}}(id);
-        if(err != null) return Result.error(1,err.getMessage());
-        return Result.OK;
+        return Result.of(err);
     }
 }

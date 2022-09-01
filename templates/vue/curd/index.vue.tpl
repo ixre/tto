@@ -76,7 +76,7 @@
         <el-table-column align="center" width="160" label="操作" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" icon="el-icon-edit-outline" @click="handleEdit(scope.row)">编辑</el-button>
-              <el-button type="text" icon="el-icon-delete" v-loading="requesting" @click="handleDelete(scope.row)">删除</el-button>
+              <el-button type="text" icon="el-icon-delete" v-loading="requesting" @click="handleDelete(scope)">删除</el-button>
             </template>
         </el-table-column>
     </el-table>
@@ -196,7 +196,7 @@ const refresh = ({state = 0,close = true,data = {}})=>{
     if(state)queryPagingData(data);
 }
 
-const handleDelete = (row) => {
+const handleDelete = ({$index,row}) => {
     MessageBox.confirm('执行此操作数据无法恢复,是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

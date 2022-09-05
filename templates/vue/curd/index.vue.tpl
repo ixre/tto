@@ -48,11 +48,7 @@
         <el-table-column type="index" width="50" label="序号"></el-table-column>
         {{range $i,$c := .columns}} \
         {{if ends_with $c.Name "_time"}} \
-        <el-table-column width="160" align="left" label="{{$c.Comment}}">
-            <template slot-scope="scope">
-                <span>{{`{{ scope.row.`}}{{$c.Name}}{{ `| parseTime}}`}}</span>
-            </template>
-        </el-table-column>
+        <el-table-column width="140" align="left" label="{{$c.Comment}}" prop="{{$c.Name}}" :formatter="formatColTime"/>
         {{else if ends_with $c.Name "state"}} \
         <el-table-column width="140" align="left" label="{{$c.Comment}}">
             <template slot-scope="scope">
@@ -98,7 +94,7 @@
 import {onMounted, reactive, ref, nextTick} from "vue";
 import {getPaging{{$Class}},delete{{$Class}},batchDelete{{$Class}} } from './api';
 import {{$Class}}Modal from './modal.vue';
-import {Message,MessageBox,router,parseResult} from "@/adapter";
+import {Message,MessageBox,router,parseResult,formatColTime} from "@/adapter";
 
 // {{.table.Comment}}数据映射类
 class ListModel {

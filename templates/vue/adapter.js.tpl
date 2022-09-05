@@ -37,6 +37,9 @@ export function parseResult(data) {
     }
 }
 
+export const formatColTime = (_,_1,v)=>parseTime(v);
+export const formatColDate = (_,_1,v)=>parseDate(v);
+
 export const parseDate = (time)=>parseTime(time,"{y}-{m}-{d}")
 
 // Parse the time to string

@@ -163,8 +163,8 @@ const handleSelectionChange = (rows)=> {
 
 // 返回
 const handleBack = ()=>{
-    this.$store.dispatch('delView', this.$route)
-    this.$router.back();
+   // this.$store.dispatch('delView', this.$route)
+   router.go(-1);
 }
 
 // 新增数据

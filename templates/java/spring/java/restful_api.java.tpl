@@ -2,10 +2,11 @@
 package {{pkg "kotlin" .global.pkg}}.restful;
 
 import {{pkg "kotlin" .global.pkg}}.entity.{{.table.Title}}{{.global.entity_suffix}};
-import {{pkg "kotlin" .global.pkg}}.service.{{.table.Prefix}}.{{.table.Title}}Service;
+import {{pkg "kotlin" .global.pkg}}.service.{{.table.Prefix}}.I{{.table.Title}}Service;
 import {{pkg "kotlin" .global.pkg}}.component.ReportDataSource;
 import net.fze.annotation.Resource;
 import net.fze.common.Result;
+import net.fze.common.Standard;
 import net.fze.extras.report.DataResult;
 import net.fze.extras.report.ReportUtils;
 import net.fze.extras.report.Params;
@@ -17,19 +18,19 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.ArrayList;
 
-{{$tableTitle := .table.Title}}
-{{$shortTitle := .table.ShortTitle}}
-{{$entityType := join .table.Title .global.entity_suffix }}
-{{$pkType := type "java" .table.PkType}}
-{{$pkOrmType := orm_type "java" .table.PkType}}
-{{$resPrefix := replace (name_path .table.Name) "/" ":"}}
+{{$tableTitle := .table.Title}}\
+{{$shortTitle := .table.ShortTitle}}\
+{{$entityType := join .table.Title .global.entity_suffix }}\
+{{$pkType := type "java" .table.PkType}}\
+{{$pkOrmType := orm_type "java" .table.PkType}}\
+{{$resPrefix := replace (name_path .table.Name) "/" ":"}}\
 {{$basePath := join .global.base_path (name_path .table.Name) "/"}}\
 
 /* {{.table.Comment}}资源 */
 @RestController
 @RequestMapping("{{$basePath}}")
 public class {{.table.Title}}Resource {
-    @Inject private {{.table.Title}}Service service;
+    @Inject private I{{.table.Title}}Service service;
     @Inject private ReportDataSource reportDs;
 
     /** 获取{{.table.Comment}} */
@@ -45,7 +46,7 @@ public class {{.table.Title}}Resource {
     public Result create{{$shortTitle}}(@RequestBody {{$entityType}} entity){
         Error err = Standard.catchError(()->{
             this.validate{{$shortTitle}}(entity);
-            Error err = this.service.save{{$shortTitle}}(entity);
+            return this.service.save{{$shortTitle}}(entity);
         });
         return Result.of(err);
     }
@@ -57,7 +58,7 @@ public class {{.table.Title}}Resource {
         Error err = Standard.catchError(()->{
             entity.set{{.table.PkProp}}(id);
             this.validate{{$shortTitle}}(entity);
-            Error err = this.service.save{{$shortTitle}}(entity);
+            return this.service.save{{$shortTitle}}(entity);
         });
         return Result.of(err);
     }

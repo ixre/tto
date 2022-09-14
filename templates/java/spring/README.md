@@ -1,4 +1,18 @@
-# 数据查询组件
+# SpringBoot代码模板
+
+本模板包含了JPA和MyBatis的模板,生成时请先排除其中一个模板, 如使用MyBatis,则在tto.conf文件中修改配置如下:
+```
+exclude_patterns = "jpa"
+```
+
+
+## 依赖组件
+
+### 支持包
+
+fze-commons.jar 参见项目: https://github.com/ixre/fze
+
+### 数据查询组件
 
 文件:`ReportDataSource.java`
 

@@ -1,15 +1,16 @@
-#!target:spring/src/main/java/{{.global.pkg}}/service/{{.table.Prefix}}/{{.table.Title}}Service.java
-package {{pkg "java" .global.pkg}}.service;
+#!target:spring/src/main/java/{{.global.pkg}}/service/{{.table.Prefix}}/impl/{{.table.Title}}ServiceImpl.java
+package {{pkg "java" .global.pkg}}.service.impl;
 
 import {{pkg "java" .global.pkg}}.entity.{{.table.Title}}{{.global.entity_suffix}};
-import {{pkg "java" .global.pkg}}.repo.{{.table.Prefix}}.{{.table.Title}}JpaRepository;
-import org.springframework.data.domain.Page;
+import {{pkg "java" .global.pkg}}.mapper.{{.table.Title}}Mapper;
+import {{pkg "java" .global.pkg}}.service.{{.table.Prefix}}.I{{.table.Title}}Service;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Example;
 import net.fze.common.Standard;
+import net.fze.common.infrastructure.PagingResult;
 import net.fze.util.Times;
-import net.fze.util.TypeConv;
 import javax.inject.Inject;
 import java.util.List;
 {{$tableTitle := .table.Title}}\
@@ -20,33 +21,38 @@ import java.util.List;
 {{$warpPkType := orm_type "java" .table.PkType}}
 
 /** {{.table.Comment}}服务  */
-@Service("{{.table.Name}}_service")
-public class {{.table.Title}}Service {
+@Service("{{.table.Name}}_mybatis_service")
+public class {{.table.Title}}ServiceImpl implements I{{.table.Title}}Service{
     @Inject
-    private {{$tableTitle}}JpaRepository repo;
+    private {{$tableTitle}}Mapper repo;
 
     /** 查找{{.table.Comment}} */
+    @Override
     public {{$tableTitle}}{{.global.entity_suffix}} find{{$shortTitle}}ById({{$pkType}} id){
-        return this.repo.findById(id).orElse(null);
+        return this.repo.selectById(id);
     }
 
     /** 查找全部{{.table.Comment}} */
+    @Override
     public List<{{$tableTitle}}{{.global.entity_suffix}}> findAll{{$shortTitle}}() {
-        return this.repo.findAll();
+        return this.repo.selectList(new QueryWrapper<>());
     }
 
     /** 保存{{.table.Comment}} */
+    @Override
     public Error save{{$shortTitle}}({{$tableTitle}}{{.global.entity_suffix}} e){
          return Standard.tryCatch(()-> {
             {{$tableTitle}}{{.global.entity_suffix}} dst;
+            boolean isInsert = false;
             {{if num_type .table.PkType}}\
             if (e.get{{$pkProp}}() > 0) {
             {{else}}
             if (e.get{{$pkProp}}() != "") {
             {{end}}
-                dst = this.repo.findById(e.get{{$pkProp}}()).orElse(null);
+                dst = this.repo.selectById(e.get{{$pkProp}}());
                 if(dst == null)throw new IllegalArgumentException("no such data");
             } else {
+                isInsert = true;
                 dst = {{$tableTitle}}{{.global.entity_suffix}}.createDefault();
                 {{$c := try_get .columns "create_time"}}\
                 {{if $c}}{{if num_type $c.Type }}\
@@ -61,8 +67,12 @@ public class {{.table.Title}}Service {
             dst.setUpdateTime(Times.unix());
             {{else}}\
             dst.setUpdateTime(new java.util.Date());{{end}}{{end}}
-            dst = this.repo.save(dst);
-            e.set{{.table.PkProp}}(dst.get{{.table.PkProp}}());
+             if (isInsert) {
+                this.repo.insert(dst);
+                e.set{{.table.PkProp}}(dst.get{{.table.PkProp}}());
+            } else {
+                this.repo.updateById(dst);
+            }
             return null;
           }).except(it->{
             it.printStackTrace();
@@ -71,26 +81,34 @@ public class {{.table.Title}}Service {
     }
 
     /** 根据对象条件查找 */
+    @Override
     public {{$tableTitle}}{{.global.entity_suffix}} find{{$shortTitle}}By({{$tableTitle}}{{.global.entity_suffix}} o){
-        return this.repo.findOne(Example.of(o)).orElse(null);
+        return this.repo.selectOne(new QueryWrapper<>(o));
     }
 
     /** 根据对象条件查找 */
+    @Override
     public List<{{$tableTitle}}{{.global.entity_suffix}}> find{{$shortTitle}}ListBy({{$tableTitle}}{{.global.entity_suffix}} o) {
-        return this.repo.findAll(Example.of(o));
+        return this.repo.selectList(new QueryWrapper<>(o));
     }
 
     /** 根据条件分页查询 */
-    public Page<{{$tableTitle}}{{.global.entity_suffix}}> findPagingWalletRecord({{$tableTitle}}{{.global.entity_suffix}} o, Pageable page) {
-        return this.repo.findAll(Example.of(o),page);
+    @Override
+    public PagingResult<{{$tableTitle}}{{.global.entity_suffix}}> findPaging{{$shortTitle}}({{$tableTitle}}{{.global.entity_suffix}} o, Pageable page) {
+        Page<{{$tableTitle}}{{.global.entity_suffix}}> p = this.repo.selectPage(new Page<>(page.getPageNumber(), page.getPageSize()),
+              new QueryWrapper<>(o));
+        return new PagingResult<>(p.getRecords(), p.getTotal());
     }
 
     /** 批量保存{{.table.Comment}} */
+    @Override
     public Iterable<{{$tableTitle}}{{.global.entity_suffix}}> saveAll{{$shortTitle}}(Iterable<{{$tableTitle}}{{.global.entity_suffix}}> entities){
-        return this.repo.saveAll(entities);
+        entities.forEach(a->this.repo.updateById(a));
+        return entities;
     }
 
     /** 删除{{.table.Comment}} */
+    @Override
     public Error delete{{$shortTitle}}ById({{$pkType}} id) {
          return Standard.tryCatch(()-> {
              this.repo.deleteById(id);
@@ -102,10 +120,10 @@ public class {{.table.Title}}Service {
     }
 
     /** 批量删除{{.table.Comment}} */
+    @Override
     public Error batchDelete{{$shortTitle}}(List<{{$warpPkType}}> id){
         return Standard.tryCatch(() -> {
-            List<{{$tableTitle}}{{.global.entity_suffix}}> all = this.repo.findAllById(id);
-            this.repo.deleteInBatch(all);
+            this.repo.deleteBatchIds(id);
             return null;
         }).except(it -> {
             it.printStackTrace();

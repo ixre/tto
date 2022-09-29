@@ -43,22 +43,27 @@ _注：在windows下升级功能如无法正常使用,可以手动重新安装_
 
 ###　使用模板
 
-您可以直接使用安装包里的模板文件,　或按照您的风格对模板进行修改,　甚至单独创建模板.　`tto`模板使用`Go Template`,　具体语法参考:
-
-- [Go模板语法-中](http://www.g-var.com/posts/translation/hugo/hugo-21-go-template-primer/)
-- [Go模板语法-English](https://golang.org/pkg/text/template/)
+您可以直接使用安装包里的模板文件,　或按照您的风格对模板进行修改,　甚至单独创建模板.
 
 ### 运行命令生成代码
 
 执行以下命令生成代码,代码会生成到`output`目录
+
 ```tto -clean```
 
-但实际应用中,推荐使用脚本文件来完成生成,　您可以参考安装包中的示例脚本文件:`./example.sh`
+但实际应用中,推荐使用脚本文件来完成生成,　您可以参考安装包中的示例脚本文件:`./example.sh`;
+
+在windows中可以使用`git-bash`来执行该脚本
 
 
-##　模板语法
+##　模板
 
-## 预定义语法
+`tto`模板使用`Go Template`,　具体语法参考:
+
+- [Go模板语法-中](http://www.g-var.com/posts/translation/hugo/hugo-21-go-template-primer/)
+- [Go模板语法-English](https://golang.org/pkg/text/template/)
+
+### 预定义语法
 
 预定义语法用来在代码模板中定义一些数据, 在生成代码时预定义语法不输入任何内容. 预定义语法格式为: !预定义参数名:预定义参数值
 
@@ -89,7 +94,7 @@ _注：在windows下升级功能如无法正常使用,可以手动重新安装_
 ```
 
 
-## 函数
+### 模板函数
 
 获取用户环境变量
 
@@ -252,9 +257,9 @@ _注：在windows下升级功能如无法正常使用,可以手动重新安装_
 {{$path := name_path .table.Name}}
 ```
 
-## 模板
+### 代码模板
 
-使用`go template`作为模板引擎, 可以通过内置的函数和语法, 生成任意代码. 如果在模板行的末尾添加`\`, 将自动合并下一行. 项目中集成了部分语言的模板,当然也可以在/templates创建自己的模板
+模板目录默认为`templates`, 我们可以通过结合内置的函数和语法, 生成项目代码.
 
 模板主要包含三大对象:
 

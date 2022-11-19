@@ -23,13 +23,13 @@ var (
 // 生成数据库所有的代码文件
 func TestGenAll(t *testing.T) {
 	driver = "postgresql"
-	connString = "postgres://postgres:123456@127.0.0.1:5432/go2o?sslmode=disable"
+	connString = "postgres://postgres:123456@192.168.1.159:15432/go2o?sslmode=disable"
 
 	// driver = "sqlserver"
 	// connString = "sqlserver://sfDBUser:Jbmeon@008@192.168.16.19:1433?database=DCF19_ERP_TEST_B&encrypt=disable"
 
-	driver = "mysql"
-	connString = "root:123456@tcp(47.106.212.18:1512)/aoxueqi?charset=utf8"
+	// driver = "mysql"
+	// connString = "root:123456@tcp(47.106.212.18:1512)/aoxueqi?charset=utf8"
 
 	// 初始化生成器
 	conn, _ := db.NewConnector(driver, connString, nil, false)

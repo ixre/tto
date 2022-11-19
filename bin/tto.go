@@ -182,7 +182,7 @@ func generate() {
 	if len(modelPath) == 0 {
 		dbName := re.GetString("database.name")
 		schema := re.GetString("database.schema")
-		ds := orm.DialectSession(getDb(driver, re), dialect)
+		ds := orm.DialectSession(getDb(driver, re, debug), dialect)
 		list, err := ds.TablesByPrefix(dbName, schema, table)
 		if err != nil {
 			println("[ app][ info]: ", err.Error())
@@ -273,7 +273,7 @@ func genByArch(arch string, dg tto.Session, tables []*tto.Table, opt *tto.Option
 }
 
 // 获取数据库连接
-func getDb(driver string, r *tto.Registry) *sql.DB {
+func getDb(driver string, r *tto.Registry, debug bool) *sql.DB {
 	//数据库连接字符串
 	//root@tcp(127.0.0.1:3306)/db_name?charset=utf8
 	var prefix = "database"
@@ -307,6 +307,10 @@ func getDb(driver string, r *tto.Registry) *sql.DB {
 			r.GetString(prefix+".name"))
 	default:
 		panic("not support driver :" + driver)
+	}
+	if debug {
+		fmt.Println("driver:", driver)
+		fmt.Println("connection string:", connStr)
 	}
 	conn, err := db.NewConnector(driver, connStr, nil, false)
 	if err == nil {

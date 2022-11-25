@@ -70,7 +70,7 @@ func generate() {
 
 	flag.StringVar(&genDir, "o", "./output", "path of output directory")
 	flag.StringVar(&tplDir, "t", "./templates", "path of code templates directory")
-	flag.StringVar(&majorLang, "lang", "go", "major code lang like java or go")
+	flag.StringVar(&majorLang, "lang", "java", "major code lang like java or go")
 	flag.StringVar(&modelPath, "model", "", "path to model directory")
 	flag.StringVar(&pkgName, "pkg", "", "the package like 'net.fze.web',it will override file config")
 	flag.StringVar(&confPath, "conf", "./tto.conf", "config path")

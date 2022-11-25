@@ -9,7 +9,7 @@
         SELECT * FROM {{.table.Name}}
         WHERE {where}
         ORDER BY {order_by}
-        LIMIT {{if eq .global.db "pgsql"}}{page_size} OFFSET {page_offset}{{else}}{page_offset},{page_size}{{end}}
+        LIMIT {{if eq .global.db "postgresql"}}{page_size} OFFSET {page_offset}{{else}}{page_offset},{page_size}{{end}}
      ]]>
     </Query>
     <Import><![CDATA[]]></Import>

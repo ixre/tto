@@ -12,8 +12,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"log"
+		"log"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -191,7 +190,7 @@ func (s *sessionImpl) AllVars() map[string]interface{} {
 
 // 转换成为模板
 func (s *sessionImpl) parseTemplate(file string, attachCopy bool) (*CodeTemplate, error) {
-	data, err := ioutil.ReadFile(file)
+	data, err := os.ReadFile(file)
 	if err == nil {
 		return NewTemplate(string(data), file, attachCopy), nil
 	}
@@ -228,7 +227,7 @@ func (s *sessionImpl) GenerateCode(table *Table, tpl *CodeTemplate) string {
 
 // 生成所有表的代码, 可引用的对象为global 和 tables
 func (s *sessionImpl) GenerateCodeByTables(tables []*Table, tpl *CodeTemplate) string {
-	if tables == nil || len(tables) == 0 {
+	if len(tables) == 0 {
 		return ""
 	}
 	var err error

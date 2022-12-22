@@ -1,8 +1,8 @@
 package tto
 
 import (
-	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -13,11 +13,11 @@ import (
 
 func ReadModels(path string) ([]*Table, error) {
 	tables := make([]*Table, 0)
-	list, err := ioutil.ReadDir(path)
+	list, err := os.ReadDir(path)
 	if err == nil {
 		for _, v := range list {
 			if strings.HasSuffix(v.Name(), ".t") {
-				bytes, err := ioutil.ReadFile(filepath.Join(path, v.Name()))
+				bytes, err := os.ReadFile(filepath.Join(path, v.Name()))
 				if err == nil {
 					tb, _ := ReadTables(string(bytes))
 					if len(tb) > 0 {

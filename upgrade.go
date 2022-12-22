@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -185,7 +184,7 @@ func printVersion(v *version) {
 	fmt.Printf("Release Date: %s\n", getReleaseDate())
 	fmt.Printf("HomePage    : %s\n", ReleaseCodeHome)
 
-	fmt.Println(fmt.Sprintf("检测到新版本 v%s!", v.version))
+	fmt.Printf("检测到新版本 v%s!\n", v.version)
 	fmt.Println(lineFill)
 	fmt.Println("Update log:")
 	fmt.Println("" + v.remark + "\n")
@@ -236,7 +235,7 @@ func getReleases() (string, error) {
 	req.Header.Add("Username-Agent", "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:82.0) Gecko/20100101 Firefox/82.0")
 	rsp, err := cli.Do(req)
 	if err == nil {
-		bytes, _ := ioutil.ReadAll(rsp.Body)
+		bytes, _ := io.ReadAll(rsp.Body)
 		return string(bytes), nil
 	}
 	return "", nil
@@ -263,8 +262,7 @@ func down(ur, target string, onProgress func(total int, reads int, seconds int),
 		}
 		if sk != size {
 			_ = file.Close()
-			return errors.New(fmt.Sprintf("%s seek length not equal file size,"+
-				"seek=%d,size=%d\n", target, sk, size))
+			return fmt.Errorf("%s seek length not equal file size,seek=%d,size=%d", target, sk, size)
 		}
 	}
 	if os.IsNotExist(err) {

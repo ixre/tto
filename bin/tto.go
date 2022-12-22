@@ -5,13 +5,14 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"runtime"
 	"strconv"
 	"strings"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/dialect"
@@ -39,13 +40,13 @@ func main() {
 func checkEveryDay() bool {
 	timeFile := os.TempDir() + "/tto_check_time"
 	var unix int64
-	lastTime, err := ioutil.ReadFile(timeFile)
+	lastTime, err := os.ReadFile(timeFile)
 	if err == nil {
 		unix1, _ := strconv.Atoi(string(lastTime))
 		unix = int64(unix1)
 	}
 	if dt := time.Now().Unix(); dt-unix > 3600*24 {
-		_ = ioutil.WriteFile(timeFile, []byte(strconv.Itoa(int(dt))), os.ModePerm)
+		_ = os.WriteFile(timeFile, []byte(strconv.Itoa(int(dt))), os.ModePerm)
 		b, _ := tto.DoUpdate(false)
 		return b
 	}
@@ -84,6 +85,7 @@ func generate() {
 	flag.BoolVar(&printVer, "v", false, "print version")
 	flag.Parse()
 
+	confPath = "/data/git/axq/axq-project-demo/generator/tto.conf"
 	if printVer {
 		println("tto Generator v" + tto.BuildVersion)
 		return
@@ -183,14 +185,13 @@ func generate() {
 		dbName := re.GetString("database.name")
 		schema := re.GetString("database.schema")
 		ds := orm.DialectSession(getDb(driver, re, debug), dialect)
-		list, err := ds.TablesByPrefix(dbName, schema, table)
-		if err != nil {
+		list, err1 := ds.TablesByPrefix(dbName, schema, table)
+		if err1 != nil {
 			println("[ app][ info]: ", err.Error())
 			return
 		}
 		userMeta := re.GetBoolean("code.meta_settings")
 		tables, err = dg.Parses(list, userMeta)
-
 	} else {
 		tables, err = tto.ReadModels(modelPath)
 	}
@@ -221,7 +222,7 @@ func filterTables(tables []*tto.Table, noTable string) []*tto.Table {
 	for _, v := range tables {
 		match := false
 		for _, k := range excludes {
-			if k != "" && strings.Index(strings.ToLower(v.Name), k) != -1 {
+			if k != "" && strings.Contains(strings.ToLower(v.Name), k) {
 				match = true
 				break
 			}
@@ -318,9 +319,8 @@ func getDb(driver string, r *tto.Registry, debug bool) *sql.DB {
 		err = conn.Ping()
 	}
 	if err != nil {
-		_ = conn.Close()
 		//如果异常，则显示并退出
-		log.Fatalln("[ tto][ init]:" + conn.Driver() + "-" + err.Error())
+		log.Fatalln("[ tto][ init]:" + driver + "-" + err.Error())
 	}
 	d := conn.Raw()
 	d.SetMaxIdleConns(10)
@@ -334,10 +334,10 @@ func crashRecover(debug bool) {
 	if !debug {
 		r := recover()
 		if r != nil {
-			if _, f, l, ok := runtime.Caller(3); ok {
-				log.Println(fmt.Sprintf("[ tto][ crash]:file:%s line:%d %v ", f, l, r))
+			if _, f, l, ok := runtime.Caller(4); ok {
+				log.Printf("[ tto][ crash]:file:%s line:%d %v \n", f, l, r)
 			} else {
-				log.Println(fmt.Sprintf("[ tto][ crash]: %v", r))
+				log.Printf("[ tto][ crash]: %v \n", r)
 			}
 		}
 	}

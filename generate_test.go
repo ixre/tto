@@ -1,7 +1,6 @@
 package tto
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -14,7 +13,7 @@ import (
 var (
 	driver     = "mysql"
 	dbName     = ""
-	dbPrefix   = ""
+	dbPrefix   = "axq_staff"
 	connString = "root:@tcp(127.0.0.1:3306)/baozhang?charset=utf8"
 	genDir     = "./generated_code/"
 	tplDir     = "./templates/java/spring"
@@ -28,8 +27,8 @@ func TestGenAll(t *testing.T) {
 	// driver = "sqlserver"
 	// connString = "sqlserver://sfDBUser:Jbmeon@008@192.168.16.19:1433?database=DCF19_ERP_TEST_B&encrypt=disable"
 
-	// driver = "mysql"
-	// connString = "root:123456@tcp(47.106.212.18:1512)/aoxueqi?charset=utf8"
+	driver = "mysql"
+	connString = "aoxueqi:123456@tcp(47.106.212.18:1512)/aoxueqi?charset=utf8"
 
 	// 初始化生成器
 	conn, _ := db.NewConnector(driver, connString, nil, false)
@@ -78,7 +77,7 @@ func TestGenAll(t *testing.T) {
 // }
 
 func TestReadTables(t *testing.T) {
-	txt, _ := ioutil.ReadFile("./templates/table.tb")
+	txt, _ := os.ReadFile("./templates/table.tb")
 	tables, _ := ReadTables(string(txt))
 	t.Log(len(tables))
 }

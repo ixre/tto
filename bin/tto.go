@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"runtime"
-	"strconv"
 	"strings"
 	"time"
 
@@ -37,21 +36,21 @@ func main() {
 	}
 }
 
-func checkEveryDay() bool {
-	timeFile := os.TempDir() + "/tto_check_time"
-	var unix int64
-	lastTime, err := os.ReadFile(timeFile)
-	if err == nil {
-		unix1, _ := strconv.Atoi(string(lastTime))
-		unix = int64(unix1)
-	}
-	if dt := time.Now().Unix(); dt-unix > 3600*24 {
-		_ = os.WriteFile(timeFile, []byte(strconv.Itoa(int(dt))), os.ModePerm)
-		b, _ := tto.DoUpdate(false)
-		return b
-	}
-	return false
-}
+// func checkEveryDay() bool {
+// 	timeFile := os.TempDir() + "/tto_check_time"
+// 	var unix int64
+// 	lastTime, err := os.ReadFile(timeFile)
+// 	if err == nil {
+// 		unix1, _ := strconv.Atoi(string(lastTime))
+// 		unix = int64(unix1)
+// 	}
+// 	if dt := time.Now().Unix(); dt-unix > 3600*24 {
+// 		_ = os.WriteFile(timeFile, []byte(strconv.Itoa(int(dt))), os.ModePerm)
+// 		b, _ := tto.DoUpdate(false)
+// 		return b
+// 	}
+// 	return false
+// }
 
 func generate() {
 	var genDir string    //输出目录
@@ -85,7 +84,7 @@ func generate() {
 	flag.BoolVar(&printVer, "v", false, "print version")
 	flag.Parse()
 
-	confPath = "/data/git/axq/axq-project-demo/generator/tto.conf"
+	//confPath = "/data/git/axq/axq-project-demo/generator/tto.conf"
 	if printVer {
 		println("tto Generator v" + tto.BuildVersion)
 		return

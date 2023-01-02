@@ -61,7 +61,7 @@ func generate() {
 	var table string
 	var excludedTables string
 	var arch string //代码架构
-	var debug bool
+	var verbose bool
 	var printVer bool
 	var cleanLast bool
 	var compactMode bool
@@ -79,7 +79,7 @@ func generate() {
 	flag.StringVar(&excludedTables, "excludes", "", "exclude tables by prefix")
 	flag.StringVar(&arch, "arch", "", "program language")
 	flag.BoolVar(&cleanLast, "clean", false, "clean last generate files")
-	flag.BoolVar(&debug, "debug", false, "debug mode")
+	flag.BoolVar(&verbose, "verbose", false, "verbose output")
 	flag.BoolVar(&compactMode, "compact", false, "compact mode for old project")
 	//flag.BoolVar(&keepLocal, "local", false, "don't update any new version")
 	flag.BoolVar(&printVer, "v", false, "print version")
@@ -98,16 +98,16 @@ func generate() {
 		println("[ tto][ fatal]:", err.Error())
 		return
 	}
-	if debug {
+	if verbose {
 		buf := bytes.NewBuffer(nil)
 		buf.WriteString(fmt.Sprintf("package: %s \n", pkgName))
-		buf.WriteString(fmt.Sprintf("table : %s \n", table))
+		buf.WriteString(fmt.Sprintf("table : %s* \n", table))
 		buf.WriteString(fmt.Sprintf("main program language : %s \n", majorLang))
 		fmt.Println(buf.String())
 	}
 
 	log.SetFlags(log.Ltime | log.Lshortfile)
-	defer crashRecover(debug)
+	defer crashRecover(verbose)
 	// 兼容模式
 	if compactMode {
 		tto.CompactMode = true
@@ -184,7 +184,7 @@ func generate() {
 	if len(modelPath) == 0 {
 		dbName := re.GetString("database.name")
 		schema := re.GetString("database.schema")
-		ds := orm.DialectSession(getDb(driver, re, debug), dialect)
+		ds := orm.DialectSession(getDb(driver, re, verbose), dialect)
 		list, err1 := ds.TablesByPrefix(dbName, schema, table)
 		if err1 != nil {
 			println("[ app][ info]: ", err.Error())

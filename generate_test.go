@@ -13,7 +13,7 @@ import (
 var (
 	driver     = "mysql"
 	dbName     = ""
-	dbPrefix   = "axq_staff"
+	dbPrefix   = "order_rebate"
 	connString = "root:@tcp(127.0.0.1:3306)/baozhang?charset=utf8"
 	genDir     = "./generated_code/"
 	tplDir     = "./templates/java/spring"
@@ -27,8 +27,8 @@ func TestGenAll(t *testing.T) {
 	// driver = "sqlserver"
 	// connString = "sqlserver://sfDBUser:Jbmeon@008@192.168.16.19:1433?database=DCF19_ERP_TEST_B&encrypt=disable"
 
-	driver = "mysql"
-	connString = "aoxueqi:123456@tcp(47.106.212.18:1512)/aoxueqi?charset=utf8"
+	// driver = "mysql"
+	// connString = "aoxueqi:123456@tcp(47.106.212.18:1512)/aoxueqi?charset=utf8"
 
 	// 初始化生成器
 	conn, _ := db.NewConnector(driver, connString, nil, false)

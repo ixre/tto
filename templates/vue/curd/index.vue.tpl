@@ -51,14 +51,14 @@
         <el-table-column width="140" align="left" label="{{$c.Comment}}" prop="{{$c.Name}}" :formatter="formatColTime"/>
         {{else if ends_with $c.Name "state"}} \
         <el-table-column width="140" align="left" label="{{$c.Comment}}">
-            <template slot-scope="scope">
-              <span v-for="(it,i) in stateOptions" v-if="it.value === scope.row.state">{{"{{ it.key }}"}}</span>
+            <template slot-scope="{row}">
+              <span v-for="(it,i) in stateOptions" v-if="it.value === row.state">{{"{{ it.key }}"}}</span>
             </template>
         </el-table-column>
         {{else if starts_with $c.Name "is_"}} \
         <el-table-column width="140" align="left" label="{{$c.Comment}}">
-             <template slot-scope="scope">
-                <span v-if="scope.row.{{$c.Name}}===1" class="green">是</span>
+             <template slot-scope="{row}">
+                <span v-if="row.{{$c.Name}}===1" class="green">是</span>
                 <span v-else class="red">否</span>
              </template>
         </el-table-column>

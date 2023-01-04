@@ -85,7 +85,7 @@
         background layout="prev, pager, next,sizes,jumper,total"></el-pagination>
     </div>
     <!-- 弹出操作框 -->
-    <el-dialog width="75%" class="mod-dialog" :title="dialog.title" :visible.sync="dialog.open"  :close-on-click-modal="false" @close="()=>dialog.modal=null">
+    <el-dialog v-if="dialog.modal != null" width="75%" class="mod-dialog" :title="dialog.title" visible :close-on-click-modal="false" @close="()=>dialog.modal=null">
         <component v-bind:is="dialog.modal" v-model="dialog.params" @callback="refresh"></component>
     </el-dialog>
 </div>
@@ -106,7 +106,7 @@ class ListModel {
 }
 
 let list = reactive({loading:false,total:0, page: 1, rows: 10,data:[]});
-let dialog = reactive({title:"Form",open:false,params:0,modal: null});
+let dialog = reactive({title:"Form",params:0,modal: null});
 let requesting = ref(false);
 let selectedIds = ref([]);
 let selectedRows = ref([]);
@@ -178,9 +178,6 @@ const openForm = (row,title)=>{
   const {{.table.Pk}} = row?row.{{.table.Pk}}:{{default "ts" .table.PkType}}
   /** #! 在新的tab页上打开临时页面 */
   // router.push({path:"../{{name_path .table.Name}}/detail",query:{title,{{.table.Pk}}}});
-
-  // 使用模态框以编辑数据
-  dialog.open = true
   dialog.title = title
   dialog.params = {{.table.Pk}}
   dialog.modal = {{$Class}}Modal
@@ -188,7 +185,7 @@ const openForm = (row,title)=>{
 
 // 参数state为true时,重置模态框并刷新数据,args接受传入的参数
 const refresh = ({state = 0,close = true,data = {}})=>{
-    if(close)dialog.open = false;
+    if(close)dialog.modal = null;
     if(state)queryPagingData(data);
 }
 

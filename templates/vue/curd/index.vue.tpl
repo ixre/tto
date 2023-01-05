@@ -105,7 +105,7 @@ class ListModel {
     }
 }
 
-let list = reactive({loading:false,total:0, page: 1, rows: 10,data:[]});
+let list = reactive({loading:false,total:0, page: 1, rows: 20,data:[]});
 let dialog = reactive({title:"Form",params:0,modal: null});
 let requesting = ref(false);
 let selectedIds = ref([]);

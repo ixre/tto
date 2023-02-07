@@ -4,11 +4,10 @@
   <div class="mod-form-container">
     <el-form ref="formRef" class="mod-form" size="small"
              label-position="right" :model="formData" :rules="rules">
-        <el-row :gutter="15">
         {{range $i,$c := exclude .columns "create_time" "update_time"}}\
         {{if not $c.IsPk}}{{$name:= $c.Prop}}{{$ele:= $c.Render.Element}}\
-          <el-col :md="12" :xs="24">
             <el-form-item class="mod-form-item" label-position="left" label-width="85px" label="{{$c.Comment}}:" prop="{{$name}}">
+            {{/*<el-col :span="12">LEFT...</el-col><el-col :span="12">RIGHT...</el-col>*/}}
             {{if eq $ele "radio"}}\
               <el-switch v-model="formData.{{$name}}"
                          active-text=""
@@ -34,11 +33,9 @@
                 <el-input v-model="formData.{{$name}}" class="mod-form-input" autosize placeholder="请输入{{$c.Comment}}"/>
             {{end}}
                 <span class="mod-form-remark"></span>
-            </el-form-item>
-          </el-col>
-        {{end}}{{end}}
-        </el-row>
-        <el-container class="mod-form-bar">
+         </el-form-item>
+         {{end}}{{end}}
+         <el-container class="mod-form-bar">
             <el-button @click="()=>callback({close: true})">取消</el-button>
             <el-button v-loading="requesting" type="primary" @click="submitForm">提交</el-button>
         </el-container>

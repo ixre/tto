@@ -52,7 +52,7 @@ public class ReportDataSource {
         return ReportHubMap.get("default");
     }
 
-    public DataResult fetchData(String key, String portal, Params params, String page, String rows) {
+    public DataResult fetchData(String key, String portal, Params params, int page, int rows) {
         ReportHub hub = this.getHub(key);
         if (hub == null)throw new Error("datasource not exists");
         return hub.fetchData(portal, params, page, rows);

@@ -81,12 +81,12 @@ public class {{.table.Title}}Resource {
     }
 
     /** {{.table.Comment}}分页数据 */
-    @GetMapping("/paging")
+    @PostMapping("/paging")
     @Resource(key = "{{$resPrefix}}:paging",name="查询{{.table.Comment}}分页数据")
-    public DataResult paging{{$shortTitle}}(@RequestParam(name ="params",defaultValue = "{}", required = false) String params,
-               @RequestParam("page") String page,
-               @RequestParam("rows") String rows){
-        Params p = ReportUtils.parseParams(params);
+    public DataResult paging{{$shortTitle}}(@RequestBody Map<String,Object> params,
+               @RequestParam("page") int page,
+               @RequestParam("size") int rows){
+        Params p = new Params(params);
         //String timeRangeSQL = ReportUtils.timeRangeSQLByJSONTime(p.get("create_time"), "create_time");
         //p.set("create_time", timeRangeSQL);
         return this.reportDs.fetchData("default",

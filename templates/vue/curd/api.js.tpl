@@ -53,8 +53,9 @@ export const batchDelete{{.table.Title}} = (arr = []) => request({
   data: arr
 })
 
-export const getPaging{{.table.Title}} = (page = 0, rows = 100, params = {}) => request({
+export const queryPaging{{.table.Title}} = (page = 0, size = 100, data = {}) => request({
   url: '{{$path}}/paging',
-  method: 'GET',
-  params: { page, rows, params }
+  method: 'POST',
+  params: { page, size },
+  data
 })

@@ -3,7 +3,7 @@ package {{pkg "java" .global.pkg}}.entity;
 
 
 import javax.persistence.Entity;
-mport javax.persistence.Id;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;

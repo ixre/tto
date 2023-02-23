@@ -92,7 +92,7 @@
 </template>
 <script setup>
 import {onMounted, reactive, ref, nextTick} from "vue";
-import {getPaging{{$Class}},delete{{$Class}},batchDelete{{$Class}} } from './api';
+import {queryPaging{{$Class}},delete{{$Class}},batchDelete{{$Class}} } from './api';
 import {{$Class}}Modal from './modal.vue';
 import {Message,MessageBox,router,parseResult,formatColTime} from "@/adapter";
 
@@ -144,7 +144,7 @@ onMounted(()=>{
 
 // 读取分页数据
 const queryPagingData = async (args)=> {
-    const { data } = await getPaging{{$Class}}(list.page,list.rows,queryParams)
+    const { data } = await queryPaging{{$Class}}(list.page,list.rows,queryParams)
       .finally(()=>list.loading=false);
     list.data = data.rows;
     if(data.total > 0)list.total = data.total;

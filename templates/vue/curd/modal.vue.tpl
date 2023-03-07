@@ -36,8 +36,8 @@
          </el-form-item>
          {{end}}{{end}}
          <el-container class="mod-form-bar">
-            <el-button @click="()=>callback({close: true})">取消</el-button>
-            <el-button v-loading="requesting" type="primary" @click="submitForm">提交</el-button>
+            <el-button @click="()=>cancelForm({close: true})">取消</el-button>
+            <el-button type="primary" :loading="requesting" @click="submitForm">提交</el-button>
         </el-container>
      </el-form>
   </div>
@@ -47,8 +47,8 @@
 
 <script setup>
 import {onMounted,ref} from "vue";
-import {{`{`}}{{$Class}},get{{$Class}},create{{$Class}},update{{$Class}} } from "./api"
-import {Message,MessageBox,router,parseResult} from "@/adapter";
+import {{`{`}}{{$Class}},default{{$Class}},get{{$Class}},create{{$Class}},update{{$Class}} } from "./api"
+import {Message,MessageBox,router,parseResult} from "@/utils/adapter";
 
 /** #! 定义属性,接收父组件的参数 */
 const props = defineProps({
@@ -59,7 +59,7 @@ const props = defineProps({
 const emit = defineEmits(['callback']);
 
 const formRef = ref(null); /* #! formRef关联表单ref属性 */
-let formData  = ref(new {{$Class}}()); /** #! 表单数据 */
+let formData  = ref(default{{$Class}}()); /** #! 表单数据 */
 let requesting = ref(false);
 let isModal = props.value;
 
@@ -88,7 +88,7 @@ onMounted(()=>{
   if(props.value)fetchFormData(props.value);
 })
 
-const callback = (arg)=> (isModal && emit("callback",arg)) || router.go(-1)
+const cancelForm = (arg)=> (isModal && emit("callback",arg)) || router.go(-1)
 
 const fetchFormData = async(id) =>{
   try {

@@ -59,3 +59,27 @@ public class ReportDataSource {
     }
 }
 ```
+
+示例SQL查询条件
+
+```sql
+SELECT COUNT(1) FROM wal_wallet_log l 
+    WHERE l.wallet_id = {wallet_id}\n AND title LIKE '%{keyword}%'
+    #if { kind>0 }
+        AND kind = {kind}
+    #else
+        AND kind = 'else'
+    #fi
+
+    #if { kind = 0 }
+        AND kind = 0 + {kind}
+    #fi
+
+    #if {trade_no}
+        AND	(trade_no IS NULL OR outer_no LIKE '%{trade_no}%')";
+    #fi
+
+    #if {check} AND (check = 1) #fi
+
+    #if {unchecked} AND (uncheck = {kind}) #fi
+```

@@ -25,7 +25,7 @@ type {{$structName}} struct{
 
 func ({{$p}} {{$structName}}) Routes(g *echo.Group) {
   // {{.table.Name}} router
-  g.POST("/{{$namePath}}/paging",{{$p}}.paging{{$shortTitle}})
+  g.GET("/{{$namePath}}/paging",{{$p}}.paging{{$shortTitle}})
   g.GET("/{{$namePath}}/:id",{{$p}}.get{{$shortTitle}})
   g.GET("/{{$namePath}}",{{$p}}.query{{$shortTitle}})
   g.POST("/{{$namePath}}",{{$p}}.create{{$shortTitle}})

@@ -7,7 +7,7 @@
 <div class="app-container mod-grid-container">
     <!-- 查询和其他操作 -->
     <div class="filter-container mod-grid-header">
-        <div class="it mod-grid-header-back" v-show="false">
+        <div class="it mod-grid-header-back" v-if="false">
             <el-button class="filter-item" @click="handleBack">返回</el-button>
         </div>
         <div class="it mod-grid-header-filter">
@@ -28,15 +28,15 @@
               </el-select>
             </el-form-item>
             <el-form-item class="filter-item">
-              <el-button v-permission="['admin']" class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
+              <el-button v-permission="['admin']" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
+            </el-form-item>
+            <el-form-item class="filter-item">
+              <el-button v-permission="['admin']" icon="el-icon-plus" @click="handleCreate">新增</el-button>
+            </el-form-item>
+            <el-form-item class="filter-item">
+              <el-button v-show="selectedRows.length > 0" v-permission="['admin']" type="danger" :loading="requesting" @click="handleDelete">删除</el-button>
             </el-form-item>
           </el-form>
-        </div>
-        <div class="it mod-grid-header-create">
-            <el-button v-permission="['admin']" class="filter-item" icon="el-icon-plus" @click="handleCreate">新增</el-button>
-        </div>
-        <div class="it mod-grid-header-del">
-            <el-button v-show="selectedRows.length > 0" v-permission="['admin']" class="filter-item" type="danger" @click="handleDelete">删除</el-button>
         </div>
     </div>
     <div class="mod-grid-body">
@@ -44,7 +44,7 @@
     <el-table ref="table" v-loading="list.loading" :data="list.data" :height="tableHeight"
               fit :highlight-current-row="false" row-key="{{$Pk}}" border 
               empty-text="暂无数据" @selection-change="handleSelectionChange">
-        <el-table-column align="center" type="selection" width="45" fixed="left"/>
+        <el-table-column align="center" type="selection" width="40" fixed="left"/>
         <el-table-column type="index" width="50" label="序号"></el-table-column>
         {{range $i,$c := .columns}} \
         {{if ends_with $c.Name "_time"}} \
@@ -72,7 +72,7 @@
         <el-table-column align="center" width="160" label="操作" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" icon="el-icon-edit-outline" @click="handleEdit(scope.row)">编辑</el-button>
-              <el-button type="text" icon="el-icon-delete" v-loading="requesting" @click="handleDelete(scope)">删除</el-button>
+              <el-button type="text" icon="el-icon-delete" :loading="requesting && $index === scope.$index" @click="handleDelete(scope.$index,scope.row)">删除</el-button>
             </template>
         </el-table-column>
     </el-table>
@@ -94,7 +94,7 @@
 import {onMounted, reactive, ref, nextTick} from "vue";
 import {queryPaging{{$Class}},delete{{$Class}},batchDelete{{$Class}} } from './api';
 import {{$Class}}Modal from './modal.vue';
-import {Message,MessageBox,router,parseResult,formatColTime} from "@/adapter";
+import {Message,MessageBox,router,parseResult,formatColTime} from "@/utils/adapter";
 
 // {{.table.Comment}}数据映射类
 class ListModel {
@@ -107,6 +107,7 @@ class ListModel {
 
 let list = reactive({loading:false,total:0, page: 1, rows: 20,data:[]});
 let dialog = reactive({title:"Form",params:0,modal: null});
+let $index = ref(-1);
 let requesting = ref(false);
 let selectedIds = ref([]);
 let selectedRows = ref([]);
@@ -138,7 +139,7 @@ onMounted(()=>{
     queryPagingData();
     nextTick(()=>{
       const rec = table.value.$el.getBoundingClientRect();
-      tableHeight.value = document.body.clientHeight - rec.top - 30;
+      tableHeight.value = document.body.clientHeight - rec.top - 80;
     })
 })
 
@@ -189,17 +190,17 @@ const refresh = ({state = 0,close = true,data = {}})=>{
     if(state)queryPagingData(data);
 }
 
-const handleDelete = ({$index,row}) => {
+const handleDelete = (idx,row) => {
     MessageBox.confirm('执行此操作数据无法恢复,是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
     }).then(async () => {
-        if(requesting.value)return;requesting.value=true;
+        if(requesting.value)return;requesting.value=true;$index.value = idx;
         let ret = await (row && row.{{.table.Pk}}?
           delete{{$Class}}(row.{{.table.Pk}}):
           batchDelete{{$Class}}(selectedIds.value))
-          .finally(()=>requesting.value=false);
+          .finally(()=>requesting.value=false;$index.value = -1;);
         let {errCode,errMsg} = parseResult(ret.data);
         if (errCode === 0) {
           Message.success({message:'删除成功',duration:2000,onClose:queryPagingData});

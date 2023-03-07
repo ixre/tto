@@ -12,7 +12,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-		"log"
+	"log"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -442,7 +442,7 @@ func (s *sessionImpl) findTemplates(opt *Options) (map[string]*CodeTemplate, err
 	}
 	err := filepath.Walk(opt.TplDir, func(path string, info os.FileInfo, err error) error {
 		// 如果模板名称以"_"开头，则忽略
-		if info != nil && !info.IsDir() && s.testFilePath(path, opt.ExcludePatterns) {
+		if info != nil && !info.IsDir() && s.testFilePath(path, info.Name(), opt.ExcludePatterns) {
 			tp, err := s.parseTemplate(path, opt.AttachCopyright)
 			if err != nil {
 				return errors.New("template:" + info.Name() + "-" + err.Error())
@@ -458,8 +458,8 @@ func (s *sessionImpl) findTemplates(opt *Options) (map[string]*CodeTemplate, err
 }
 
 // 验证文件名路径, 是否可以可以被作为模板生成代码
-func (s *sessionImpl) testFilePath(path string, excludePatterns []string) bool {
-	if path[0] == '_' {
+func (s *sessionImpl) testFilePath(path string, fileName string, excludePatterns []string) bool {
+	if fileName[0] == '_' || fileName[0] == '~' {
 		return false
 	}
 	if strings.HasSuffix(strings.ToUpper(path), "README.MD") {

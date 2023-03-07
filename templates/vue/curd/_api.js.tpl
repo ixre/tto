@@ -1,6 +1,6 @@
 #!lang:ts＃!name:API和定义文件
 #!target:vue/{{name_path .table.Name}}/api.js
-import {request} from '@/adapter'
+import {request} from '@/utils/adapter'
 {{$columns := .columns}}
 {{$path := join .global.base_path (name_path .table.Name) "/"}}\
 
@@ -25,14 +25,14 @@ export const get{{.table.Title}} = (id, params = {}) => request({
 })
 
 export const query{{.table.Title}}List = (params = {}) => request({
-  url: '{{$path}}',
-  method: 'GET',
+  url: `{{$path}}`,
+  method:  'GET',
   params: { ...params }
 })
 
 export const create{{.table.Title}} = (data = {}) => request({
-  url: '{{$path}}',
-  method: 'POST',
+  url: `{{$path}}`,
+  method:  'POST',
   data
 })
 
@@ -48,14 +48,13 @@ export const delete{{.table.Title}} = (id) => request({
 })
 
 export const batchDelete{{.table.Title}} = (arr = []) => request({
-  url: '{{$path}}',
-  method: 'DELETE',
+  url: `{{$path}}`,
+  method:  'DELETE',
   data: arr
 })
 
-export const queryPaging{{.table.Title}} = (page = 0, size = 100, data = {}) => request({
-  url: '{{$path}}/paging',
-  method: 'POST',
-  params: { page, size },
-  data
+export const queryPaging{{.table.Title}} = (page = 0, size = 100, params = {}) => request({
+  url: `{{$path}}/paging`,
+  method:  'GET',
+  params: { page, size,...params },
 })

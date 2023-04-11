@@ -1,4 +1,4 @@
-#!kind:2#!target:vue/{{.prefix}}/route.js
+#!kind:2#!target:vue/{{.prefix}}/route.ts
 {{$tables := .tables}}
 {{$first := get_n .tables 0}}\
 {{$first_path := substr_n $first.Name "_" 1}}\

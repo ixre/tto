@@ -19,8 +19,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="关键词:" class="filter-item">
-              <el-input v-model="queryParams.keyword" clearable class="filter-input"
-                        placeholder="请输入关键词"/>
+              <el-input v-model="queryParams.keyword" clearable class="filter-input" placeholder="请输入关键词"/>
             </el-form-item>
             <el-form-item label="排序方式:" class="filter-item">
               <el-select v-model="queryParams.order_by" class="filter-select">
@@ -28,22 +27,28 @@
               </el-select>
             </el-form-item>
             <el-form-item class="filter-item">
-              <el-button v-permission="['admin']" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
+              <span v-perm="{key: '', roles: ['admin'], visible: true }" @click="handleFilter">
+                <el-button type="primary" icon="el-icon-search">搜索</el-button>
+              </span>
             </el-form-item>
             <el-form-item class="filter-item">
-              <el-button v-permission="['admin']" icon="el-icon-plus" @click="handleCreate">新增</el-button>
+              <span v-perm="{key: '[权限key]+1', roles: ['admin'], visible: true }" @click="handleCreate">
+                <el-button icon="el-icon-plus">新增</el-button>
+              </span>
             </el-form-item>
             <el-form-item class="filter-item">
-              <el-button v-show="selectedRows.length > 0" v-permission="['admin']" type="danger" :loading="requesting" @click="handleDelete">删除</el-button>
+              <span v-perm="{key: '', roles: ['admin'], visible: true }" @click="handleDelete">
+                <el-button v-show="selectedRows.length > 0" type="danger" icon="el-icon-delete" :loading="requesting">删除</el-button>
+              </span>
             </el-form-item>
           </el-form>
         </div>
     </div>
     <div class="mod-grid-body">
     <!-- 表单数据 -->
-    <el-table ref="table" v-loading="list.loading" :data="list.data" :height="tableHeight"
-              fit :highlight-current-row="false" row-key="{{$Pk}}" border 
-              empty-text="暂无数据" @selection-change="handleSelectionChange">
+    <el-table ref="table" v-loading="list.loading" :data="list.data" class="mod-grid-table"
+              border :height="tableHeight" fit :highlight-current-row="false"
+              row-key="{{$Pk}}" empty-text="暂无数据" @selection-change="handleSelectionChange">
         <el-table-column align="center" type="selection" width="40" fixed="left"/>
         <el-table-column type="index" width="50" label="序号"></el-table-column>
         {{range $i,$c := .columns}} \
@@ -58,8 +63,8 @@
         {{else if starts_with $c.Name "is_"}} \
         <el-table-column width="140" align="left" label="{{$c.Comment}}">
              <template slot-scope="{row}">
-                <span v-if="row.{{$c.Name}}===1" class="green">是</span>
-                <span v-else class="red">否</span>
+                <span v-if="row.{{$c.Name}}===1" class="g-txt-green">是</span>
+                <span v-else class="g-txt-red">否</span>
              </template>
         </el-table-column>
         {{else if $c.IsPk }} \
@@ -71,15 +76,19 @@
 
         <el-table-column align="center" width="160" label="操作" fixed="right">
             <template slot-scope="scope">
-              <el-button type="text" icon="el-icon-edit-outline" @click="handleEdit(scope.row)">编辑</el-button>
-              <el-button type="text" icon="el-icon-delete" :loading="requesting && $index === scope.$index" @click="handleDelete(scope.$index,scope.row)">删除</el-button>
+              <span v-perm="{key: '[权限key]+4', roles: ['admin'], visible: true }" @click="handleEdit(scope.row)">
+                <el-button type="primary" size="mini" icon="el-icon-edit-outline">编辑</el-button>
+              </span>
+              <span v-perm="{key: '[权限key]+2', roles: ['admin'], visible: true }" @click="handleDelete(scope.$index,scope.row)">
+                <el-button type="danger" size="mini" icon="el-icon-delete" :loading="requesting && $index === scope.$index">删除</el-button>
+              </span>
             </template>
         </el-table-column>
     </el-table>
     </div>
     <div class="mod-grid-footer">
-    <!-- 分页 -->
-      <el-pagination v-show="list.total>0" :total="list.total" :page-size.sync="list.rows"
+      <!-- 分页 -->
+      <el-pagination v-show="list.total > 0" :total="list.total" :page-size.sync="list.rows"
         :current-page.sync="list.page" :page-sizes="[10, 20, 50, 100]"
         @current-change="queryPagingData" @size-change="(v)=>list.rows = v"
         background layout="prev, pager, next,sizes,jumper,total"></el-pagination>
@@ -90,45 +99,37 @@
     </el-dialog>
 </div>
 </template>
-<script setup>
+<script lang="ts" setup>
 import {onMounted, reactive, ref, nextTick} from "vue";
-import {queryPaging{{$Class}},delete{{$Class}},batchDelete{{$Class}} } from './api';
+import {Paging{{$Class}},queryPaging{{$Class}},delete{{$Class}},batchDelete{{$Class}} } from './api';
 import {{$Class}}Modal from './modal.vue';
 import {Message,MessageBox,router,parseResult,formatColTime} from "@/utils/adapter";
 
-// {{.table.Comment}}数据映射类
-class ListModel {
-    constructor() {
-      {{range $i,$c := .columns}} \
-      this.{{$c.Name}} = {{default "ts" $c.Type}};// {{$c.Comment}}
-      {{end}}
-    }
-}
 
-let list = reactive({loading:false,total:0, page: 1, rows: 20,data:[]});
-let dialog = reactive({title:"Form",params:0,modal: null});
-let $index = ref(-1);
-let requesting = ref(false);
-let selectedIds = ref([]);
-let selectedRows = ref([]);
-let table = ref(null);
-let tableHeight = ref(0);
+const list = reactive<{ loading: boolean, total: number, page: number, rows: number, data: Array<PagingMmLevel> }>({loading:false,total:0, page: 1, rows: 20,data:[]});
+const dialog = reactive({title:"Form",params:0,modal: null});
+const $index = ref(-1);
+const requesting = ref(false);
+const selectedIds = ref([]);
+const selectedRows = ref([]);
+const table = ref(null);
+const tableHeight = ref(0);
 
 /** 定义排序条件 */
-let sortOptions = [
+const sortOptions = [
   {key: "默认排序", value: "{{.table.Pk}} DESC"},
   {key: "按创建时间先后顺序", value: "{{.table.Pk}} ASC"},
 ];
 
 /** 定义状态条件(自定义条件) */
-let stateOptions = [
+const stateOptions = [
   {key: "全部", value: -1},
   {key: "正常", value: 1},
   {key: "停用", value: 0}
 ];
 
 /** 定义查询参数 */
-let queryParams = reactive({
+const queryParams = reactive({
   keyword: "",
   where: "0=0",
   state: stateOptions[0].value,
@@ -144,7 +145,9 @@ onMounted(()=>{
 })
 
 // 读取分页数据
-const queryPagingData = async (args)=> {
+const queryPagingData = async ()=> {
+  if(list.loading) return;
+  list.loading=true;
     const { data } = await queryPaging{{$Class}}(list.page,list.rows,queryParams)
       .finally(()=>list.loading=false);
     list.data = data.rows;
@@ -156,7 +159,7 @@ const handleFilter = ()=>{
   queryPagingData();
 }
 
-const handleSelectionChange = (rows)=> {
+const handleSelectionChange = (rows: Array<Paging{{$Class}}>)=> {
     selectedRows.value = rows;
     selectedIds.value = [];
     rows.map(row=> selectedIds.value.push(row.{{.table.Pk}}));
@@ -172,16 +175,15 @@ const handleBack = ()=>{
 const handleCreate = ()=> openForm(null,"新增{{.table.Comment}}")
 
 // 编辑数据
-const handleEdit = (row)=>openForm(row,"编辑{{.table.Comment}}")
+const handleEdit = (row:Paging{{$Class}})=>openForm(row,"编辑{{.table.Comment}}")
 
 // 打开表单
-const openForm = (row,title)=>{
-  const {{.table.Pk}} = row?row.{{.table.Pk}}:{{default "ts" .table.PkType}}
+const openForm = (row:Paging{{$Class}},title:string)=>{
   /** #! 在新的tab页上打开临时页面 */
-  // router.push({path:"../{{name_path .table.Name}}/detail",query:{title,{{.table.Pk}}}});
-  dialog.title = title
-  dialog.params = {{.table.Pk}}
-  dialog.modal = {{$Class}}Modal
+  // router.push({path:"../{{name_path .table.Name}}/detail",query:{title,{{.table.PkProp}}}});
+  dialog.title = title;
+  dialog.params = row.{{.table.PkProp}};
+  dialog.modal = {{$Class}}Modal;
 }
 
 // 参数state为true时,重置模态框并刷新数据,args接受传入的参数
@@ -190,7 +192,7 @@ const refresh = ({state = 0,close = true,data = {}})=>{
     if(state)queryPagingData(data);
 }
 
-const handleDelete = (idx,row) => {
+const handleDelete = (idx:number,row:Paging{{$Class}}) => {
     MessageBox.confirm('执行此操作数据无法恢复,是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

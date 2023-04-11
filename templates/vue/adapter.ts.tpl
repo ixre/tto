@@ -1,4 +1,4 @@
-#!kind:2#!target:vue/adapter.js
+#!kind:2#!target:vue/utils/adapter.ts
 
 /** 您可以编辑此文件,并进行适配 */
 

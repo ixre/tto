@@ -41,7 +41,7 @@ func ({{$p}} *{{$structName}}) Get{{$shortTitle}}(primary interface{})*model.{{$
         return &e
     }
     if err != sql.ErrNoRows{
-      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$shortTitle}}")
+      log.Printf("[ Orm][ Error]: %s; Entity:{{$shortTitle}}\n",err.Error())
     }
     return nil
 }
@@ -54,7 +54,7 @@ func ({{$p}} *{{$structName}}) Get{{$shortTitle}}By(where string,v ...interface{
         return &e
     }
     if err != sql.ErrNoRows{
-      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$shortTitle}}")
+      log.Printf("[ Orm][ Error]: %s; Entity:{{$shortTitle}}\n",err.Error())
     }
     return nil
 }
@@ -69,7 +69,7 @@ func ({{$p}} *{{$structName}}) Select{{$shortTitle}}(where string,v ...interface
     list := make([]*model.{{$shortTitle}},0)
     err := {{$p}}._orm.Select(&list,where,v...)
     if err != nil && err != sql.ErrNoRows{
-      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$shortTitle}}")
+      log.Printf("[ Orm][ Error]: %s; Entity:{{$shortTitle}}\n",err.Error())
     }
     return list
 }
@@ -78,7 +78,7 @@ func ({{$p}} *{{$structName}}) Select{{$shortTitle}}(where string,v ...interface
 func ({{$p}} *{{$structName}}) Save{{$shortTitle}}(v *model.{{$shortTitle}})(int,error){
     id,err := orm.Save({{$p}}._orm,v,int(v.{{title .table.Pk}}))
     if err != nil && err != sql.ErrNoRows{
-      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$shortTitle}}")
+      log.Printf("[ Orm][ Error]: %s; Entity:{{$shortTitle}}\n",err.Error())
     }
     return id,err
 }
@@ -87,7 +87,7 @@ func ({{$p}} *{{$structName}}) Save{{$shortTitle}}(v *model.{{$shortTitle}})(int
 func ({{$p}} *{{$structName}}) Delete{{$shortTitle}}(primary interface{}) error {
     err := {{$p}}._orm.DeleteByPk(model.{{$shortTitle}}{}, primary)
     if err != nil && err != sql.ErrNoRows{
-      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$shortTitle}}")
+      log.Printf("[ Orm][ Error]: %s; Entity:{{$shortTitle}}\n",err.Error())
     }
     return err
 }
@@ -96,7 +96,7 @@ func ({{$p}} *{{$structName}}) Delete{{$shortTitle}}(primary interface{}) error 
 func ({{$p}} *{{$structName}}) BatchDelete{{$shortTitle}}(where string,v ...interface{})(int64,error) {
     r,err := {{$p}}._orm.Delete(model.{{$shortTitle}}{},where,v...)
     if err != nil && err != sql.ErrNoRows{
-      log.Println("[ Orm][ Error]:",err.Error(),"; Entity:{{$shortTitle}}")
+      log.Printf("[ Orm][ Error]: %s; Entity:{{$shortTitle}}\n",err.Error())
     }
     return r,err
 }
@@ -119,7 +119,7 @@ func ({{$p}} *{{$structName}}) PagingQuery{{$shortTitle}}(begin, end int,where, 
             rows = db.RowsToMarshalMap(_rows)
         }, begin, end-begin)
         if err != nil{
-            log.Println(fmt.Sprintf("[ Orm][ Error]: %s (table:{{.table.Name}})", err.Error()))
+            log.Printf("[ Orm][ Error]: %s (table:{{.table.Name}})\n", err.Error())
         }
 	}else{
 	    rows = make([]map[string]interface{},0)

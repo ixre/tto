@@ -103,7 +103,7 @@
 import {onMounted, reactive, ref, nextTick} from "vue";
 import {Paging{{$Class}},queryPaging{{$Class}},delete{{$Class}},batchDelete{{$Class}} } from './api';
 import {{$Class}}Modal from './modal.vue';
-import {Message,MessageBox,router,parseResult,formatColTime} from "@/utils/adapter";
+import {Message,MessageBox,router,parseResult,formatColTime} from "@/utils";
 
 
 const list = reactive<{ loading: boolean, total: number, page: number, rows: number, data: Array<PagingMmLevel> }>({loading:false,total:0, page: 1, rows: 20,data:[]});

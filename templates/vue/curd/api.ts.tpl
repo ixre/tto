@@ -1,6 +1,6 @@
 #!lang:ts＃!name:API和定义文件
 #!target:vue/{{name_path .table.Name}}/api.ts
-import {request} from '@/utils/adapter'
+import {request} from '@/utils'
 {{$columns := .columns}}
 {{$path := join .global.base_path (name_path .table.Name) "/"}}\
 

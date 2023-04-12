@@ -48,7 +48,7 @@
 <script lang="ts" setup>
 import {onMounted,ref,reactive} from "vue";
 import {{`{`}}{{$Class}},get{{$Class}},create{{$Class}},update{{$Class}} } from "./api"
-import {Message,MessageBox,router,parseResult} from "@/utils/adapter";
+import {Message,MessageBox,router,parseResult} from "@/utils";
 
 /** #! 定义属性,接收父组件的参数 */
 const props = withDefaults(defineProps<{modelValue?:{{type "ts" .table.PkType}}}>(),{});

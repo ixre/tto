@@ -1,6 +1,6 @@
 #!kind:2#!target:vue/utils/adapter.ts
 
-/** 您可以编辑此文件,并进行适配 */
+/** 您可以编辑此文件,并进行适配,需要在utils包中导出 */
 
 import axios from "axios";
 export {Message,MessageBox} from "element-ui"

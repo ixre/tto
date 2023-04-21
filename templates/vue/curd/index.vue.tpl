@@ -38,7 +38,7 @@
             </el-form-item>
             <el-form-item class="filter-item">
               <span v-perm="{key: '', roles: ['admin'], visible: true }" @click="handleDelete">
-                <el-button v-show="selectedRows.length > 0" type="danger" icon="el-icon-delete" :loading="requesting">删除</el-button>
+                <el-button v-show="data.selectedRows.length > 0" type="danger" icon="el-icon-delete" :loading="data.requesting">删除</el-button>
               </span>
             </el-form-item>
           </el-form>
@@ -47,7 +47,7 @@
     <div class="mod-grid-body">
     <!-- 表单数据 -->
     <el-table ref="table" v-loading="list.loading" :data="list.data" class="mod-grid-table"
-              border :height="tableHeight" fit :highlight-current-row="false"
+              border :height="data.tableHeight" fit :highlight-current-row="false"
               row-key="{{$Pk}}" empty-text="暂无数据" @selection-change="handleSelectionChange">
         <el-table-column align="center" type="selection" width="40" fixed="left"/>
         <el-table-column type="index" width="50" label="序号"></el-table-column>
@@ -80,7 +80,7 @@
                 <el-button type="primary" size="mini" icon="el-icon-edit-outline">编辑</el-button>
               </span>
               <span v-perm="{key: '[权限key]+2', roles: ['admin'], visible: true }" @click="handleDelete(scope.$index,scope.row)">
-                <el-button type="danger" size="mini" icon="el-icon-delete" :loading="requesting && $index === scope.$index">删除</el-button>
+                <el-button type="danger" size="mini" icon="el-icon-delete" :loading="data.requesting && data.rowIndex === scope.$index">删除</el-button>
               </span>
             </template>
         </el-table-column>
@@ -95,7 +95,7 @@
     </div>
     <!-- 弹出操作框 -->
     <el-dialog v-if="dialog.modal != null" width="75%" class="mod-dialog" :title="dialog.title" visible :close-on-click-modal="false" @close="()=>dialog.modal=null">
-        <component v-bind:is="dialog.modal" v-model="dialog.params" @callback="refresh"></component>
+        <component v-bind:is="dialog.modal" :model-value="dialog.params" @callback="refresh"></component>
     </el-dialog>
 </div>
 </template>
@@ -105,15 +105,10 @@ import {Paging{{$Class}},queryPaging{{$Class}},delete{{$Class}},batchDelete{{$Cl
 import {{$Class}}Modal from './modal.vue';
 import {Message,MessageBox,router,parseResult,formatColTime} from "@/utils";
 
-
-const list = reactive<{ loading: boolean, total: number, page: number, rows: number, data: Array<PagingMmLevel> }>({loading:false,total:0, page: 1, rows: 20,data:[]});
-const dialog = reactive({title:"Form",params:0,modal: null});
-const $index = ref(-1);
-const requesting = ref(false);
-const selectedIds = ref([]);
-const selectedRows = ref([]);
 const table = ref(null);
-const tableHeight = ref(0);
+const list = reactive<{ loading: boolean, total: number, page: number, rows: number, data: Array<Paging{{$Class}}> }>({loading:false,total:0, page: 1, rows: 20,data:[]});
+const dialog = reactive({title:"Form",params:0,modal: null});
+const data = reactive({rowIndex:-1,requesting:false,selectedIds:[],selectedRows:[],tableHeight:0});
 
 /** 定义排序条件 */
 const sortOptions = [
@@ -140,7 +135,7 @@ onMounted(()=>{
     queryPagingData();
     nextTick(()=>{
       const rec = table.value.$el.getBoundingClientRect();
-      tableHeight.value = document.body.clientHeight - rec.top - 80;
+      data.tableHeight =  document.documentElement.clientHeight - rec.top - 80;
     })
 })
 
@@ -159,10 +154,10 @@ const handleFilter = ()=>{
   queryPagingData();
 }
 
-const handleSelectionChange = (rows: Array<Paging{{$Class}}>)=> {
-    selectedRows.value = rows;
-    selectedIds.value = [];
-    rows.map(row=> selectedIds.value.push(row.{{.table.Pk}}));
+const handleSelectionChange = (rows: Array<PagingSysAppV2Version>)=> {
+    data.selectedRows = rows;
+    data.selectedIds = [];
+    rows.map(row=> data.selectedIds.push(row.id));
 }
 
 // 返回
@@ -189,7 +184,7 @@ const openForm = (row:Paging{{$Class}},title:string)=>{
 // 参数state为true时,重置模态框并刷新数据,args接受传入的参数
 const refresh = ({state = 0,close = true,data = {}})=>{
     if(close)dialog.modal = null;
-    if(state)queryPagingData(data);
+    if(state)queryPagingData();
 }
 
 const handleDelete = (idx:number,row:Paging{{$Class}}) => {
@@ -198,11 +193,11 @@ const handleDelete = (idx:number,row:Paging{{$Class}}) => {
         cancelButtonText: '取消',
         type: 'warning'
     }).then(async () => {
-        if(requesting.value)return;requesting.value=true;$index.value = idx;
+        if(data.requesting)return;data.requesting=true;data.rowIndex = idx;
         let ret = await (row && row.{{.table.Pk}}?
           delete{{$Class}}(row.{{.table.Pk}}):
-          batchDelete{{$Class}}(selectedIds.value))
-          .finally(()=>requesting.value=false;$index.value = -1;);
+          batchDelete{{$Class}}(data.selectedIds))
+          .finally(()=>{data.requesting=false;data.rowIndex = -1;});
         let {errCode,errMsg} = parseResult(ret.data);
         if (errCode === 0) {
           Message.success({message:'删除成功',duration:2000,onClose:queryPagingData});

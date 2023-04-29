@@ -128,7 +128,7 @@ const queryParams = reactive({
   keyword: "",
   where: "0=0",
   state: stateOptions[0].value,
-  order_by: sortOptions[0].value,
+  order_by: sortOptions[0].value
 });
 
 onMounted(()=>{

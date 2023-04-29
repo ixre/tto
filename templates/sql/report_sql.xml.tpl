@@ -8,6 +8,7 @@
         <![CDATA[
         SELECT * FROM {{.table.Name}}
         WHERE {where}
+        #if {create_time} AND {create_time} #fi
         ORDER BY {order_by}
         LIMIT {{if eq .global.db "postgresql"}}{page_size} OFFSET {page_offset}{{else}}{page_offset},{page_size}{{end}}
      ]]>
@@ -16,6 +17,7 @@
     <Total>
         <![CDATA[
             SELECT COUNT(1) FROM {{.table.Name}} WHERE {where}
+            #if {create_time} AND {create_time} #fi
         ]]>
     </Total>
 </ExportItemConfig>

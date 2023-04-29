@@ -81,16 +81,17 @@ public class {{.table.Title}}Resource {
     }
 
     /** {{.table.Comment}}分页数据 */
-    @PostMapping("/paging")
+    @GetMapping("/paging")
     @Resource(key = "{{$resPrefix}}:paging",name="查询{{.table.Comment}}分页数据")
-    public DataResult paging{{$shortTitle}}(@RequestBody Map<String,Object> params,
+    public DataResult paging{{$shortTitle}}(@RequestParam Map<String,Object> params,
                @RequestParam("page") int page,
-               @RequestParam("size") int rows){
+               @RequestParam("size") int size){
         Params p = new Params(params);
-        //String timeRangeSQL = ReportUtils.timeRangeSQLByJSONTime(p.get("create_time"), "create_time");
+        //https://www.zhihu.com/question/586324313/answer/2912413783
+        //String timeRangeSQL = ReportUtils.timestampSQLByJSONTime(p.get("create_time"), "create_time");
         //p.set("create_time", timeRangeSQL);
         return this.reportDs.fetchData("default",
-                "{{.table.Prefix}}/{{substr_n .table.Name "_" 1}}_list", p, page, rows);
+                "{{.table.Prefix}}/{{substr_n .table.Name "_" 1}}_list", p, page, size);
     }
 
     /** 查询{{.table.Comment}}列表 */

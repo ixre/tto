@@ -6,7 +6,6 @@ import {{pkg "java" .global.pkg}}.mapper.{{.table.Title}}Mapper;
 import {{pkg "java" .global.pkg}}.service.{{.table.Prefix}}.I{{.table.Title}}Service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import net.fze.common.Standard;
@@ -23,7 +22,7 @@ import java.util.List;
 
 /** {{.table.Comment}}服务  */
 @Service("{{.table.Name}}_mybatis_service")
-public class {{.table.Title}}ServiceImpl extends ServiceImpl<{{$tableTitle}}Mapper,{{$tableTitle}}{{.global.entity_suffix}}> implements I{{.table.Title}}Service{
+public class {{.table.Title}}ServiceImpl implements I{{.table.Title}}Service{
     @Inject
     private {{$tableTitle}}Mapper repo;
 

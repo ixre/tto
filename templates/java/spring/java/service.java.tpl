@@ -2,7 +2,6 @@
 package {{pkg "java" .global.pkg}}.service;
 
 import {{pkg "java" .global.pkg}}.entity.{{.table.Title}}{{.global.entity_suffix}};
-import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.data.domain.Pageable;
 import net.fze.common.infrastructure.PagingResult;
 
@@ -15,7 +14,7 @@ import java.util.List;
 {{$warpPkType := orm_type "java" .table.PkType}}
 
 /** {{.table.Comment}}服务  */
-public interface I{{.table.Title}}Service extends IService<{{$tableTitle}}{{.global.entity_suffix}}>{
+public interface I{{.table.Title}}Service {
 
     /** 查找{{.table.Comment}} */
     {{$tableTitle}}{{.global.entity_suffix}} find{{$shortTitle}}ById({{$pkType}} id);

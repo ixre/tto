@@ -90,19 +90,17 @@ func ({{$p}} *{{$structName}}) paging{{$shortTitle}}(ctx echo.Context) error {
     //dst := proto.{{$shortTitle}}PagingRequest{}
     //ctx.Bind(&dst) \
     /** #! 使用分页参数(GET)来分页 */
-    page := typeconv.MustInt(ctx.QueryParam("page"))
     size := typeconv.MustInt(ctx.QueryParam("rows"))
-    mp := make(map[string]interface{}, 0)
-    _ = json.Unmarshal([]byte(ctx.QueryParam("params")), &mp)
+	  page := typeconv.MustInt(ctx.QueryParam("page"))
     params := &proto.SPagingParams{
         Begin:  int64((page - 1) * size),
         End:    int64(page * size),
         Where:  ctx.QueryParam("where"),
-        SortBy: typeconv.Stringify(mp["order_by"]),
-        Parameters: map[string]string{
-            "keyword": typeconv.Stringify(mp["keyword"]),
-            "state":   typeconv.Stringify(mp["state"]),
-        },
+        SortBy: typeconv.Stringify(ctx.QueryParam("order_by")),
+		    Parameters: map[string]string{
+			    "keyword": typeconv.Stringify(ctx.QueryParam("keyword")),
+			    "state":   typeconv.Stringify(ctx.QueryParam("state")),
+		    },
     }
     dst := proto.{{$shortTitle}}PagingRequest{
         Params:params,

@@ -82,6 +82,7 @@ func TestReadTables(t *testing.T) {
 	t.Log(len(tables))
 }
 
+// 加载路径中的模型并生成代码
 func TestGenerateByReadedTables(t *testing.T) {
 	//txt, _ := ioutil.ReadFile("./templates/table.tb")
 	//tables, _ := ReadTables(string(txt), "user")

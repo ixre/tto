@@ -11,6 +11,7 @@ import (
 	"github.com/ixre/gof/db/db"
 )
 
+// ReadModels 从目录中识别模型并转换为表
 func ReadModels(path string) ([]*Table, error) {
 	tables := make([]*Table, 0)
 	list, err := os.ReadDir(path)
@@ -34,7 +35,7 @@ var tableRegex = regexp.MustCompile(`///*\s*([^\n]+)\n*\s*type\s+([^\s]+)\s+stru
 var txtColRegex = regexp.MustCompile(`///*\s*([\S]+)\s*([\S]+)\s+([\S]+)\s+` + "`([^`]+)`")
 var txtPropRegex = regexp.MustCompile(`([\S]+?)\s*:\s*"(.+?)"`)
 
-/// 从文本中读取表信息
+// / 从文本中读取表信息
 func ReadTables(txt string) ([]*Table, error) {
 	sub := tableRegex.FindAllStringSubmatch(txt, -1)
 	tables := make([]*Table, 0)

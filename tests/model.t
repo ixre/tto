@@ -1,5 +1,5 @@
 
-// 数据源
+// dbs 数据源
 type DataSource struct {
 	// 主键
 	Id int `db:"id" pk:"yes" auto:"yes"`

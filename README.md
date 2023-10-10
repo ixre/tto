@@ -18,10 +18,12 @@
 ### 在Linux/Mac下安装
 
 使用以下命令安装
-```
+
+```bash
 curl -L https://raw.githubusercontent.com/ixre/tto/master/install | sh
 ```
-###　在Windows下安装
+
+### 　在Windows下安装
 
 到下载页面([链接](https://github.com/ixre/tto/releases/)),下载最新版本(文件:tto-generator-bin.tar.gz)后解压,将目录中的`tto.exe`文件复制到`C:\windows`下完成安装.　请注意windows10以下版本需要复制到`C:\windows\System32`目录.
 
@@ -33,15 +35,15 @@ _注：在windows下升级功能如无法正常使用,可以手动重新安装_
 
 ## 快速开始
 
-###　下载程序包
+### 　下载程序包
 
-到下载页面([链接](https://github.com/ixre/tto/releases/)),下载最新版本(文件:tto-generator-bin.tar.gz)后解压; 
+到下载页面([链接](https://github.com/ixre/tto/releases/)),下载最新版本(文件:tto-generator-bin.tar.gz)后解压;
 
-###　配置数据库
+### 　配置数据库
 
-`tto.conf`为程序的默认配置文件,　打开文件进行找到`[database]`节点配置数据库. 
+`tto.conf`为程序的默认配置文件,　打开文件进行找到`[database]`节点配置数据库.
 
-###　使用模板
+### 　使用模板
 
 您可以直接使用安装包里的模板文件,　或按照您的风格对模板进行修改,　甚至单独创建模板.
 
@@ -55,8 +57,7 @@ _注：在windows下升级功能如无法正常使用,可以手动重新安装_
 
 在windows中可以使用`git-bash`来执行该脚本
 
-
-##　模板
+## 　模板
 
 `tto`模板使用`Go Template`,　具体语法参考:
 
@@ -75,13 +76,13 @@ _注：在windows下升级功能如无法正常使用,可以手动重新安装_
 - \#!format: 是否启用格式化代码，可选值为:true和false，默认开启
 - \#!lang: 指定当前生成代码的语言 如:
 
-```
+```text
 #!target:java/{{.global.pkg}}/pojo/{{.table.Title}}{{.global.entity_suffix}}.java
 ```
 
 多个预定义表达式可以放在一行
 
-```
+```text
 #!format:true#!target:Entity.java
 ```
 
@@ -89,74 +90,76 @@ _注：在windows下升级功能如无法正常使用,可以手动重新安装_
 
 模板注释,使用`/** #! 注释 */`的语法,使用`#!`与普通的代码注释区分
 
-```
+```java
 /** #! 这是模板注释,不会出现在生成的代码中 */
 ```
-
 
 ### 模板函数
 
 获取用户环境变量
 
-```
+```text
 {{env "PROJECT_MEMBERS"}}
 ```
 
 大/小写函数: lower和upper
 
-```
+```text
 {{lower .table.Name}}
 {{upper .table.Name}}
 ```
 
 单词首字大写函数:title
 
-```
+```text
 {{title .table.Name}}
 ```
 
 首字母小写函数: lower_title
 
-```
+```text
 {{lower_title .table.Name}}
 ```
 
 语言类型函数: type
 
-```
+```text
 {{type "go" .columns[0].Type}}
 ```
 
 返回SQL/ORM类型: sql_type
 
-```
+```text
 {{sql_type "py" .columns[0].Type .columns[0].Length}}
 ```
+
 返回ORM字段类型,通常在Java中使用
-```
+
+```text
 {{orm_type "java" 3 }}  // 输出: Integer
 ```
 
 是否为数值类型
-```
+
+```text
 {{num_type .table.PkType}}
 ```
 
 包函数: pkg, 用于获取包的路径
 
-```
+```text
 {{pkg "go" .global.pkg}} # github.com/ixre
 ```
 
 包名函数:
 
-```
+```text
 {{pkg_name "go" "github/com/ixre"}} # ixre
 ```
 
 默认值函数: default
 
-```
+```text
 {{default "go" .columns[0].TypeId}}
 ```
 
@@ -406,7 +409,6 @@ public class {{.table.Title}}{{.global.entity_suffix}} {
 ## 逆向生成代码
 
 参见代码：[generate_test.go](generate_test.go)
-
 
 **如果您觉得这个项目不错, 请给个star吧.**
 

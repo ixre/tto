@@ -82,6 +82,9 @@ func (g *Options) prepare() {
 		g.ExcludePatterns = nil
 	}
 	g.MajorLang = strings.ToLower(strings.TrimSpace(g.MajorLang))
+	if len(g.MajorLang) == 0 {
+		g.MajorLang = "java"
+	}
 	if g.TplDir == "" {
 		g.TplDir = "./templates"
 	}

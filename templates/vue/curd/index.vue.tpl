@@ -154,7 +154,7 @@ const handleFilter = ()=>{
   queryPagingData();
 }
 
-const handleSelectionChange = (rows: Array<PagingSysAppV2Version>)=> {
+const handleSelectionChange = (rows: Array<Paging{{$Class}}>)=> {
     data.selectedRows = rows;
     data.selectedIds = [];
     rows.map(row=> data.selectedIds.push(row.id));

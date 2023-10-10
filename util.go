@@ -1,10 +1,11 @@
 package tto
 
 import (
-	"github.com/ixre/gof/util"
 	"os"
 	"strings"
 	"unicode"
+
+	"github.com/ixre/gof/util"
 )
 
 func prefix(str string) string {
@@ -53,6 +54,24 @@ func lowerTitle(s string) string {
 		return string(unicode.ToLower(rune0)) + s[1:]
 	}
 	return s
+}
+
+// 大写改为小写并插入字符
+func joinLowerCase(s string, delimer byte) string {
+	dst := make([]byte, 0)
+	for i, b := range strings.TrimSpace(s) {
+		if unicode.IsUpper(b) {
+			l := byte(unicode.ToLower(b))
+			if i == 0 {
+				dst = append(dst, l)
+			} else {
+				dst = append(dst, delimer, l)
+			}
+		} else {
+			dst = append(dst, byte(b))
+		}
+	}
+	return string(dst)
 }
 
 // 保存到文件

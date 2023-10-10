@@ -1,12 +1,10 @@
 package tto
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
-	"unicode"
 
 	"github.com/ixre/gof/db/db"
 )
@@ -20,7 +18,7 @@ func ReadModels(path string) ([]*Table, error) {
 			if strings.HasSuffix(v.Name(), ".t") {
 				bytes, err := os.ReadFile(filepath.Join(path, v.Name()))
 				if err == nil {
-					tb, _ := ReadTables(string(bytes))
+					tb, _ := ReverseParseTable(string(bytes))
 					if len(tb) > 0 {
 						tables = append(tables, tb...)
 					}
@@ -35,11 +33,12 @@ var tableRegex = regexp.MustCompile(`///*\s*([^\n]+)\n*\s*type\s+([^\s]+)\s+stru
 var txtColRegex = regexp.MustCompile(`///*\s*([\S]+)\s*([\S]+)\s+([\S]+)\s+` + "`([^`]+)`")
 var txtPropRegex = regexp.MustCompile(`([\S]+?)\s*:\s*"(.+?)"`)
 
-// / 从文本中读取表信息
-func ReadTables(txt string) ([]*Table, error) {
+// / 从文本中读取表信息,逆向转换表
+func ReverseParseTable(txt string) ([]*Table, error) {
 	sub := tableRegex.FindAllStringSubmatch(txt, -1)
 	tables := make([]*Table, 0)
 	for i, v := range sub {
+		// 如: user_info 用户列表
 		structName := v[2]
 		// 解析表名和文档
 		tbTxt := strings.Split(v[1], " ")
@@ -52,7 +51,7 @@ func ReadTables(txt string) ([]*Table, error) {
 			tbDoc = tbTxt[1]
 		} else {
 			tbDoc = tbTxt[0]
-			tbName = keyFormat(structName)
+			tbName = joinLowerCase(structName, '_')
 		}
 		tb := &Table{
 			Ordinal:    i,
@@ -69,22 +68,23 @@ func ReadTables(txt string) ([]*Table, error) {
 			PkType:     0,
 			Columns:    []*Column{},
 		}
-		readColumns(tb, v[3])
+		reverseParseColumns(tb, v[3])
 		tables = append(tables, tb)
-		log.Println("[ reverse]: find model ", tb.Name, ":", tb.Comment)
+		//log.Println("[ reverse]: find model ", tb.Name, ":", tb.Comment)
 	}
-
 	return tables, nil
 }
 
-func readColumns(table *Table, txt string) {
+// 转换列
+func reverseParseColumns(table *Table, txt string) {
 	sub := txtColRegex.FindAllStringSubmatch(txt, -1)
 	for i, v := range sub {
 		props := parseColumnProps(v[4])
 		ormType := GetOrmTypeFromGoType(v[3])
+		colName := joinLowerCase(props["db"],'_')
 		col := &Column{
 			Ordinal: i,
-			Name:    props["db"],
+			Name:    colName,
 			Prop:    v[2],
 			IsPk:    props["pk"] == "yes",
 			IsAuto:  props["auto"] == "yes",
@@ -103,7 +103,7 @@ func readColumns(table *Table, txt string) {
 				if !strings.HasSuffix(prefix, "_") {
 					prefix += "_"
 				}
-				table.Name = keyFormat(prefix + table.Name)
+				table.Name = joinLowerCase(prefix+table.Name, '_')
 				table.Prefix = prefix[:len(prefix)-1]
 			}
 		}
@@ -119,23 +119,6 @@ func parseColumnProps(s string) map[string]string {
 		}
 	}
 	return props
-}
-
-func keyFormat(s string) string {
-	dst := make([]byte, 0)
-	for i, b := range strings.TrimSpace(s) {
-		if unicode.IsUpper(b) {
-			l := byte(unicode.ToLower(b))
-			if i == 0 {
-				dst = append(dst, l)
-			} else {
-				dst = append(dst, byte('_'), l)
-			}
-		} else {
-			dst = append(dst, byte(b))
-		}
-	}
-	return string(dst)
 }
 
 func GetOrmTypeFromGoType(typeName string) int {

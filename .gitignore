@@ -27,6 +27,7 @@ output
 go.sum
 *.tar.gz
 generated_code
+generated-code
 *-bin
 tto_*.conf
 *.iml

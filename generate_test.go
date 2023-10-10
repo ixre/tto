@@ -15,7 +15,7 @@ var (
 	dbName     = ""
 	dbPrefix   = "order_rebate"
 	connString = "root:@tcp(127.0.0.1:3306)/baozhang?charset=utf8"
-	genDir     = "./generated_code/"
+	genDir     = "./generated-code/"
 	tplDir     = "./templates/java/spring"
 )
 
@@ -78,12 +78,12 @@ func TestGenAll(t *testing.T) {
 
 func TestReadTables(t *testing.T) {
 	txt, _ := os.ReadFile("./templates/table.tb")
-	tables, _ := ReadTables(string(txt))
+	tables, _ := ReverseParseTable(string(txt))
 	t.Log(len(tables))
 }
 
-// 加载路径中的模型并生成代码
-func TestGenerateByReadedTables(t *testing.T) {
+// 逆向生成代码,加载路径中的模型并生成代码
+func TestReverseGenerate(t *testing.T) {
 	//txt, _ := ioutil.ReadFile("./templates/table.tb")
 	//tables, _ := ReadTables(string(txt), "user")
 	tables, _ := ReadModels("./templates")

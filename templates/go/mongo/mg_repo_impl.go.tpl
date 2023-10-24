@@ -1,18 +1,18 @@
 package impl
 
 #!type:0#!lang:go
-#!target:{{.global.pkg}}/mongo/dao/impl/{{.table.Name}}_dao_impl.go
+#!target:{{.global.pkg}}/mongo/repo/impl/{{.table.Name}}_repo_impl.go
 {{$title := .table.Title}}
 {{$pkType := type "go" .table.PkType}}
 {{$pkProp := .table.PkProp}}
 {{$tableName := .table.Name}}
 {{$shortTitle := .table.ShortTitle}}
 {{$p := substr .table.Name 0 1 }}
-{{$structName := join (lower_title $title) "DaoImpl"}}
+{{$structName := join (lower_title $title) "RepositoryImpl"}}
 import(
     "context"
-    "{{pkg "go" .global.pkg}}/mongo/dao/model"
-    "{{pkg "go" .global.pkg}}/mongo/dao"
+    "{{pkg "go" .global.pkg}}/mongo/repo/model"
+    "{{pkg "go" .global.pkg}}/mongo/repo"
     "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/mongo/options"
@@ -38,15 +38,14 @@ func getIncrementPkId(d *mongo.Database, collname string) int {
 	return result.NextID
 }
 
-var _ dao.I{{$title}}Dao = new({{$structName}})
+var _ repo.I{{$title}}Repository = new({{$structName}})
 type {{$structName}} struct{
     d *mongo.Database
 }
 
-var {{$structName}}Mapped = false
 
-// New{{$title}}Dao Create new {{$title}}Dao
-func New{{$title}}Dao(d *mongo.Database) dao.I{{$title}}Dao{
+// New{{$title}}Repository Create new {{$title}}Repository
+func New{{$title}}Repository(d *mongo.Database) repo.I{{$title}}Repository{
     return &{{$structName}}{
         d:d,
     }

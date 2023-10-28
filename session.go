@@ -44,6 +44,10 @@ const (
 )
 
 type (
+	// 代码处理
+	GenerateHandler func(result string, tpl *Template) (ret string)
+
+	// Session 生成器会话
 	Session interface {
 		// add or update variable
 		Var(key string, v interface{})
@@ -56,11 +60,11 @@ type (
 		// 返回所有的变量
 		AllVars() map[string]interface{}
 		// 生成代码
-		GenerateCode(table *Table, tpl *CodeTemplate) string
+		GenerateCode(table *Table, tpl *Template, g GenerateHandler) string
 		// 生成所有表的代码, 可引用的对象为global 和 tables
-		GenerateCodeByTables(tables []*Table, tpl *CodeTemplate) string
+		GenerateCodeByTables(tables []*Table, tpl *Template, g GenerateHandler) string
 		// 遍历模板文件夹, 并生成代码, 如果为源代码目标,文件存在,则自动生成添加 .gen后缀
-		WalkGenerateCodes(tables []*Table) error
+		WalkGenerateCodes(tables []*Table, g GenerateHandler) error
 		// 转换表格,如果meta为true,则读取元数据,如果没有则自动生成元数据
 		Parses(tables []*db.Table, meta bool) (arr []*Table, err error)
 	}
@@ -192,7 +196,7 @@ func (s *sessionImpl) AllVars() map[string]interface{} {
 }
 
 // 转换成为模板
-func (s *sessionImpl) parseTemplate(file string, attachCopy bool) (*CodeTemplate, error) {
+func (s *sessionImpl) parseTemplate(file string, attachCopy bool) (*Template, error) {
 	data, err := os.ReadFile(file)
 	if err == nil {
 		return NewTemplate(string(data), file, attachCopy), nil
@@ -201,7 +205,7 @@ func (s *sessionImpl) parseTemplate(file string, attachCopy bool) (*CodeTemplate
 }
 
 // 生成代码
-func (s *sessionImpl) GenerateCode(table *Table, tpl *CodeTemplate) string {
+func (s *sessionImpl) GenerateCode(table *Table, tpl *Template, g GenerateHandler) string {
 	if table == nil {
 		return ""
 	}
@@ -222,14 +226,19 @@ func (s *sessionImpl) GenerateCode(table *Table, tpl *CodeTemplate) string {
 	buf := bytes.NewBuffer(nil)
 	err = t.Execute(buf, mp)
 	if err == nil {
-		return s.formatCode(tpl, buf.String())
+		ret := s.formatCode(tpl, buf.String())
+		if g != nil {
+			// 格式化代码
+			return g(ret, tpl)
+		}
+		return ret
 	}
 	log.Println("execute template error:", err.Error())
 	return ""
 }
 
 // 生成所有表的代码, 可引用的对象为global 和 tables
-func (s *sessionImpl) GenerateCodeByTables(tables []*Table, tpl *CodeTemplate) string {
+func (s *sessionImpl) GenerateCodeByTables(tables []*Table, tpl *Template, g GenerateHandler) string {
 	if len(tables) == 0 {
 		return ""
 	}
@@ -253,14 +262,18 @@ func (s *sessionImpl) GenerateCodeByTables(tables []*Table, tpl *CodeTemplate) s
 	buf := bytes.NewBuffer(nil)
 	err = t.Execute(buf, mp)
 	if err == nil {
-		return s.formatCode(tpl, buf.String())
+		ret := s.formatCode(tpl, buf.String())
+		if g != nil {
+			return g(ret, tpl)
+		}
+		return ret
 	}
 	log.Println("execute template error:", err.Error())
 	return ""
 }
 
 // 获取生成目标代码文件路径
-func (s *sessionImpl) predefineTargetPath(tpl *CodeTemplate, table *Table) (string, error) {
+func (s *sessionImpl) predefineTargetPath(tpl *Template, table *Table) (string, error) {
 	n, ok := tpl.Predefine("target")
 	if !ok {
 		return "", errors.New("template not contain predefine command #!target")
@@ -303,7 +316,7 @@ var multiLineRegexp = regexp.MustCompile(`(\{|,|>)[\n\r]+?\s*\n+`)
 var multiLineRevertRegexp = regexp.MustCompile(`\n+\s*[\n\r]+?\}`)
 
 // 格式化代码
-func (s *sessionImpl) formatCode(tpl *CodeTemplate, code string) string {
+func (s *sessionImpl) formatCode(tpl *Template, code string) string {
 
 	// 去除`{`后多余的换行
 	code = multiLineRegexp.ReplaceAllString(code, "$1\n")
@@ -325,31 +338,33 @@ func (s *sessionImpl) formatCode(tpl *CodeTemplate, code string) string {
 }
 
 // 遍历模板文件夹, 并生成代码, 如果为源代码目标,文件存在,则自动生成添加 .gen后缀
-func (s *sessionImpl) WalkGenerateCodes(tables []*Table) error {
+func (s *sessionImpl) WalkGenerateCodes(tables []*Table, g GenerateHandler) error {
 	tplMap, err := s.findTemplates(s.opt)
 	if err != nil {
 		return err
 	}
 	rc := NewRunnerCalc()
 	ch := make(chan int, 3)
-	s.generateAllTablesCode(ch, tables, tplMap, s.opt, &rc)
-	s.generateGroupTablesCode(ch, tables, tplMap, s.opt, &rc)
-	s.generateTables(ch, tables, s.opt, tplMap)
+	s.generateAllTablesCode(ch, tables, tplMap, s.opt, &rc, g)
+	s.generateGroupTablesCode(ch, tables, tplMap, s.opt, &rc, g)
+	s.generateTables(ch, tables, s.opt, tplMap, g)
 	<-ch
 	<-ch
 	<-ch
 	return err
 }
 
-func (s *sessionImpl) generateTables(ch chan int, tables []*Table, opt *Options, tplMap map[string]*CodeTemplate) {
+func (s *sessionImpl) generateTables(ch chan int, tables []*Table,
+	opt *Options, tplMap map[string]*Template,
+	g GenerateHandler) {
 	wg := sync.WaitGroup{}
 	for path, tpl := range tplMap {
 		if tpl.Kind() == KindNormal {
 			for _, tb := range tables {
 				wg.Add(1)
-				go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb *Table, path string) {
+				go func(wg *sync.WaitGroup, tpl *Template, tb *Table, path string) {
 					defer wg.Done()
-					out := s.GenerateCode(tb, tpl)
+					out := s.GenerateCode(tb, tpl, g)
 					s.flushToFile(tpl, tb, path, out, opt)
 				}(&wg, tpl, tb, path)
 			}
@@ -360,17 +375,20 @@ func (s *sessionImpl) generateTables(ch chan int, tables []*Table, opt *Options,
 }
 
 // 生成所有表的代码
-func (s *sessionImpl) generateAllTablesCode(ch chan int, tables []*Table, tplMap map[string]*CodeTemplate, opt *Options, rc *RunnerCalc) {
+func (s *sessionImpl) generateAllTablesCode(ch chan int, tables []*Table,
+	tplMap map[string]*Template,
+	opt *Options, rc *RunnerCalc,
+	g GenerateHandler) {
 	wg := sync.WaitGroup{}
 	for path, tpl := range tplMap {
 		if tpl.Kind() != KindTables || rc.State(path) {
 			continue // 如果生成类型不符合或已经生成,跳过
 		}
 		wg.Add(1)
-		go func(wg *sync.WaitGroup, tpl *CodeTemplate, tb []*Table, rc *RunnerCalc, path string) {
+		go func(wg *sync.WaitGroup, tpl *Template, tb []*Table, rc *RunnerCalc, path string) {
 			defer wg.Done()
 			rc.SignState(tpl.path, true)
-			out := s.GenerateCodeByTables(tables, tpl)
+			out := s.GenerateCodeByTables(tb, tpl, g)
 			s.flushToFile(tpl, nil, path, out, opt)
 		}(&wg, tpl, tables, rc, path)
 	}
@@ -379,7 +397,10 @@ func (s *sessionImpl) generateAllTablesCode(ch chan int, tables []*Table, tplMap
 }
 
 // 按表前缀分组生成代码
-func (s *sessionImpl) generateGroupTablesCode(ch chan int, tables []*Table, tplMap map[string]*CodeTemplate, opt *Options, rc *RunnerCalc) {
+func (s *sessionImpl) generateGroupTablesCode(ch chan int, tables []*Table,
+	tplMap map[string]*Template,
+	opt *Options, rc *RunnerCalc,
+	g GenerateHandler) {
 	groups := s.reduceGroup(tables)
 	wg := sync.WaitGroup{}
 	for path, tpl := range tplMap {
@@ -394,11 +415,11 @@ func (s *sessionImpl) generateGroupTablesCode(ch chan int, tables []*Table, tplM
 			}
 			wg.Add(1)
 			//time.Sleep(time.Second/5)
-			go func(wg *sync.WaitGroup, tpl *CodeTemplate, tables []*Table,
+			go func(wg *sync.WaitGroup, tpl *Template, tables []*Table,
 				rc *RunnerCalc, path string, key string) {
 				defer wg.Done()
 				rc.SignState(tpl.path, true)
-				out := s.GenerateCodeByTables(tables, tpl)
+				out := s.GenerateCodeByTables(tables, tpl, g)
 				s.flushToFile(tpl, tables[0], path, out, opt)
 			}(&wg, tpl, tables, rc, path, key)
 		}
@@ -422,7 +443,7 @@ func (s *sessionImpl) reduceGroup(tables []*Table) map[string][]*Table {
 }
 
 // 输出到文件
-func (s *sessionImpl) flushToFile(tpl *CodeTemplate, tb *Table, path string, output string, opt *Options) {
+func (s *sessionImpl) flushToFile(tpl *Template, tb *Table, path string, output string, opt *Options) {
 	// 获取文件的路径和名称
 	dstPath, _ := s.predefineTargetPath(tpl, tb)
 	if dstPath == "" {
@@ -436,8 +457,8 @@ func (s *sessionImpl) flushToFile(tpl *CodeTemplate, tb *Table, path string, out
 	}
 }
 
-func (s *sessionImpl) findTemplates(opt *Options) (map[string]*CodeTemplate, error) {
-	tplMap := map[string]*CodeTemplate{}
+func (s *sessionImpl) findTemplates(opt *Options) (map[string]*Template, error) {
+	tplMap := map[string]*Template{}
 	sliceSize := len(opt.TplDir)
 	if opt.TplDir[sliceSize-1] == '/' {
 		opt.TplDir = opt.TplDir + "/"

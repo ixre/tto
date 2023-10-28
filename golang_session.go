@@ -20,7 +20,7 @@ func (s *sessionImpl) tableToGoRepo(table *Table,
 	sign bool, ePrefix string) (string, string) {
 	tpl := GoEntityRepTemplate
 	path, _ := s.predefineTargetPath(tpl, table)
-	return s.GenerateCode(table, GoEntityRepTemplate), path
+	return s.GenerateCode(table, GoEntityRepTemplate,nil), path
 }
 
 // 表生成仓库仓储接口
@@ -28,7 +28,7 @@ func (s *sessionImpl) tableToGoIRepo(table *Table,
 	sign bool, ePrefix string) (string, string) {
 	tpl := GoEntityRepIfceTemplate
 	path, _ := s.predefineTargetPath(tpl, table)
-	return s.GenerateCode(table, tpl), path
+	return s.GenerateCode(table, tpl,nil), path
 }
 
 // 表生成结构
@@ -103,7 +103,7 @@ func (s *sessionImpl) GenerateGoRepoCodes(tables []*Table, targetDir string) (er
 	}
 	wg.Wait()
 	// 生成仓储工厂
-	code := s.GenerateCodeByTables(tables, GoRepoFactoryTemplate)
+	code := s.GenerateCodeByTables(tables, GoRepoFactoryTemplate,nil)
 	path, _ := s.predefineTargetPath(GoRepoFactoryTemplate, nil)
 	return SaveFile(code, targetDir+"/"+path)
 }

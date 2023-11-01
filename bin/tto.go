@@ -11,15 +11,18 @@ import (
 	"strings"
 	"time"
 
+	"github.com/fsnotify/fsnotify"
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/dialect"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/shell"
+	"github.com/ixre/gof/util"
 	"github.com/ixre/tto"
 )
 
+// go run bin/tto.go --model ./templates --watch
 func main() {
 	cmd := "generate"
 	if len(os.Args) > 1 {
@@ -66,10 +69,12 @@ func generate() {
 	var compactMode bool
 	var modelPath string // 模型文件的路径
 	var pkgName string   // 包名
+	var watch bool
 	//var keepLocal bool
 
 	flag.StringVar(&genDir, "o", "./output", "path of output directory")
 	flag.StringVar(&tplDir, "t", "./templates", "path of code templates directory")
+	flag.BoolVar(&watch, "watch", false, "watch template directory to generate")
 	flag.StringVar(&majorLang, "lang", "java", "major code lang like java or go")
 	flag.StringVar(&modelPath, "model", "", "path to model directory")
 	flag.StringVar(&pkgName, "pkg", "", "the package like 'net.fze.web',it will override file config")
@@ -105,7 +110,8 @@ func generate() {
 		fmt.Println(buf.String())
 	}
 
-	log.SetFlags(log.Ltime | log.Lshortfile)
+	log.SetFlags(log.Ltime | log.Lmsgprefix)
+	log.SetPrefix("[ tto][ info]: ")
 	defer crashRecover(verbose)
 	// 兼容模式
 	if compactMode {
@@ -138,10 +144,6 @@ func generate() {
 		if err = os.RemoveAll(genDir); err != nil {
 			log.Fatalln("[ tto][ fatal]:", err.Error())
 		}
-	}
-	// 生成之前执行操作
-	if err := runBefore(re, bashExec); err != nil {
-		log.Fatalln("[ tto][ fatal]:", err.Error())
 	}
 
 	// 获取排除的文件名
@@ -200,16 +202,38 @@ func generate() {
 	}
 	// 筛选表
 	tables = filterTables(tables, excludedTables)
+
+	h := func() {
+		startGenerate(dg, tables, re, bashExec, arch, opt)
+	}
+	h()
+	if watch {
+		watchGenerate(opt.TplDir, h)
+	}
+}
+
+// 监听模板文件变化,并进行生成
+func watchGenerate(directory string, h func()) {
+	log.Printf("watch directory: %s\n", directory)
+	util.FsWatch(func( fsnotify.Event) {
+		h()
+	}, directory)
+}
+
+func startGenerate(dg tto.Session, tables []*tto.Table, re *tto.Registry, bashExec string, arch string, opt *tto.Options) {
+	// 生成之前执行操作
+	if err := runBefore(re, bashExec); err != nil {
+		log.Fatalln(err.Error())
+	}
 	// 生成代码
 	if err := genByArch(arch, dg, tables, opt); err != nil {
-		log.Fatalln("[ tto][ fatal]:", err.Error())
+		log.Fatalln(err.Error())
 	}
 	// 生成之后执行操作
 	if err := runAfter(re, bashExec); err != nil {
-		log.Fatalln("[ tto][ fatal]:", err.Error())
+		log.Fatalln(err.Error())
 	}
-	println(fmt.Sprintf("generate successfully! all %d tasks.",
-		len(tables)))
+	log.Printf("total %d tasks generate successfully! \r", len(tables))
 }
 
 func filterTables(tables []*tto.Table, noTable string) []*tto.Table {
@@ -269,7 +293,7 @@ func genByArch(arch string, dg tto.Session, tables []*tto.Table, opt *tto.Option
 	if err != nil {
 		println(fmt.Sprintf("[ tto][ Error]: generate go code fail! %s", err.Error()))
 	}
-	return dg.WalkGenerateCodes(tables)
+	return dg.WalkGenerateCodes(tables, nil)
 }
 
 // 获取数据库连接

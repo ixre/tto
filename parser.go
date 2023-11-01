@@ -83,7 +83,7 @@ func loadUserMeta(t *Table, userMeta bool) *Table {
 				flushCfgFile(cfg, dstPath)
 			}
 		} else {
-			bytes, _ :=  io.ReadAll(f)
+			bytes, _ := io.ReadAll(f)
 			if err = json.Unmarshal(bytes, cfg); err != nil {
 				log.Fatalf("[ tto][ fatal]: read user meta file %s failed, reason: %s",
 					dstPath, err.Error())

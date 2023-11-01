@@ -295,9 +295,11 @@ func (t *internalFunc) endsWith(v interface{}, s string) bool {
 // 返回是否为数组中的最后一个元素索引,如：
 // {{$columns := .columns}}
 // {{range $,$v := .columns}}
+//
 //	  {{if is_last $i .columns}}
 //		last column
 //	  {{end}}
+//
 // {{end}}
 func (t *internalFunc) isLast(i int, arr interface{}) bool {
 	kind := reflect.TypeOf(arr).Kind()
@@ -383,7 +385,7 @@ func (t *internalFunc) isEmpty(s string) bool {
 	return strings.TrimSpace(s) == ""
 }
 
-//求余
+// 求余
 func (t *internalFunc) mathRemain(i int, j int) int {
 	return i % j
 }

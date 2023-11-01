@@ -81,7 +81,7 @@ func reverseParseColumns(table *Table, txt string) {
 	for i, v := range sub {
 		props := parseColumnProps(v[4])
 		ormType := GetOrmTypeFromGoType(v[3])
-		colName := joinLowerCase(props["db"],'_')
+		colName := joinLowerCase(props["db"], '_')
 		col := &Column{
 			Ordinal: i,
 			Name:    colName,

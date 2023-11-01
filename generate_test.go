@@ -60,7 +60,7 @@ func TestGenAll(t *testing.T) {
 	os.RemoveAll(genDir)
 	// 生成GoRepo代码
 	//dg.GenerateGoRepoCodes(tables, genDir)
-	dg.WalkGenerateCodes(tables)
+	dg.WalkGenerateCodes(tables, nil)
 	//格式化代码
 	shell.Run("gofmt -w "+genDir, false)
 	t.Log("生成成功, 输出目录", genDir)
@@ -106,7 +106,7 @@ func TestReverseGenerate(t *testing.T) {
 	os.RemoveAll(genDir)
 	// 生成GoRepo代码
 	//dg.GenerateGoRepoCodes(tables, genDir)
-	err := dg.WalkGenerateCodes(tables)
+	err := dg.WalkGenerateCodes(tables, nil)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

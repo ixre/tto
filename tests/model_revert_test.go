@@ -44,6 +44,6 @@ func TestGenerateByReadedTables(t *testing.T) {
 		t.FailNow()
 	}
 	//格式化代码
-	shell.Run("gofmt -w "+genDir, false)
+	shell.Run("go fmt "+genDir, false)
 	t.Log("生成成功, 输出目录", genDir)
 }

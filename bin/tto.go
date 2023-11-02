@@ -215,7 +215,7 @@ func generate() {
 // 监听模板文件变化,并进行生成
 func watchGenerate(directory string, h func()) {
 	log.Printf("watch directory: %s\n", directory)
-	util.FsWatch(func( fsnotify.Event) {
+	util.FsWatch(func(fsnotify.Event) {
 		h()
 	}, directory)
 }
@@ -373,7 +373,7 @@ func genGoRepoCode(dg tto.Session, tables []*tto.Table,
 		// 生成GoRepo代码
 		err := ig.GenerateGoRepoCodes(tables, genDir)
 		//格式化代码
-		_, _, _ = shell.Run("gofmt -w "+genDir, false)
+		_, _, _ = shell.Run("go fmt "+genDir, false)
 		return err
 	}
 	return nil

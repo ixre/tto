@@ -94,7 +94,7 @@ func TestReverseGenerate(t *testing.T) {
 	// 生成自定义代码
 	opt := &Options{
 		TplDir:          tplDir,
-		AttachCopyright: !true,
+		AttachCopyright: true,
 		OutputDir:       genDir,
 		ExcludePatterns: []string{"grid_list.html"},
 	}

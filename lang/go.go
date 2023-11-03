@@ -69,5 +69,5 @@ func GoValues(typeId int) string {
 	case db.TypeFloat32, db.TypeFloat64:
 		return "0.0"
 	}
-	return "<unknown>"
+	return "nil"
 }

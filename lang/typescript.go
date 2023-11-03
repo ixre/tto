@@ -36,7 +36,7 @@ func tsValues(typeId int) string {
 	case db.TypeFloat32, db.TypeFloat64:
 		return "0.0"
 	}
-	return "<unknown>"
+	return "null"
 }
 
 var _ Lang = new(Typescript)

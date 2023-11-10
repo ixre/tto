@@ -6,7 +6,7 @@
              label-position="right" :model="form.data" :rules="rules">
         {{range $i,$c := exclude .columns "create_time" "update_time"}}\
         {{if not $c.IsPk}}{{$name:= $c.Prop}}{{$ele:= $c.Render.Element}}\
-            <el-form-item class="mod-form-item" label-position="left" label-width="85px" label="{{$c.Comment}}:" prop="{{$name}}">
+            <el-form-item class="mod-form-item" label-position="left" :label-width="form.labelWidth" label="{{$c.Comment}}:" prop="{{$name}}">
             {{/*<el-col :span="12">LEFT...</el-col><el-col :span="12">RIGHT...</el-col>*/}}
             {{if eq $ele "radio"}}\
               <el-switch v-model="form.data.{{$name}}"
@@ -56,8 +56,10 @@ const props = withDefaults(defineProps<{modelValue?:{{type "ts" .table.PkType}}}
 const emit = defineEmits(['callback']);
 
 const formRef = ref(null);
-const form = reactive<{requesting?:boolean,ref?:any,pk?:{{type "ts" .table.PkType}},data:{{$Class}}}>({
-  pk:props.modelValue,data:new {{$Class}}(),
+const form = reactive<{requesting?:boolean,ref?:any,pk?:{{type "ts" .table.PkType}},data:{{$Class}}, labelWidth: number}>({
+  pk:props.modelValue,
+  data:new {{$Class}}(),
+  labelWidth: 90,
 });
 
 /** #! 验证规则会反应到组件,比如required,所以不用在组件上再加required */

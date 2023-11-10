@@ -67,6 +67,8 @@ type (
 		WalkGenerateCodes(tables []*Table, g GenerateHandler) error
 		// 转换表格,如果meta为true,则读取元数据,如果没有则自动生成元数据
 		Parses(tables []*db.Table, meta bool) (arr []*Table, err error)
+		// 清理生成目录
+		Clean() error
 	}
 )
 
@@ -575,4 +577,9 @@ func (s *sessionImpl) copyTable(table *Table, lowerProp bool) *Table {
 		}
 	}
 	return dst
+}
+
+// Clean implements Session.
+func (s *sessionImpl) Clean() error {
+	return os.RemoveAll(s.opt.OutputDir)
 }

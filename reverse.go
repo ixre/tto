@@ -88,7 +88,7 @@ func reverseParseColumns(table *Table, txt string) {
 			Prop:    v[2],
 			IsPk:    props["pk"] == "yes",
 			IsAuto:  props["auto"] == "yes",
-			NotNull: props["null"] == "no",
+			NotNull: props["null"] != "yes",
 			DbType:  props["db_type"],
 			Comment: v[1],
 			Length:  0,

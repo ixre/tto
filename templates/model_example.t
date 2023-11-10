@@ -7,15 +7,17 @@
  // [表名] [表备注]
  struct [结构名] struct{
 	// [列备注]
-	[列名] [类型] `db:"[字段名]"`
+	[列名] [类型] `db:"[字段名]" null:"yes"`
  }
 ```
 
  # 命令行生成,传递model参数，自动识别目录中的模型文件(.t后缀)
+ 
  ```
  tto -model /templates 
  ```
  # 代码生成
+
  ```
  调用tto.ReadTables转换为tto.Tables
  ```

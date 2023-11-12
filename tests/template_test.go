@@ -1,8 +1,10 @@
 package tests
 
 import (
-	"github.com/ixre/tto"
+	"log"
 	"testing"
+
+	"github.com/ixre/tto"
 )
 
 func TestTemplate(t *testing.T) {
@@ -38,6 +40,12 @@ func TestMultiQuota(t *testing.T) {
 	haha
 `
 	dg := tto.DBCodeGenerator("", nil)
-	result := dg.GenerateCode(&tto.Table{Name: "admin_user"}, tto.NewTemplate(str, "", true))
+	result := dg.GenerateCode(&tto.Table{Name: "admin_user"}, tto.NewTemplate(str, "", true),nil)
 	t.Log("--", result)
+}
+
+// 测试解析模板信息
+func TestResolveTemplatePackInfo(t *testing.T) {
+	ret := tto.ResolveTemplatePackage("../templates/vue")
+	log.Println(ret)
 }

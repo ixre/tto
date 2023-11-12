@@ -1,4 +1,4 @@
-# 说明
+# Vue2+TypeScript代码模板
 
 *此模板仅支持vue2, vue3版本请使用模板: vue*
 

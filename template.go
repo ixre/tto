@@ -1,6 +1,9 @@
 package tto
 
 import (
+	"encoding/json"
+	"fmt"
+	"os"
 	"regexp"
 	"strings"
 	"sync"
@@ -156,4 +159,58 @@ func (g *Template) dart(s string) string {
 		return s
 	}
 	return strings.Replace(g.baseContent(), "#", "///", -1) + s
+}
+
+// TemplatePackageInfo 模板包信息
+type TemplatePackageInfo struct {
+	// 包名
+	PackageName string `json:"packageName"`
+	// 模板名称
+	TemplateName string `json:"templateName"`
+	// 作者
+	Author string `json:"author"`
+	// 模板网址
+	Url string `json:"url"`
+	// 版本号
+	Version string `json:"version"`
+	// 最后更新时间
+	LastUpdate string `json:"lastUpdate"`
+}
+
+// TemplatePackageJson 模板包信息配置
+type TemplatePackageJson struct {
+	// 模板名称
+	Name string `json:"name"`
+	// 模板作者
+	Author string `json:"author"`
+	// 模板网址
+	Url string `json:"url"`
+	// 版本号
+	Version string `json:"version"`
+	// 最后更新时间
+	LastUpdate string `json:"lastUpdate"`
+}
+
+// ResolveTemplatePackage 解析模板包信息
+func ResolveTemplatePackage(path string) *TemplatePackageInfo {
+	pkgName := path[strings.LastIndex(path, "/")+1:]
+	ret := &TemplatePackageInfo{
+		PackageName:  pkgName,
+		TemplateName: pkgName,
+		Version:      "0.1",
+		LastUpdate:   "-",
+	}
+	jsonPath := fmt.Sprintf("%s/%s", path, "package.json")
+	bytes, err := os.ReadFile(jsonPath)
+	if err == nil {
+		// 获取模板包信息
+		var js TemplatePackageJson
+		json.Unmarshal(bytes, &js)
+		ret.Author = js.Author
+		ret.Url = js.Url
+		ret.TemplateName = js.Name
+		ret.Version = js.Version
+		ret.LastUpdate = js.LastUpdate
+	}
+	return ret
 }

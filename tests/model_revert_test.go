@@ -38,7 +38,7 @@ func TestGenerateByReadedTables(t *testing.T) {
 	os.RemoveAll(genDir)
 	// 生成GoRepo代码
 	//dg.GenerateGoRepoCodes(tables, genDir)
-	err := dg.WalkGenerateCodes(tables)
+	err := dg.WalkGenerateCodes(tables,nil)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

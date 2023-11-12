@@ -1,5 +1,10 @@
+# Protobuf代码模板
+
+## 资源文件
+
 global.proto
-```
+
+```protobuf
 syntax = "proto3";
 option go_package = ".;proto";
 option java_package="com.github.go2o.rpc";

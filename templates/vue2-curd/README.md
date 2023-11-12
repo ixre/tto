@@ -1,4 +1,4 @@
-# Vue2/Vue3+TypeScript代码模板
+# Vue2模板-curd版
 
 *此模板兼容`Vue2.7`和`vue3`*
 

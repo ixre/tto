@@ -8,6 +8,11 @@ import (
 	"github.com/ixre/gof/util"
 )
 
+// 转换为实体名称号
+func ParseStructName(name string) string {
+	return title(name, true)
+}
+
 func prefix(str string) string {
 	if i := strings.Index(str, "_"); i != -1 {
 		return str[:i]

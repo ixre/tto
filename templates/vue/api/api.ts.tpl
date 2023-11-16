@@ -35,14 +35,14 @@ export const get{{$entityName}} = (id: {{type "ts" .table.PkType}}, params: any 
 
 // 查询{{.table.Comment}}列表
 export const query{{$entityName}}List = (params: any = {}):Promise<{data:Array<{{$entityName}}>}> => request({
-  url: '{{$path}}',
+  url: `{{$path}}`,
   method: 'GET',
   params
 })
 
 // 创建{{.table.Comment}}
 export const create{{$entityName}} = (data: {{$entityName}}) => request({
-  url: '{{$path}}',
+  url: `{{$path}}`,
   method: 'POST',
   data
 })
@@ -65,7 +65,7 @@ export const delete{{$entityName}} = ({{$pkName}}: Array<{{$pkType}}>) => reques
 // 查询{{.table.Comment}}分页数据
 export const queryPaging{{$entityName}} = (page:number, size:number, params: any):Promise<{
   data:{total:number,rows:Array<Paging{{$entityName}}>}}> => request({
-  url: '{{$path}}/paging',
+  url: `{{$path}}/paging`,
   method: 'GET',
   params: { page, size,...params }
 })

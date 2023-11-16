@@ -43,9 +43,10 @@
     </div>
     <div class="mod-grid-body">
     <!-- 表单数据 -->
-    <el-table ref="tableRef" v-loading="queryData.loading" :data="queryData.data" class="mod-grid-table"
+    <el-table ref="tableRef" v-loading="queryData.loading" :data="queryData.dataList" class="mod-grid-table"
               border :height="queryData.tableHeight" fit :highlight-current-row="false"
-              row-key="{{$pk}}" empty-text="暂无数据" @selection-change="handleSelectionChange">
+              row-key="{{$pk}}" empty-text="暂无数据"
+              @select="handleSelectionChange" @select-all="handleSelectionChange">
         <el-table-column align="center" type="selection" width="40" fixed="left"/>
         <el-table-column type="index" width="50" label="序号"></el-table-column>
         {{range $i,$c := .columns}} \
@@ -86,7 +87,7 @@
     <div class="mod-grid-footer">
       <!-- 分页 -->
       <el-pagination v-show="queryData.total && queryData.total > 0" :total="queryData.total" :page-size.sync="queryData.size"
-        :current-page.sync="queryData.page" :page-sizes="[10, 20, 50, 100]"
+        :current-page="queryData.page" :page-sizes="[10, 20, 50, 100]"
         @current-change="queryPagingData" @size-change="(v)=>queryData.size = v"
         background layout="prev, pager, next,sizes,jumper,total"></el-pagination>
     </div>
@@ -97,13 +98,14 @@ import {onMounted, reactive, ref, nextTick} from "vue";
 import {Paging{{$Class}},queryPaging{{$Class}},delete{{$Class}} } from '../../api';
 import {{$Class}}Modal from './{{$Class}}Modal.vue';
 import {Message,MessageBox,formatColTime} from "../../utils";
-import {showModal,ListDataRef,queryDataList, deleteData} from "../../components";
+import {showModal,ListDataRef,queryDataList, deleteData,onSelectionChange} from "../../components";
 
 const tableRef = ref(null);
 
 const queryData = reactive<ListDataRef<Paging{{$Class}}>
     & { tableHeight: number }>({
-        page: 1, size: 20,
+        page: 1, size: 20,selectedRows: [],tableRef: () => tableRef, 
+        primary: (row) => row.{{$pk}},
         tableHeight: 0
     });
 
@@ -137,8 +139,9 @@ onMounted(()=>{
 })
 
 // 读取分页数据
-const queryPagingData = async ()=> {
+const queryPagingData = async (page?:number)=> {
   if (queryData.loading) return;
+  queryData.page = page || 1;
   await queryDataList(queryData,queryPaging{{$Class}},queryParams);
 };
 
@@ -147,9 +150,7 @@ const handleFilter = ()=>{
   queryPagingData();
 };
 
-const handleSelectionChange = (rows: Array<Paging{{$Class}}>)=>{
-  queryData.selectedRows = rows;
-};
+const handleSelectionChange = (rows: Array<Paging{{$Class}}>,row?:Paging{{$Class}})=>onSelectionChange(queryData, rows, row);
 
 // 新增数据
 const handleCreate = ()=> openForm("新增{{.table.Comment}}")

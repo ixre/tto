@@ -1,4 +1,5 @@
 #!kind:1
+#!target:spring/rbac_init.sql
 
 /**
 该模板生成权限系统的SQL脚本

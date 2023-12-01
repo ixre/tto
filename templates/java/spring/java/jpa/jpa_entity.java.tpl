@@ -14,15 +14,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 {{$entity := join .table.Title .global.entity_suffix}}
-/** {{.table.Comment}} */
+/**
+ * {{.table.Comment}} 
+ */
 @Entity
 {{/*　@DynamicInsert 排除值为null的字段　*/}} \
 @Table(name = "{{.table.Name}}", schema = "{{.table.Schema}}")
 public class {{$entity}} {
     {{/* 将字段单独生成，以便做裁剪 */}}\
     {{range $i,$c := .columns}}{{$type := orm_type "java" $c.Type}}
-    {{$lowerProp := lower_title $c.Prop}} \
-    private {{$type}} {{$lowerProp}}; // {{$c.Comment}}\
+    {{$lowerProp := lower_title $c.Prop}}
+    /**
+     * {{$c.Comment}}
+     */
+    private {{$type}} {{$lowerProp}};\
     {{end}}
     
     {{range $i,$c := .columns}}{{$type := type "java" $c.Type}}{{$ormType := orm_type "java" $c.Type}}

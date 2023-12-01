@@ -1,4 +1,4 @@
-#!target:query/{{.table.Prefix}}/{{substr_n .table.Name "_" 1}}_list.xml
+#!target:quarkus/query/{{.table.Prefix}}/{{substr_n .table.Name "_" 1}}_list.xml
 <?xml version="1.0" encoding="utf-8" ?>
 <ExportItemConfig>
     <ColumnMapping>

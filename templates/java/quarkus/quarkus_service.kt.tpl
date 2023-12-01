@@ -1,4 +1,4 @@
-#!target:src/main/kotlin/{{.global.pkg}}/service/{{.table.Title}}Service.kt
+#!target:quarkus/src/main/kotlin/{{.global.pkg}}/service/{{.table.Title}}Service.kt
 package {{pkg "kotlin" .global.pkg}}.service
 
 import {{pkg "kotlin" .global.pkg}}.entity.{{.table.Title}}{{.global.entity_suffix}}

@@ -1,4 +1,4 @@
-#!target:src/main/java/{{.global.pkg}}/entity/{{.table.Title}}{{.global.entity_suffix}}.java
+#!target:quarkus/src/main/java/{{.global.pkg}}/entity/{{.table.Title}}{{.global.entity_suffix}}.java
 package {{pkg "java" .global.pkg}}.entity;
 
 import net.fze.util.TypeConv;

@@ -1,4 +1,4 @@
-#!target:src/main/kotlin/{{.global.pkg}}/repo/{{.table.Title}}JpaRepository.kt
+#!target:quarkus/src/main/kotlin/{{.global.pkg}}/repo/{{.table.Title}}JpaRepository.kt
 package {{pkg "kotlin" .global.pkg}}.repo;
 
 import {{pkg "kotlin" .global.pkg}}.entity.{{.table.Title}}{{.global.entity_suffix}}

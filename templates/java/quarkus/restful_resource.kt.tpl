@@ -1,4 +1,4 @@
-#!target:src/main/kotlin/{{.global.pkg}}/resources/{{.table.Title}}Resource.kt
+#!target:quarkus/src/main/kotlin/{{.global.pkg}}/resources/{{.table.Title}}Resource.kt
 package {{pkg "kotlin" .global.pkg}}.resources
 
 import {{pkg "kotlin" .global.pkg}}.pojo.{{.table.Title}}Entity

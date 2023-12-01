@@ -10,7 +10,9 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 
 {{$entity := join .table.Title .global.entity_suffix}}
-/** {{.table.Comment}}(MyBatis) */
+/**
+ * {{.table.Comment}}(MyBatis)
+ */
 {{/*　@DynamicInsert 排除值为null的字段,@Entity,@Table,@Id为兼容Hibernate　*/}} \
 @Entity
 @Table(name = "{{.table.Name}}", schema = "{{.table.Schema}}")
@@ -18,14 +20,17 @@ import com.baomidou.mybatisplus.annotation.TableId;
 public class {{$entity}} {
     {{/* 将字段单独生成，以便做裁剪 */}}\
     {{range $i,$c := .columns}}{{$type := orm_type "java" $c.Type}}
-    {{$lowerProp := lower_title $c.Prop}} \
+    {{$lowerProp := lower_title $c.Prop}} 
+    /**
+     * {{$c.Comment}}
+     */\
     {{if $c.IsPk}}
     @Id{{/* 兼容Hibernate*/}}
     @TableId("{{$c.Name}}") \
     {{else}}
     @TableField("{{$c.Name}}") \
     {{end}}
-    private {{$type}} {{$lowerProp}}; // {{$c.Comment}}\
+    private {{$type}} {{$lowerProp}}; \
     {{end}}
     
     {{range $i,$c := .columns}}{{$type := type "java" $c.Type}}{{$ormType := orm_type "java" $c.Type}}

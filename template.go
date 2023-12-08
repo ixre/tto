@@ -178,7 +178,7 @@ type TemplatePackageInfo struct {
 }
 
 // TemplatePackageJson 模板包信息配置
-type TemplatePackageJson struct {
+type templatePackageJson struct {
 	// 模板名称
 	Name string `json:"name"`
 	// 模板作者
@@ -204,7 +204,7 @@ func ResolveTemplatePackage(path string) *TemplatePackageInfo {
 	bytes, err := os.ReadFile(jsonPath)
 	if err == nil {
 		// 获取模板包信息
-		var js TemplatePackageJson
+		var js templatePackageJson
 		json.Unmarshal(bytes, &js)
 		ret.Author = js.Author
 		ret.Url = js.Url

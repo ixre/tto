@@ -15,17 +15,32 @@
 
 ## 安装
 
-### 在Linux/Mac下安装
+### 命令行工具
 
-使用以下命令安装
+在Linux/Mac下安装，使用以下命令安装
 
 ```bash
 curl -L https://raw.githubusercontent.com/ixre/tto/master/install | sh
 ```
 
-### 　在Windows下安装
+Windows用户进入下载页面([链接](https://github.com/ixre/tto/releases/)),下载最新版本(文件:tto-generator-client.tar.gz)后解压,将目录中的`tto.exe`文件复制到`C:\windows`下完成安装.　请注意windows10以下版本需要复制到`C:\windows\System32`目录.
 
-到下载页面([链接](https://github.com/ixre/tto/releases/)),下载最新版本(文件:tto-generator-bin.tar.gz)后解压,将目录中的`tto.exe`文件复制到`C:\windows`下完成安装.　请注意windows10以下版本需要复制到`C:\windows\System32`目录.
+### 图形界面
+
+`tto`提供基于B/S的图形界面，可进行模板管理和代码生成等功能，使用`docker`运行图形界面，参考以下命令：
+
+```bash
+docker run -d --name gdp -p 8000:8000 \
+    -v $(pwd)/conf:/app/conf\
+    -v $(pwd)/storage:/app/storage\
+    jarry6/gdp
+```
+
+或直接下载运行二进制包后，输入以下网址运行:
+
+```text
+http://localhost:8000
+```
 
 ## 升级
 

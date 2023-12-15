@@ -180,75 +180,75 @@ _注：在windows下升级功能如无法正常使用,可以手动重新安装_
 
 是否相等
 
-```
-{{equal (3%2) 1}
+```text
+{{equal (3%2) 1}}
 ```
 
 是否与任意值相等, 如表的主键是否为int类型
 
-```
+```text
 {{equal_any .table.PkType 3 4 5}}
 ```
 
 替换, 如将`table_name`替换为:`table-name`
 
-```
+```text
 {{replace "table_name" "_" "-"}}
 ```
 
 替换N次, 如将`table_name`替换为:`table-name`
 
-```
+```text
 {{replace_n "table_name" "_" "-" 1}}
 ```
 
 截取字符串函数：substr
 
-```
+```text
 {{substr "sys_user_list" 0 3 }} # 结果：sys
 {{substr "sys_user_list" 4 }} 结果:sys_list
 ```
 
 截取第N个字符位置后的字符串,如以下语句将输出:user_list
 
-```
+```text
 {{substr_n "sys_user_list" "_" 1}}
 ```
 
 截取索引为N的元素
 
-```
+```text
 {{$first_table := get_n .tables 0}}
 ```
 
 字符组合,如以下语句将输出:`1,2,3`
 
-```
+```text
 {{join "," "1","2","3"}}
 {{$api := join "/" .global.base_path (name_path .table.Name)}}
 ```
 
 包含函数
 
-```
+```text
 {{contain .table.Pk "id"}}
 ```
 
 是否以指定字符开始
 
-```
+```text
 {{starts_with .table.Pk "user_"}}
 ```
 
 是否以指定字符结束
 
-```
+```text
 {{ends_with .table.Pk "_time"}}
 ```
 
 是否为表的列(数组)的最后一列
 
-```gotemplate
+```text
 {{$columns := .columns}}
 {{range $,$v := .columns}}
 {{if is_last $i .columns}} last column {{end}}
@@ -258,20 +258,20 @@ _注：在windows下升级功能如无法正常使用,可以手动重新安装_
 
 排除列元素, 组成新的列数组, 如：
 
-```
+```text
 {{ $columns := exclude .columns "id","create_time" }}
 ```
 
 尝试获取一个列,返回列及是否存在的Boolean, 如:
 
-```
+```text
 {{ $c := try_get .columns "update_time" }}
 {{if $c}}prop={{$c.Prop}}{{end}}
 ```
 
 将名称转为路径,规则： 替换首个"_"为"/"
 
-```
+```text
 {{$path := name_path .table.Name}}
 ```
 
@@ -290,57 +290,55 @@ _注：在windows下升级功能如无法正常使用,可以手动重新安装_
 - global
 - tables
 
-### global
+### 全局变量(global)
 
-**用于读取全局变量**
+输出生成器的版本号
 
-1. 输出生成器的版本号
-
-```
+```text
 // this file created by generate {{.global.version}}
 ```
 
-2. 输出包名,包名通过配置文件配置.格式为: com/pkg
+输出包名,包名通过配置文件配置.格式为: com/pkg
 
-```
+```text
 package {{.global.pkg}}
 ```
 
 如果是Java或其他语言, 包名以"."分割, 可使用pkg函数,如:
 
-```
+```text
 // java package
 package {{pkg "java" .global.pkg}}
 // c# namespace
 namespace {{pkg "csharp" .global.pkg}}
 ```
 
-3. 输出当前时间
+输出当前时间
 
-```
+```text
 generate time {{.global.time}}
 ```
 
-4. 获取数据库驱动 可选值：pgsql | mysql, 可针对不同数据库生成代码
+获取数据库驱动 可选值：pgsql | mysql, 可针对不同数据库生成代码
 
-```
+```text
 {{.global.db}}
 ```
 
-5. 输出自定义变量 用户可以通过在配置文件的节点`[global]`中进行添加变量,如:
+输出自定义变量 用户可以通过在配置文件的节点`[global]`中进行添加变量,如:
 
-```
+```text
 [global]
 base_path="/api"
 ```
 
 使用以下语法读取变量
 
-```
+```text
 {{.global.base_path}}
 ```
 
-### table 数据表对象
+### 数据表对象(table)
 
 数据表对象对来返回表的信息,包含如下属性:
 
@@ -357,7 +355,7 @@ base_path="/api"
 - Charset: 数据库编码
 - Ordinal: 表的序号
 
-### columns 数据列对象
+### 数据列对象(columns)
 
 数据列对象存储表的数据列数组, 并且可遍历. 每个数据列都包含如下属性:
 
@@ -374,7 +372,7 @@ base_path="/api"
 
 示例:
 
-```
+```text
 {{range $i,$c := .columns}}
     列名:$c.Name {{if $c.IsPk}}是主键{{end}}, 类型:{{type "java" $c.Type}}
 {{end}}
@@ -384,7 +382,7 @@ base_path="/api"
 
 以下代码用于生成Java的Pojo对象, 更多示例点击[这里](templates)
 
-```
+```text
 #!target:{{.global.pkg}}/pojo/{{.table.Title}}{{.global.entity_suffix}}.java
 package {{pkg "java" .global.pkg}}.pojo;
 

@@ -138,3 +138,12 @@ export function onSelectionChange<E>(queryData: ListDataRef<E>, rows: Array<E>, 
         }
     }
 }
+
+/**
+ * 清除选择的行
+ * @param queryData 查询对象
+ */
+export function onResetSelection<E>(queryData: ListDataRef<E>) {
+    queryData.selectedRows = [];
+    queryData.tableRef().value.clearSelection();
+}

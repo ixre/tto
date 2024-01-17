@@ -101,7 +101,7 @@ import {onMounted, reactive, ref, nextTick} from "vue";
 import {Paging{{$Class}},queryPaging{{$Class}},delete{{$Class}} } from '../../api';
 import {{$Class}}Modal from './{{$Class}}Modal.vue';
 import {Message,MessageBox,formatColTime} from "../../utils";
-import {showModal,ListDataRef,queryDataList, deleteData,onSelectionChange} from "../../components";
+import {showModal,ListDataRef,queryDataList, deleteData,onSelectionChange,onResetSelection} from "../../components";
 
 const tableRef = ref(null);
 

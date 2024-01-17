@@ -35,7 +35,7 @@
             </el-form-item>
             <el-form-item class="filter-item">
               <span v-show="queryData.selectedRows?.length" @click="resetSelections">
-                <el-button type="plain">清除选择项({{ "{{queryData.selectedRows?.length}}"" }})</el-button>
+                <el-button type="plain">清除选择项({{ "{{queryData.selectedRows?.length}}" }})</el-button>
               </span>
               <span v-perm="{key: '', roles: ['admin'], visible: true }" @click="handleDelete">
                 <el-button v-show="queryData.selectedRows?.length" type="danger" :loading="queryData.requesting">删除</el-button>

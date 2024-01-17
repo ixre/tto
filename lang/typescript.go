@@ -33,8 +33,10 @@ func tsValues(typeId int) string {
 		return "false"
 	case db.TypeInt16, db.TypeInt32, db.TypeInt64:
 		return "0"
-	case db.TypeFloat32, db.TypeFloat64:
+	case db.TypeFloat32, db.TypeFloat64,db.TypeDecimal:
 		return "0.0"
+	case db.TypeDateTime:
+		return "new Date()"
 	}
 	return "null"
 }

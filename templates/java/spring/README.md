@@ -1,10 +1,10 @@
-# SpringBoot代码模板
+# SpringBoot 代码模板
 
-本模板包含了JPA和MyBatis的模板,生成时请先排除其中一个模板, 如使用MyBatis,则在tto.conf文件中修改配置如下:
+本模板包含了 JPA 和 MyBatis 的模板,生成时请先排除其中一个模板, 如使用 MyBatis,则在 tto.conf 文件中修改配置如下:
+
 ```
 exclude_patterns = "jpa"
 ```
-
 
 ## 依赖组件
 
@@ -17,7 +17,7 @@ fze-commons.jar 参见项目: https://github.com/ixre/fze
 文件:`ReportDataSource.java`
 
 ```java
-import net.fze.common.Standard;
+import net.fze.util.Systems;
 import net.fze.extras.report.DataResult;
 import net.fze.extras.report.ReportHub;
 import net.fze.extras.report.Params;
@@ -32,7 +32,7 @@ public class ReportDataSource {
     public Connection getDB(String key) {
         try {
             switch(key){
-                default: 
+                default:
                  return this.ds.getConnection();
             }
         } catch (SQLException e) {
@@ -42,7 +42,7 @@ public class ReportDataSource {
     }
 
     private void lazyInit() {
-        boolean cache = !Standard.dev();
+        boolean cache = !Systems.dev();
         ReportHubMap.put("default", new ReportHub( ()->getDB("default"),"/query",cache ));
     }
 
@@ -60,10 +60,10 @@ public class ReportDataSource {
 }
 ```
 
-示例SQL查询条件
+示例 SQL 查询条件
 
 ```sql
-SELECT COUNT(1) FROM wal_wallet_log l 
+SELECT COUNT(1) FROM wal_wallet_log l
     WHERE l.wallet_id = {wallet_id}\n AND title LIKE '%{keyword}%'
     #if { kind>0 }
         AND kind = {kind}

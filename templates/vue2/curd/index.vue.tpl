@@ -1,5 +1,5 @@
 #!lang:ts＃!name:全功能界面
-#!lang:ts#!target:vue/{{name_path .table.Name}}/index.vue
+#!lang:ts#!target:vue/views/{{name_path .table.Name}}/index.vue
 {{$Class := .table.Title}}
 {{$PkType := .table.PkType}}
 {{$Pk := .table.Pk}}
@@ -101,7 +101,7 @@
 </template>
 <script lang="ts" setup>
 import {onMounted, reactive, ref, nextTick} from "vue";
-import {Paging{{$Class}},queryPaging{{$Class}},delete{{$Class}},batchDelete{{$Class}} } from './api';
+import {Paging{{$Class}},queryPaging{{$Class}},delete{{$Class}} } from '@/api';
 import {{$Class}}Modal from './modal.vue';
 import {Message,MessageBox,router,parseResult,formatColTime} from "@/utils";
 
@@ -194,9 +194,8 @@ const handleDelete = (idx:number,row:Paging{{$Class}}) => {
         type: 'warning'
     }).then(async () => {
         if(data.requesting)return;data.requesting=true;data.rowIndex = idx;
-        let ret = await (row && row.{{.table.Pk}}?
-          delete{{$Class}}(row.{{.table.Pk}}):
-          batchDelete{{$Class}}(data.selectedIds))
+        const pkArr = row ? [row.{{.table.Pk}}] : (data.selectedRows || []).map(r => r.{{.table.Pk}});
+        let ret = await delete{{$Class}}(pkArr)
           .finally(()=>{data.requesting=false;data.rowIndex = -1;});
         let {errCode,errMsg} = parseResult(ret.data);
         if (errCode === 0) {

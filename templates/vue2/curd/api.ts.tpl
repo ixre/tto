@@ -1,11 +1,14 @@
 #!lang:ts＃!name:API和定义文件
-#!target:vue/{{name_path .table.Name}}/api.ts
-import {request} from '@/utils'
+#!target:vue/api/{{.table.Title}}Api.ts
+import {request} from '../utils'
+{{$entityName := .table.Title}}
 {{$columns := .columns}}
 {{$path := join .global.base_path (name_path .table.Name) "/"}}\
+{{$pkName := lower_title .table.Pk}}
+{{$pkType := type "ts" .table.PkType}}
 
 // {{.table.Comment}}对象
-export class {{.table.Title}} {
+export class {{$entityName}} {
     {{range $i,$c := .columns}}// {{$c.Comment}}
     {{$c.Prop}}: {{type "ts" $c.Type}} = {{if eq $c.Render.Element "radio"}} \
         {{default "ts" $c.Type}} + 1 \
@@ -16,7 +19,7 @@ export class {{.table.Title}} {
 }
 
 // {{.table.Comment}}数据映射类
-export interface Paging{{.table.Title}} {
+export interface Paging{{$entityName}} {
   {{range $i,$c := .columns}} \
   // {{$c.Comment}}
   {{$c.Name}}:{{type "ts" $c.Type}};
@@ -24,50 +27,45 @@ export interface Paging{{.table.Title}} {
 }
 
 // 获取{{.table.Comment}}
-export const get{{.table.Title}} = (id: {{type "ts" .table.PkType}}, params: any = {}):Promise<{data:{{.table.Title}}}> => request({
+export const get{{$entityName}} = (id: {{type "ts" .table.PkType}}, params: any = {}):Promise<{data:{{$entityName}}}> => request({
   url: `{{$path}}/${id}`,
   method: 'GET',
   params
 })
 
 // 查询{{.table.Comment}}列表
-export const query{{.table.Title}}List = (params: any = {}) => request({
-  url: '{{$path}}',
+export const query{{$entityName}}List = (params: any = {}):Promise<{data:Array<{{$entityName}}>}> => request({
+  url: `{{$path}}`,
   method: 'GET',
   params
 })
 
 // 创建{{.table.Comment}}
-export const create{{.table.Title}} = (data: {{.table.Title}}) => request({
-  url: '{{$path}}',
+export const create{{$entityName}} = (data: {{$entityName}}) => request({
+  url: `{{$path}}`,
   method: 'POST',
   data
 })
 
 // 保存{{.table.Comment}}
-export const update{{.table.Title}} = (id: {{type "ts" .table.PkType}}, data: {{.table.Title}}) => request({
+export const update{{$entityName}} = (id: {{$pkType}}, data: {{$entityName}}) => request({
   url: `{{$path}}/${id}`,
   method: 'PUT',
   data
 })
 
 // 删除{{.table.Comment}}
-export const delete{{.table.Title}} = (id: {{type "ts" .table.PkType}}) => request({
-  url: `{{$path}}/${id}`,
-  method: 'DELETE'
+export const delete{{$entityName}} = ({{$pkName}}: Array<{{$pkType}}>) => request({
+  url: `{{$path}}/${{"{"}}{{$pkName}}[0]}`,
+  method: 'DELETE',
+  data: {{$pkName}}.length > 1? { list : {{$pkName}}{{"}"}} : undefined
 })
 
-// 批量删除{{.table.Comment}}
-export const batchDelete{{.table.Title}} = (arr: Array<{{type "ts" .table.PkType}}>) => request({
-  url: '{{$path}}',
-  method: 'DELETE',
-  data: arr
-})
 
 // 查询{{.table.Comment}}分页数据
-export const queryPaging{{.table.Title}} = (page:number, size:number, params: any):Promise<{
-  data:{total:number,rows:Array<Paging{{.table.Title}}>}}> => request({
-  url: '{{$path}}/paging',
+export const queryPaging{{$entityName}} = (page:number, size:number, params: any):Promise<{
+  data:{total:number,rows:Array<Paging{{$entityName}}>}}> => request({
+  url: `{{$path}}/paging`,
   method: 'GET',
   params: { page, size,...params }
 })

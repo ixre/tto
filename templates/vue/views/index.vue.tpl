@@ -1,5 +1,5 @@
 #!lang:ts＃!name:全功能界面
-#!lang:ts#!target:vue/views/{{.table.Name}}/{{.table.Title}}Index.vue
+#!lang:ts#!target:vue/views/{{.table.Title}}/{{.table.Title}}Index.vue
 {{$Class := .table.Title}}
 {{$pkType := type "ts" .table.PkType}}
 {{$pk := .table.Pk}}

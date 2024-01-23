@@ -1,5 +1,5 @@
 #!lang:ts＃!name:表单界面
-#!target:vue/views/{{.table.Name}}/{{.table.Title}}Modal.vue
+#!target:vue/views/{{.table.Title}}/{{.table.Title}}Modal.vue
 <template>
   <div class="mod-form-container">
     <el-form ref="formRef" class="mod-form" size="small"

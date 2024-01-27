@@ -94,7 +94,7 @@
         background layout="prev, pager, next,sizes,jumper,total"></el-pagination>
     </div>
     <!-- 弹出操作框 -->
-    <el-dialog v-if="dialog.modal != null" width="75%" class="mod-dialog" :title="dialog.title" visible :close-on-click-modal="false" @close="()=>dialog.modal=null">
+    <el-dialog v-if="dialog.modal != null" v-model="dialog.open" width="75%" class="mod-dialog" :title="dialog.title" visible :close-on-click-modal="false" @close="()=>dialog.modal=null">
         <component v-bind:is="dialog.modal" :model-value="dialog.params" @callback="refresh"></component>
     </el-dialog>
 </div>

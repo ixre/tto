@@ -1,5 +1,5 @@
 #!lang:ts＃!name:表单界面
-#!target:vue/{{name_path .table.Name}}/modal.vue
+#!target:vue/views/{{name_path .table.Name}}/modal.vue
 <template>
   <div class="mod-form-container">
     <el-form ref="formRef" class="mod-form" size="small"
@@ -47,7 +47,7 @@
 
 <script lang="ts" setup>
 import {onMounted,ref,reactive} from "vue";
-import {{`{`}}{{$Class}},get{{$Class}},create{{$Class}},update{{$Class}} } from "./api"
+import {{`{`}}{{$Class}},get{{$Class}},create{{$Class}},update{{$Class}} } from "@/api"
 import {Message,MessageBox,router,parseResult} from "@/utils";
 
 /** #! 定义属性,接收父组件的参数 */
@@ -56,10 +56,10 @@ const props = withDefaults(defineProps<{modelValue?:{{type "ts" .table.PkType}}}
 const emit = defineEmits(['callback']);
 
 const formRef = ref(null);
-const form = reactive<{requesting?:boolean,ref?:any,pk?:{{type "ts" .table.PkType}},data:{{$Class}}, labelWidth: number}>({
+const form = reactive<{requesting?:boolean,ref?:any,pk?:{{type "ts" .table.PkType}},data:{{$Class}}, labelWidth: string}>({
   pk:props.modelValue,
   data:new {{$Class}}(),
-  labelWidth: 90,
+  labelWidth: "90",
 });
 
 /** #! 验证规则会反应到组件,比如required,所以不用在组件上再加required */

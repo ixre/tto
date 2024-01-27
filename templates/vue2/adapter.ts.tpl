@@ -50,8 +50,6 @@ export const parseTime = (time, format) => {
     if (typeof time === 'string') {
         if(/^[0-9]+$/.test(time)){
             time = parseInt(time)
-        }else{
-            time = time.replace(new RegExp(/-/gm), '/').replace(/^(\d{4}\/\d{2}\/\d{2})[^\d]*(\d{2}:\d{2}:\d{2}).+?$/,'$1 $2')
         }
         date = new Date(time)
     }

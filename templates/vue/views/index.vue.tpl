@@ -1,5 +1,5 @@
 #!lang:ts＃!name:全功能界面
-#!lang:ts#!target:vue/views/{{.table.Name}}/{{.table.Title}}Index.vue
+#!lang:ts#!target:vue/views/{{.table.Title}}/{{.table.Title}}Index.vue
 {{$Class := .table.Title}}
 {{$pkType := type "ts" .table.PkType}}
 {{$pk := .table.Pk}}
@@ -34,6 +34,9 @@
               </span>
             </el-form-item>
             <el-form-item class="filter-item">
+              <span v-show="queryData.selectedRows?.length" @click="resetSelections">
+                <el-button type="plain">清除选择项({{ "{{queryData.selectedRows?.length}}" }})</el-button>
+              </span>
               <span v-perm="{key: '', roles: ['admin'], visible: true }" @click="handleDelete">
                 <el-button v-show="queryData.selectedRows?.length" type="danger" :loading="queryData.requesting">删除</el-button>
               </span>
@@ -98,7 +101,7 @@ import {onMounted, reactive, ref, nextTick} from "vue";
 import {Paging{{$Class}},queryPaging{{$Class}},delete{{$Class}} } from '../../api';
 import {{$Class}}Modal from './{{$Class}}Modal.vue';
 import {Message,MessageBox,formatColTime} from "../../utils";
-import {showModal,ListDataRef,queryDataList, deleteData,onSelectionChange} from "../../components";
+import {showModal,ListDataRef,queryDataList, deleteData,onSelectionChange,onResetSelection} from "../../components";
 
 const tableRef = ref(null);
 
@@ -150,7 +153,8 @@ const handleFilter = ()=>{
   queryPagingData();
 };
 
-const handleSelectionChange = (rows: Array<Paging{{$Class}}>,row?:Paging{{$Class}})=>onSelectionChange(queryData, rows, row);
+const handleSelectionChange = (rows: Array<Paging{{$Class}}>,row?:Paging{{$Class}})=>onSelectionChange(queryData, rows, row)
+const resetSelections = () => onResetSelection(queryData)
 
 // 新增数据
 const handleCreate = ()=> openForm("新增{{.table.Comment}}")

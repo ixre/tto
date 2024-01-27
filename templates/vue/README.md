@@ -1,6 +1,6 @@
-# Vue2/Vue3+TypeScript代码模板
+# Vue3+TypeScript 代码模板
 
-*此模板兼容`Vue2.7`和`vue3`*
+_因`h`函数`vue3`和`vue2`有较大差异，模板不兼容`Vue2.7`_
 
 模板设置接口前缀,在配置文件中设置`base_path`
 
@@ -9,7 +9,7 @@
 base_path ="/app/admin"
 ```
 
-生成适用于Java程序的代码,指定参数:`-lang java`
+生成适用于 Java 程序的代码,指定参数:`-lang java`
 
 ```shell
 tto -lang java -conf app.conf
@@ -20,18 +20,21 @@ tto -lang java -conf app.conf
 使用权限指令代码如下:
 
 ```vue
-<span v-perm="{ key: 'C02+1', roles: ['admin'], visible:true}" @click="handleCreate">
+<span
+  v-perm="{ key: 'C02+1', roles: ['admin'], visible: true }"
+  @click="handleCreate"
+>
     <el-button class="filter-item" icon="el-icon-plus">创建页面</el-button>
 </span>
 ```
 
-指令包含3个属性:
+指令包含 3 个属性:
 
-- key  权限key, 编码规则如下文;
-- roles  角色数组, 优先匹配角色,如果当前用户不存在于数组中,再使用key进行验证权限.
+- key 权限 key, 编码规则如下文;
+- roles 角色数组, 优先匹配角色,如果当前用户不存在于数组中,再使用 key 进行验证权限.
 - visible 是否可见,可见状态弹出提示,　不可见状态直接隐藏组件
 
-权限key的编码规则:
+权限 key 的编码规则:
 
 ```txt
 (模块[A-Z])+(子模块[01-99])+(页面[01-99])+(组件[01-99])

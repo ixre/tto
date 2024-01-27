@@ -54,13 +54,13 @@
         <el-table-column width="140" align="left" label="{{$c.Comment}}" prop="{{$c.Name}}" :formatter="formatColTime"/>
         {{else if ends_with $c.Name "state"}} \
         <el-table-column width="140" align="left" label="{{$c.Comment}}">
-            <template slot-scope="{row}">
+            <template #default="{row}">
               <span v-for="(it,i) in stateOptions" v-if="it.value === row.state">{{"{{ it.key }}"}}</span>
             </template>
         </el-table-column>
         {{else if starts_with $c.Name "is_"}} \
         <el-table-column width="140" align="left" label="{{$c.Comment}}">
-             <template slot-scope="{row}">
+             <template #default="{row}">
                 <span v-if="row.{{$c.Name}}===1" class="g-txt-green">是</span>
                 <span v-else class="g-txt-red">否</span>
              </template>
@@ -73,7 +73,7 @@
         {{end}} \
 
         <el-table-column align="center" width="160" label="操作" fixed="right">
-            <template slot-scope="scope">
+            <template #default="scope">
               <span v-perm="{key: '[权限key]+4', roles: ['admin'], visible: true }" @click="handleEdit(scope.row)">
                 <el-button type="primary" size="mini" icon="el-icon-edit-outline">编辑</el-button>
               </span>

@@ -30,9 +30,9 @@ public class {{$entity}} {
     private {{$type}} {{$lowerProp}};\
     {{end}}
     
-    {{range $i,$c := .columns}}{{$type := type "java" $c.Type}}{{$ormType := orm_type "java" $c.Type}}
+    {{range $i,$c := .columns}}{{$ormType := orm_type "java" $c.Type}}
     {{$lowerProp := lower_title $c.Prop}} \
-    public {{$entity}} set{{$c.Prop}}({{$type}} {{$lowerProp}}){
+    public {{$entity}} set{{$c.Prop}}({{$ormType}} {{$lowerProp}}){
         this.{{$lowerProp}} = {{$lowerProp}};
         return this;
     }

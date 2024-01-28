@@ -19,7 +19,7 @@ import java.util.Map;
 {{/*　@DynamicInsert 排除值为null的字段　*/}} \
 @Table(name = "{{.table.Name}}", schema = "{{.table.Schema}}")
 public class {{$entity}} {
-    {{range $i,$c := .columns}}{{$type := type "java" $c.Type}}
+    {{range $i,$c := .columns}}{{$type := orm_type "java" $c.Type}}
     {{$lowerProp := lower_title $c.Prop}} \
     private {{$type}} {{$lowerProp}};
     public {{$entity}} set{{$c.Prop}}({{$type}} {{$lowerProp}}){

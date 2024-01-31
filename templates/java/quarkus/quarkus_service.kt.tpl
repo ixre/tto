@@ -39,8 +39,8 @@ class {{.table.Title}}Service {
     }
 
     /** 根据条件查找并返回列表 */
-    fun list{{$shortTitle}}By(query:String,params:List<Any>):List<{{$tableTitle}}{{.global.entity_suffix}}>{
-        return this.repo.list(query,params)
+    fun list{{$shortTitle}}By(query:String,vararg params:List<Any>):List<{{$tableTitle}}{{.global.entity_suffix}}>{
+        return this.repo.list(query,*params)
     }
 
     /** 保存{{.table.Comment}} */

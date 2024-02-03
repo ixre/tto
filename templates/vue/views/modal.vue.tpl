@@ -48,7 +48,7 @@
 {{$validateColumns := exclude .columns .table.Pk "create_time" "update_time" "state"}}
 
 <script lang="ts" setup>
-import {onMounted,ref,reactive,toRaw} from "vue";
+import {ref,reactive,toRaw} from "vue";
 import {{`{`}}{{$Class}},get{{$Class}},create{{$Class}},update{{$Class}} } from "../../api"
 import {Message,MessageBox,parseResult} from "../../utils";
 
@@ -83,7 +83,7 @@ const rules = {
   {{end}}{{end}}
 };
 
-onMounted( async ()=>{
+const fetchData = async ()=>{
   {{/** 作为单独的页面
   //if(!form.pk){
   //  const {{`{`}}{{.table.Pk}}{{`}`}} = useRoute().currentRoute.query;
@@ -98,7 +98,7 @@ onMounted( async ()=>{
       Message.warning("数据加载失败:"+err)
     }
   }
-});
+}
 
 
 // 返回/回调
@@ -124,5 +124,7 @@ defineExpose({
   submit:submitForm,
   reset: applyCallback
 });
+
+fetchData()
 </script>
 

@@ -1,6 +1,7 @@
 #!kind:2#!target:vue/components/ModalDialog.ts
 
 
+
 import { ElDialog, ElButton } from "element-plus";
 import { Component, h, ref, render } from "vue";
 
@@ -24,16 +25,16 @@ export interface ModalOption {
   confirmLabel?: string;
   // 是否显示控制按钮(默认:显示)
   showControl?: boolean;
-  // 自定义控制按钮内容
-  controlSlot?: (modalRef: ModalRef<any>) => Component | string;
+  // 自定义控制按钮内容, @apply: 用于生成绑定参数的函数
+  controlSlot?: (modalRef: ModalRef<any>, apply: (fn?: Function) => void) => Component | string;
 }
 
 /**  模态框子组件引用
  * @type {C} 组件或字符
  */
 export type ModalRef<R> = any & {
-  submit?: (r: R) => void;
-  reset?: (r: R) => void;
+  submit?: (r: R) => void
+  cancel?: () => void
 };
 
 /**
@@ -47,14 +48,14 @@ export type ModalRef<R> = any & {
  * @example
  * const data = await showModal(TProjectModal,{modelValue: 2},{
  *  title: "创建连接",
- *  controlSlot(modalRef: ModalRef<any>) {
+ *  controlSlot(modalRef: ModalRef<any>,apply) {
  *     return h("div", { style: "display:flex; align-content: space-between" }, [
  *         h("div", {}, [
- *               h(ElButton, { type: "primary", onClick: () => modalRef.dbConnection() }, "测试连接")
+ *               h(ElButton, { type: "primary", onClick: () => apply(modalRef.dbConnection) }, "测试连接")
  *         ]),
  *         h("div", { style: "flex:1" }, [
- *           h(ElButton, { onClick: () => modalRef.reset() }, "取消"),
- *           h(ElButton, { type: "primary", onClick: () => modalRef.submit() }, "确定")
+ *           h(ElButton, { onClick: () => apply(modalRef.reset) }, "取消"),
+ *           h(ElButton, { type: "primary", onClick: () => apply(modalRef.submit) }, "确定")
  *         ])
  *     ]);
  *   },
@@ -92,13 +93,10 @@ export function showModal<
       destroyOnClose: true,
     };
 
+    // 接收close事件
     const closeHandler = (r?: R) => {
       // 返回错误
       if (r instanceof Error) return reject(r);
-      // 隐藏模态框
-      if (vNode.component?.props.modelValue) {
-        vNode.component!.props.modelValue = false;
-      }
       removeChild();
       resolve(r);
     };
@@ -115,6 +113,11 @@ export function showModal<
 
     // 关闭并移出DOM
     const removeChild = () => {
+      // 隐藏模态框
+      if (vNode.component?.props.modelValue) {
+        vNode.component!.props.modelValue = false;
+      }
+      // 移除dom
       render(null, container);
       document.body.removeChild(container);
     };
@@ -158,8 +161,17 @@ export function showModal<
             // 不显示控制栏
             return null;
           }
+
+          // 解析调用函数
+          const applyResolveFunc = (fn?: Function) => {
+            fn ? fn((v: any) => {
+              // 当解析到预期结果时,关闭弹窗
+              removeChild()
+              resolve(v)
+            }, reject) : closeHandler()
+          }
           if (opt?.controlSlot) {
-            const slotComponent = opt?.controlSlot(elRef.value);
+            const slotComponent = opt?.controlSlot(elRef.value, applyResolveFunc);
             // 自定义控制栏插槽
             if (typeof slotComponent === "string") {
               return h("div", slotComponent as string);
@@ -170,14 +182,14 @@ export function showModal<
           return [
             h(
               ElButton as Component,
-              { onClick: () => (elRef.value.reset || closeHandler)() },
+              { onClick: () => applyResolveFunc(elRef.value.cancel) },
               opt?.cancelLabel || "取消"
             ),
             h(
               ElButton as Component,
               {
                 type: "primary",
-                onClick: () => (elRef.value.submit || closeHandler)(),
+                onClick: () => applyResolveFunc(elRef.value.submit),
               },
               opt?.confirmLabel || "确定"
             ),

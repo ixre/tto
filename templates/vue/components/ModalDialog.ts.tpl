@@ -136,10 +136,13 @@ export function showModal<
             return h("div", component as string);
           } else {
             // 组件使用close-emit, emit必须以"on"开头,在子组件中用emits(`close`)
+            // 添加resolve和reject两个emit
             return h(component as Component, {
               ...props,
               ref: elRef,
               onClose: closeHandler,
+              onResolve: resolve,
+              onReject: reject,
             });
           }
         },

@@ -48,6 +48,7 @@ export type ModalRef<R> = any & {
  * @example
  * const data = await showModal(TProjectModal,{modelValue: 2},{
  *  title: "创建连接",
+ *  width: 600,
  *  controlSlot(modalRef: ModalRef<any>,apply) {
  *     return h("div", { style: "display:flex; align-content: space-between" }, [
  *         h("div", {}, [

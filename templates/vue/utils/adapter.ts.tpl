@@ -50,7 +50,7 @@ export const parseDate = (time)=>parseTime(time,"{y}-{m}-{d}")
 
 // Parse the time to string
 export const parseTime = (time, format) => {
-    if (time === undefined || time === 0 || time==="")return "";
+    if (!time)return "-";
     const fmt = format || '{y}-{m}-{d} {h}:{i}'
     let date = time;
     if (typeof time === 'string') {

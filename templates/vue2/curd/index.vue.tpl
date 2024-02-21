@@ -12,16 +12,16 @@
         </div>
         <div class="it mod-grid-header-filter">
           <el-form :inline="true">
-            <el-form-item label="状态:" class="filter-item">
+            <el-form-item label="状态" class="filter-item">
               <el-select v-model="queryParams.state" class="filter-select"
                          @change="queryPagingData">
                 <el-option v-for="(it,i) in stateOptions" :key="i" :label="it.key" :value="it.value"/>
               </el-select>
             </el-form-item>
-            <el-form-item label="关键词:" class="filter-item">
+            <el-form-item label="关键词" class="filter-item">
               <el-input v-model="queryParams.keyword" clearable class="filter-input" placeholder="请输入关键词"/>
             </el-form-item>
-            <el-form-item label="排序方式:" class="filter-item">
+            <el-form-item label="排序方式" class="filter-item">
               <el-select v-model="queryParams.order_by" class="filter-select">
                 <el-option v-for="(it,i) in sortOptions" :key="i" :value="it.value" :label="it.key"></el-option>
               </el-select>

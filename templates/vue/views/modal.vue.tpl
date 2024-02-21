@@ -2,11 +2,11 @@
 #!target:vue/views/{{.table.Title}}/{{.table.Title}}Modal.vue
 <template>
   <div class="mod-form-container">
-    <el-form ref="formRef" class="mod-form" size="small"
+    <el-form ref="formRef" class="mod-form" size="small" :label-width="form.labelWidth"
              label-position="right" :model="form.data" :rules="rules">
         {{range $i,$c := exclude .columns "create_time" "update_time"}}\
         {{if not $c.IsPk}}{{$name:= $c.Prop}}{{$ele:= $c.Render.Element}}\
-            <el-form-item class="mod-form-item" label-position="left" :label-width="form.labelWidth" label="{{$c.Comment}}:" prop="{{$name}}">
+            <el-form-item class="mod-form-item" label-position="left" label="{{$c.Comment}}:" prop="{{$name}}">
             {{/*<el-col :span="12">LEFT...</el-col><el-col :span="12">RIGHT...</el-col>*/}}
             {{if eq $ele "radio"}}\
               <el-switch v-model="form.data.{{$name}}"

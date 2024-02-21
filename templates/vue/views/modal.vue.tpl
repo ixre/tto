@@ -2,11 +2,12 @@
 #!target:vue/views/{{.table.Title}}/{{.table.Title}}Modal.vue
 <template>
   <div class="mod-form-container">
-    <el-form ref="formRef" class="mod-form" size="small" :label-width="form.labelWidth"
-             label-position="right" :model="form.data" :rules="rules">
+    <el-form ref="formRef" class="mod-form" size="small"
+            label-position="left" :label-width="85"
+            :model="form.data" :rules="rules">
         {{range $i,$c := exclude .columns "create_time" "update_time"}}\
         {{if not $c.IsPk}}{{$name:= $c.Prop}}{{$ele:= $c.Render.Element}}\
-            <el-form-item class="mod-form-item" label-position="left" label="{{$c.Comment}}:" prop="{{$name}}">
+            <el-form-item class="mod-form-item" label="{{$c.Comment}}:" prop="{{$name}}">
             {{/*<el-col :span="12">LEFT...</el-col><el-col :span="12">RIGHT...</el-col>*/}}
             {{if eq $ele "radio"}}\
               <el-switch v-model="form.data.{{$name}}"
@@ -48,20 +49,17 @@
 {{$validateColumns := exclude .columns .table.Pk "create_time" "update_time" "state"}}
 
 <script lang="ts" setup>
-import {onMounted,ref,reactive,toRaw} from "vue";
+import {ref,reactive,toRaw} from "vue";
 import {{`{`}}{{$Class}},get{{$Class}},create{{$Class}},update{{$Class}} } from "../../api"
 import {Message,MessageBox,parseResult} from "../../utils";
 
 /** #! 定义属性,接收父组件的参数 */
 const props = withDefaults(defineProps<{modelValue?:{{type "ts" .table.PkType}}}>(),{});
-/** #! 定义Emit向父组件传递数据 */
-const emit = defineEmits(['close']);
 
 const formRef = ref(null);
-const form = reactive<{requesting?:boolean, pk?:{{type "ts" .table.PkType}},data:{{$Class}}, labelWidth:number}>({
+const form = reactive<{requesting?:boolean, pk?:{{type "ts" .table.PkType}},data:{{$Class}}}>({
   pk: props.modelValue,
   data: new {{$Class}}(),
-  labelWidth: 85,
 });
 
 /** #! 验证规则会反应到组件,比如required,所以不用在组件上再加required */
@@ -83,7 +81,7 @@ const rules = {
   {{end}}{{end}}
 };
 
-onMounted( async ()=>{
+const fetchData = async ()=>{
   {{/** 作为单独的页面
   //if(!form.pk){
   //  const {{`{`}}{{.table.Pk}}{{`}`}} = useRoute().currentRoute.query;
@@ -98,13 +96,13 @@ onMounted( async ()=>{
       Message.warning("数据加载失败:"+err)
     }
   }
-});
+}
 
 
-// 返回/回调
-const applyCallback = (arg?:any)=>emit("close", arg); // router.go(-1)
+// 取消
+const cancel = (resolve:any)=>resolve()
 
-const submitForm = ()=> {
+const submitForm = (resolve,reject)=> {
     (formRef.value as any)?.validate(async (valid:boolean) => {
     if (!valid)return;
     if(form.requesting)return;
@@ -114,15 +112,18 @@ const submitForm = ()=> {
     const {errCode,errMsg} = parseResult(ret.data);
     if(errCode === 0){
       Message.success({message:'操作成功',duration:2000});
-      applyCallback(toRaw(form.data));
+      resolve(toRaw(form.data))
     }else{
       MessageBox.alert(errMsg,"操作失败");
+      reject(errMsg)
     }
   })
 }
 defineExpose({
   submit:submitForm,
-  reset: applyCallback
+  cancel: cancel
 });
+
+fetchData()
 </script>
 

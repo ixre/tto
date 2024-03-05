@@ -30,15 +30,19 @@ public class {{.table.Title}}RepositoryImpl extends Base{{.table.Title}}Reposito
      */
     @Override
     public I{{$suffix}}AggregateRoot get{{$suffix}}({{$pkType}} {{$pkName}}){
-
+        {{$tableTitle}}{{.global.entity_suffix}} e = this.find{{$suffix}}ById({{$pkName}});
+        if (e != null) {
+            return super.create{{$suffix}}(e);
+        }
+        return null;
     }
 
     
     /** 查找{{.table.Comment}} */
-    public {{$tableTitle}}{{.global.entity_suffix}} find{{$suffix}}ById({{$pkType}} id){
+    private {{$tableTitle}}{{.global.entity_suffix}} find{{$suffix}}ById({{$pkType}} {{$pkName}}){
         // TODO: not implemented
         throw new RuntimeException("not implemented");
-        //return this.repo.findById(id).orElse(null);
+        //return this.repo.findById({{$pkName}}).orElse(null);
     }
 
 
@@ -85,7 +89,7 @@ public class {{.table.Title}}RepositoryImpl extends Base{{.table.Title}}Reposito
      * @param id 标识
      */
     @Override
-    public int delete{{$suffix}}ById({{$pkType}} id) {
+    public int delete{{$suffix}}({{$pkType}} id) {
         // TODO: not implemented
         throw new RuntimeException("not implemented");
         //this.repo.deleteById(id);

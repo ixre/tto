@@ -16,6 +16,15 @@ import java.util.List;
  * @author {{.global.user}}
  */
 public interface I{{$tableTitle}}Repository{
+
+    /**
+     * 创建{{$comment}}聚合
+     *
+     * @param e 数据
+     * @return {{$comment}}
+     */
+    I{{$suffix}}AggregateRoot create{{$suffix}}({{$tableTitle}}{{.global.entity_suffix}} e);
+
     /**
      * 获取{{$comment}}聚合
      *

@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @author {{.global.user}}
  */
-public interface I{{$tableTitle}}AggregateRoot extends IAggregateRoot<Long>{
+public interface I{{$tableTitle}}AggregateRoot extends IAggregateRoot<{{$pkType}}>{
     /**
      * 保存
      */

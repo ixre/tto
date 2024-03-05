@@ -22,6 +22,9 @@ import java.util.List;
  * @author {{.global.user}}
  */
 public class {{.table.Title}}RepositoryImpl extends Base{{.table.Title}}Repository implements I{{$tableTitle}}Repository {
+    // 如果在Springboot中，则应使用InjectFactory.getInstance直接获取实例
+    //{{$tableTitle}}Mapper repo = InjectFactory.getInstance({{$tableTitle}}Mapper.class);
+
     /**
      * 获取{{$comment}}聚合
      *
@@ -55,7 +58,7 @@ public class {{.table.Title}}RepositoryImpl extends Base{{.table.Title}}Reposito
     public void save{{$suffix}}({{$tableTitle}}{{.global.entity_suffix}} e){
         // TODO: not implemented
         throw new RuntimeException("not implemented");
-        //this.repo.save{{$suffix}}(e);
+        //this.repo.save(e);
     }
 
     /**
@@ -67,7 +70,7 @@ public class {{.table.Title}}RepositoryImpl extends Base{{.table.Title}}Reposito
     public {{$tableTitle}}{{.global.entity_suffix}} find{{$suffix}}By({{$tableTitle}}{{.global.entity_suffix}} e){
         // TODO: not implemented
         throw new RuntimeException("not implemented");
-        //return this.repo.findOne(Example.of(e)).orElse(null);
+        //return this.repo.findOne(e).orElse(null);
     }
 
     /**
@@ -79,7 +82,7 @@ public class {{.table.Title}}RepositoryImpl extends Base{{.table.Title}}Reposito
     public List<{{$tableTitle}}{{.global.entity_suffix}}> find{{$suffix}}ListBy({{$tableTitle}}{{.global.entity_suffix}} e) {
         // TODO: not implemented
         throw new RuntimeException("not implemented");
-        //return this.repo.findAll(Example.of(e));
+        //return this.repo.findAll(e);
     }
 
 
@@ -92,6 +95,6 @@ public class {{.table.Title}}RepositoryImpl extends Base{{.table.Title}}Reposito
     public int delete{{$suffix}}({{$pkType}} id) {
         // TODO: not implemented
         throw new RuntimeException("not implemented");
-        //this.repo.deleteById(id);
+        //return this.repo.deleteById(id);
     }
 }

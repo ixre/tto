@@ -1,5 +1,5 @@
 #!target:domain/src/main/java/{{.global.pkg}}/domain/impl/{{.table.Prefix}}/{{.table.Title}}AggregateRootImpl.java
-package {{pkg "java" .global.pkg}}.domain.iface.{{.table.Prefix}};
+package {{pkg "java" .global.pkg}}.domain.impl.{{.table.Prefix}};
 
 import java.util.List;
 

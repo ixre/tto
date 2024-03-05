@@ -1,5 +1,5 @@
 #!target:domain/src/main/java/{{.global.pkg}}/domain/repo/{{.table.Prefix}}/{{.table.Title}}RepositoryImpl.java
-package {{pkg "java" .global.pkg}}.domain.iface.{{.table.Prefix}};
+package {{pkg "java" .global.pkg}}.domain.repo.{{.table.Prefix}};
 
 import {{pkg "java" .global.pkg}}.domain.iface.{{.table.Prefix}}.{{.table.Title}}{{.global.entity_suffix}};
 import {{pkg "java" .global.pkg}}.domain.iface.{{.table.Prefix}}.I{{.table.Title}}Repository;

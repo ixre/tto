@@ -6,6 +6,10 @@ import net.fze.ext.mybatis.BaseJpaMapper;
 
 {{$pkType := orm_type "java" .table.PkType}}
 
-/** {{.table.Comment}}仓储接口 */
+/** 
+ * {{.table.Comment}}仓储接口
+ *
+ * @author {{.global.user}}
+ */
 public interface {{.table.Title}}Mapper extends BaseJpaMapper<{{$pkType}},{{.table.Title}}{{.global.entity_suffix}}>{
 }

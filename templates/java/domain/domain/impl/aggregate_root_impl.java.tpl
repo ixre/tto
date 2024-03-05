@@ -17,9 +17,9 @@ import java.util.List;
  */
 public class {{$tableTitle}}AggregateRootImpl implements I{{$tableTitle}}AggregateRoot{
 
-    private I{{$tableTitle}}Repository _repo; 
+    protected I{{$tableTitle}}Repository _repo; 
     
-    private {{$tableTitle}}{{.global.entity_suffix}} _value = null;
+    protected {{$tableTitle}}{{.global.entity_suffix}} _value = null;
 
     protected {{$tableTitle}}AggregateRootImpl(I{{$tableTitle}}Repository repo, {{$tableTitle}}{{.global.entity_suffix}} value) {
         this._repo = repo;
@@ -34,6 +34,7 @@ public class {{$tableTitle}}AggregateRootImpl implements I{{$tableTitle}}Aggrega
     /**
      * 保存
      */
+    @Override
     public void save(){
         this._repo.save{{$suffix}}(this._value);
     }
@@ -41,6 +42,7 @@ public class {{$tableTitle}}AggregateRootImpl implements I{{$tableTitle}}Aggrega
     /**
      * 获取值
      */
+    @Override
     public {{$tableTitle}}{{.global.entity_suffix}} getValue(){
         return this._value.clone();
     }
@@ -48,7 +50,8 @@ public class {{$tableTitle}}AggregateRootImpl implements I{{$tableTitle}}Aggrega
     /**
      * 销毁
      */ 
+    @Override
     public void destroy(){
-        this._repo.delete{{$suffix}}ById(this.getAggregateRootId());
+        this._repo.delete{{$suffix}}(this.getAggregateRootId());
     }
 }

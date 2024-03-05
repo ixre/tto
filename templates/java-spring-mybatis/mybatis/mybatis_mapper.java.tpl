@@ -2,7 +2,7 @@
 package {{pkg "java" .global.pkg}}.mapper.{{.table.Prefix}};
 
 import {{pkg "java" .global.pkg}}.entity.{{.table.Title}}{{.global.entity_suffix}};
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
 import net.fze.ext.mybatis.BaseJpaMapper;
 
 {{$pkType := orm_type "java" .table.PkType}}

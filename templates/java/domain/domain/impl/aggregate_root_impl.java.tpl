@@ -47,6 +47,17 @@ public class {{$tableTitle}}AggregateRootImpl implements I{{$tableTitle}}Aggrega
         return this._value.clone();
     }
 
+
+    /**
+     * 设置值
+     */
+    Error setValue({{$tableTitle}}{{.global.entity_suffix}} e){
+        {{range $i,$c := .columns}}
+        {{if $c.IsPk}}{{else}}\
+        this._value.set{{$c.Prop}}(e.get{{$c.Prop}}());{{end}}{{end}}
+        return null;
+    }
+
     /**
      * 销毁
      */ 

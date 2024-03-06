@@ -27,6 +27,11 @@ public interface I{{$tableTitle}}AggregateRoot extends IAggregateRoot<{{$pkType}
     {{$tableTitle}}{{.global.entity_suffix}} getValue();
 
     /**
+     * 设置值
+     */
+    Error setValue({{$tableTitle}}{{.global.entity_suffix}} e);
+    
+    /**
      * 销毁
      */ 
     void destroy();

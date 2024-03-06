@@ -4,10 +4,15 @@ package {{pkg "java" .global.pkg}}.service;
 import {{pkg "java" .global.pkg}}.entity.{{.table.Title}}{{.global.entity_suffix}};
 import {{pkg "java" .global.pkg}}.repo.{{.table.Prefix}}.{{.table.Title}}JpaRepository;
 import {{pkg "java" .global.pkg}}.service.{{.table.Prefix}}.I{{.table.Title}}Service;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import net.fze.domain.DomainException;
+import net.fze.ext.injector.InjectFactory;
+import net.fze.ext.jdbc.tx.ITransaction;
+import net.fze.ext.jdbc.tx.ITransactionManager;
 import net.fze.util.Systems;
 import net.fze.util.Times;
-import javax.inject.Inject;
-import java.util.List;
 
 {{$comment := .table.Comment}}
 {{$pkName := .table.Pk}}
@@ -32,11 +37,10 @@ public class {{$tableTitle}}ServiceImpl{
     }
 
     /** 保存{{.table.Comment}} */
-    @Override
     public Error save{{$suffix}}({{$tableTitle}}{{.global.entity_suffix}} e){
          I{{$tableTitle}}AggregateRoot ia;
          ITransaction trans = InjectFactory.getInstance(ITransactionManager.class).beginTransaction();
-         return Systems.tryCatch(()-> {
+         try {
             {{$tableTitle}}{{.global.entity_suffix}} dst;
             {{if num_type .table.PkType}}\
             if (e.get{{$pkProp}}() > 0) {
@@ -62,15 +66,20 @@ public class {{$tableTitle}}ServiceImpl{
             dst.setUpdateTime(Times.unix());
             {{else}}\
             dst.setUpdateTime(new java.util.Date());{{end}}{{end}}
-            ia.setValue(dst);
+            Error err = ia.setValue(dst);
+            if(err != null){
+               return err;
+            }
             ia.save();
             e.set{{.table.PkProp}}(ia.getAggregateRootId());
             trans.commit();
-            return null;
-          }).except(it->{
+        }catch(Throwable ex){
             trans.rollback();
-            it.printStackTrace();
-            return null;
-         }).error();
+            if(!(ex instanceof DomainException)){
+                ex.printStackTrace();
+            }
+            return new Error(ex.getMessage());
+        }
+        return null;
     }
 }

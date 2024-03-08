@@ -89,8 +89,8 @@ public class {{.table.Title}}Resource {
                @RequestParam("size") int size){
         Params p = new Params(params);
         //https://www.zhihu.com/question/586324313/answer/2912413783
-        //String timeRangeSQL = ReportUtils.timestampSQLByJSONTime(p.get("create_time"), "create_time");
-        //p.set("create_time", timeRangeSQL);
+        //String timeRangeSql = ReportUtils.timestampSQLByJSONTime(p.get("create_time"), "create_time");
+        //p.set("create_time", timeRangeSql);
         return this.reportDs.fetchData("default",
                 "{{.table.Prefix}}/{{substr_n .table.Name "_" 1}}_list", p, page, size);
     }

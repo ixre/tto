@@ -5,6 +5,7 @@ package {{pkg "java" .global.pkg}}.entity;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -26,7 +27,7 @@ public class {{$entity}} {
      */\
     {{if $c.IsPk}}
     @Id{{/* 兼容Hibernate*/}}
-    @TableId("{{$c.Name}}") \
+    @TableId(value="{{$c.Name}}"{{if $c.IsAuto}}, type = IdType.AUTO{{end}}) \
     {{else}}
     @TableField("{{$c.Name}}") \
     {{end}}

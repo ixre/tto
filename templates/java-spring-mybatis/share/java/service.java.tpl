@@ -23,7 +23,7 @@ public interface I{{.table.Title}}Service {
     List<{{$tableTitle}}{{.global.entity_suffix}}> findAll{{$shortTitle}}();
 
     /** 保存{{.table.Comment}} */
-    Error save{{$shortTitle}}({{$tableTitle}}{{.global.entity_suffix}} e);
+    {{$pkType}} save{{$shortTitle}}({{$tableTitle}}{{.global.entity_suffix}} e);
 
     /** 根据对象条件查找 */
     {{$tableTitle}}{{.global.entity_suffix}} find{{$shortTitle}}By({{$tableTitle}}{{.global.entity_suffix}} o);
@@ -38,8 +38,8 @@ public interface I{{.table.Title}}Service {
     Iterable<{{$tableTitle}}{{.global.entity_suffix}}> saveAll{{$shortTitle}}(Iterable<{{$tableTitle}}{{.global.entity_suffix}}> entities);
 
     /** 删除{{.table.Comment}} */
-    Error delete{{$shortTitle}}ById({{$pkType}} id);
+    void delete{{$shortTitle}}ById({{$pkType}} id);
 
     /** 批量删除{{.table.Comment}} */
-    Error batchDelete{{$shortTitle}}(List<{{$warpPkType}}> id);
+    void batchDelete{{$shortTitle}}(List<{{$warpPkType}}> id);
 }

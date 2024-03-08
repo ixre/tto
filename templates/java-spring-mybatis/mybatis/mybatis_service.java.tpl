@@ -40,7 +40,7 @@ public class {{.table.Title}}ServiceImpl implements I{{.table.Title}}Service{
 
     /** 保存{{.table.Comment}} */
     @Override
-    public Error save{{$shortTitle}}({{$tableTitle}}{{.global.entity_suffix}} e){
+    public {{$pkType}} save{{$shortTitle}}({{$tableTitle}}{{.global.entity_suffix}} e){
          return Systems.tryCatch(()-> {
             {{$tableTitle}}{{.global.entity_suffix}} dst;
             boolean isInsert = false;
@@ -109,7 +109,7 @@ public class {{.table.Title}}ServiceImpl implements I{{.table.Title}}Service{
 
     /** 删除{{.table.Comment}} */
     @Override
-    public Error delete{{$shortTitle}}ById({{$pkType}} id) {
+    public void delete{{$shortTitle}}ById({{$pkType}} id) {
          return Systems.tryCatch(()-> {
              this.repo.deleteById(id);
              return null;
@@ -121,7 +121,7 @@ public class {{.table.Title}}ServiceImpl implements I{{.table.Title}}Service{
 
     /** 批量删除{{.table.Comment}} */
     @Override
-    public Error batchDelete{{$shortTitle}}(List<{{$warpPkType}}> id){
+    public void batchDelete{{$shortTitle}}(List<{{$warpPkType}}> id){
         return Systems.tryCatch(() -> {
             this.repo.deleteBatchIds(id);
             return null;

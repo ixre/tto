@@ -40,44 +40,37 @@ public class {{.table.Title}}ServiceImpl implements I{{.table.Title}}Service{
 
     /** 保存{{.table.Comment}} */
     @Override
-    public Error save{{$shortTitle}}({{$tableTitle}}{{.global.entity_suffix}} e){
-         return Systems.tryCatch(()-> {
-            {{$tableTitle}}{{.global.entity_suffix}} dst;
-            boolean isInsert = false;
-            {{if num_type .table.PkType}}\
-            if (e.get{{$pkProp}}() > 0) {
-            {{else}}
-            if (e.get{{$pkProp}}() != "") {
-            {{end}}
-                dst = this.repo.selectById(e.get{{$pkProp}}());
-                if(dst == null)throw new IllegalArgumentException("no such data");
-            } else {
-                isInsert = true;
-                dst = {{$tableTitle}}{{.global.entity_suffix}}.createDefault();
-                {{$c := try_get .columns "create_time"}}\
-                {{if $c}}{{if num_type $c.Type }}\
-                dst.setCreateTime(Times.unix());
-                {{else}}\
-                dst.setCreateTime(new java.util.Date());{{end}}{{end}}
-            }\
-            {{range $i,$c := exclude .columns $pkName "create_time" "update_time"}}
-            dst.set{{$c.Prop}}(e.get{{$c.Prop}}());{{end}}\
-            {{$c := try_get .columns "update_time"}}
+    public {{$pkType}} save{{$shortTitle}}({{$tableTitle}}{{.global.entity_suffix}} e){
+        {{$tableTitle}}{{.global.entity_suffix}} dst;
+        boolean isInsert = false;
+        {{if num_type .table.PkType}}\
+        if (e.get{{$pkProp}}() > 0) {
+        {{else}}
+        if (e.get{{$pkProp}}() != "") {
+        {{end}}
+            dst = this.repo.selectById(e.get{{$pkProp}}());
+            if(dst == null)throw new IllegalArgumentException("no such data");
+        } else {
+            isInsert = true;
+            dst = {{$tableTitle}}{{.global.entity_suffix}}.createDefault();
+            {{$c := try_get .columns "create_time"}}\
             {{if $c}}{{if num_type $c.Type }}\
-            dst.setUpdateTime(Times.unix());
+            dst.setCreateTime(Times.unix());
             {{else}}\
-            dst.setUpdateTime(new java.util.Date());{{end}}{{end}}
-             if (isInsert) {
-                this.repo.insert(dst);
-                e.set{{.table.PkProp}}(dst.get{{.table.PkProp}}());
-            } else {
-                this.repo.updateById(dst);
-            }
-            return null;
-          }).except(it->{
-            it.printStackTrace();
-            return null;
-         }).error();
+            dst.setCreateTime(new java.util.Date());{{end}}{{end}}
+        }\
+        {{range $i,$c := exclude .columns $pkName "create_time" "update_time"}}
+        dst.set{{$c.Prop}}(e.get{{$c.Prop}}());{{end}}\
+        {{$c := try_get .columns "update_time"}}
+        {{if $c}}{{if num_type $c.Type }}\
+        dst.setUpdateTime(Times.unix());
+        {{else}}\
+        dst.setUpdateTime(new java.util.Date());{{end}}{{end}}
+        this.repo.save(dst);
+            e.set{{.table.PkProp}}(dst.get{{.table.PkProp}}());
+        } else {
+            this.repo.updateById(dst);
+        }
     }
 
     /** 根据对象条件查找 */
@@ -109,7 +102,7 @@ public class {{.table.Title}}ServiceImpl implements I{{.table.Title}}Service{
 
     /** 删除{{.table.Comment}} */
     @Override
-    public Error delete{{$shortTitle}}ById({{$pkType}} id) {
+    public void delete{{$shortTitle}}ById({{$pkType}} id) {
          return Systems.tryCatch(()-> {
              this.repo.deleteById(id);
              return null;
@@ -121,7 +114,7 @@ public class {{.table.Title}}ServiceImpl implements I{{.table.Title}}Service{
 
     /** 批量删除{{.table.Comment}} */
     @Override
-    public Error batchDelete{{$shortTitle}}(List<{{$warpPkType}}> id){
+    public void batchDelete{{$shortTitle}}(List<{{$warpPkType}}> id){
         return Systems.tryCatch(() -> {
             this.repo.deleteBatchIds(id);
             return null;

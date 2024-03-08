@@ -6,7 +6,12 @@
     </ColumnMapping>
     <Query>
         <![CDATA[
-        SELECT * FROM {{.table.Name}}
+        SELECT
+        {{$columns := .columns}} \
+        {{range $i,$v := $columns}}
+            {{$v.Name}} AS {{$v.Prop}}{{if not (is_last $i $columns)}},{{end}}
+        {{end}}
+        FROM {{.table.Name}}
         WHERE {where}
         #if {create_time} AND {create_time} #fi
         ORDER BY {order_by}

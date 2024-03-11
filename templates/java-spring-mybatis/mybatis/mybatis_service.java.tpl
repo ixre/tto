@@ -29,67 +29,57 @@ public class {{.table.Title}}ServiceImpl implements I{{.table.Title}}Service{
     /** 查找{{.table.Comment}} */
     @Override
     public {{$tableTitle}}{{.global.entity_suffix}} find{{$shortTitle}}ById({{$pkType}} id){
-        return this.repo.selectById(id);
+        return this.repo.findById(id).orElse(null);
     }
 
     /** 查找全部{{.table.Comment}} */
     @Override
     public List<{{$tableTitle}}{{.global.entity_suffix}}> findAll{{$shortTitle}}() {
-        return this.repo.selectList(new QueryWrapper<>());
+        return this.repo.findBy(null);
     }
 
     /** 保存{{.table.Comment}} */
     @Override
     public {{$pkType}} save{{$shortTitle}}({{$tableTitle}}{{.global.entity_suffix}} e){
-         return Systems.tryCatch(()-> {
-            {{$tableTitle}}{{.global.entity_suffix}} dst;
-            boolean isInsert = false;
-            {{if num_type .table.PkType}}\
-            if (e.get{{$pkProp}}() > 0) {
-            {{else}}
-            if (e.get{{$pkProp}}() != "") {
-            {{end}}
-                dst = this.repo.selectById(e.get{{$pkProp}}());
-                if(dst == null)throw new IllegalArgumentException("no such data");
-            } else {
-                isInsert = true;
-                dst = {{$tableTitle}}{{.global.entity_suffix}}.createDefault();
-                {{$c := try_get .columns "create_time"}}\
-                {{if $c}}{{if num_type $c.Type }}\
-                dst.setCreateTime(Times.unix());
-                {{else}}\
-                dst.setCreateTime(new java.util.Date());{{end}}{{end}}
-            }\
-            {{range $i,$c := exclude .columns $pkName "create_time" "update_time"}}
-            dst.set{{$c.Prop}}(e.get{{$c.Prop}}());{{end}}\
-            {{$c := try_get .columns "update_time"}}
-            {{if $c}}{{if num_type $c.Type }}\
-            dst.setUpdateTime(Times.unix());
-            {{else}}\
-            dst.setUpdateTime(new java.util.Date());{{end}}{{end}}
-             if (isInsert) {
-                this.repo.insert(dst);
-                e.set{{.table.PkProp}}(dst.get{{.table.PkProp}}());
-            } else {
-                this.repo.updateById(dst);
+        {{$tableTitle}}{{.global.entity_suffix}} dst;
+        {{if num_type .table.PkType}}\
+        if (e.get{{$pkProp}}() > 0) {
+        {{else}}
+        if (e.get{{$pkProp}}() != "") {
+        {{end}}
+            dst = this.repo.findById(e.get{{$pkProp}}()).orElse(null);
+            if(dst == null){
+                throw new IllegalArgumentException("no such data");
             }
-            return null;
-          }).except(it->{
-            it.printStackTrace();
-            return null;
-         }).error();
+        } else {
+            dst = {{$tableTitle}}{{.global.entity_suffix}}.createDefault();
+            {{$c := try_get .columns "create_time"}}\
+            {{if $c}}{{if num_type $c.Type }}\
+            dst.setCreateTime(Times.unix());
+            {{else}}\
+            dst.setCreateTime(new java.util.Date());{{end}}{{end}}
+        }\
+        {{range $i,$c := exclude .columns $pkName "create_time" "update_time"}}
+        dst.set{{$c.Prop}}(e.get{{$c.Prop}}());{{end}}\
+        {{$c := try_get .columns "update_time"}}
+        {{if $c}}{{if num_type $c.Type }}\
+        dst.setUpdateTime(Times.unix());
+        {{else}}\
+        dst.setUpdateTime(new java.util.Date());{{end}}{{end}}
+        dst = this.repo.save(dst,{{$tableTitle}}{{.global.entity_suffix}}::get{{.table.PkProp}});
+        return dst.get{{.table.PkProp}}();
     }
-
+    
     /** 根据对象条件查找 */
     @Override
     public {{$tableTitle}}{{.global.entity_suffix}} find{{$shortTitle}}By({{$tableTitle}}{{.global.entity_suffix}} o){
-        return this.repo.selectOne(new QueryWrapper<>(o));
+         return this.repo.findOne(o).orElse(null);
     }
 
     /** 根据对象条件查找 */
     @Override
     public List<{{$tableTitle}}{{.global.entity_suffix}}> find{{$shortTitle}}ListBy({{$tableTitle}}{{.global.entity_suffix}} o) {
-        return this.repo.selectList(new QueryWrapper<>(o));
+         return this.repo.findBy(o);
     }
 
     /** 根据条件分页查询 */
@@ -110,24 +100,12 @@ public class {{.table.Title}}ServiceImpl implements I{{.table.Title}}Service{
     /** 删除{{.table.Comment}} */
     @Override
     public void delete{{$shortTitle}}ById({{$pkType}} id) {
-         return Systems.tryCatch(()-> {
-             this.repo.deleteById(id);
-             return null;
-           }).except(it->{
-            it.printStackTrace();
-            return null;
-         }).error();
+        this.repo.deleteById(id);
     }
 
     /** 批量删除{{.table.Comment}} */
     @Override
     public void batchDelete{{$shortTitle}}(List<{{$warpPkType}}> id){
-        return Systems.tryCatch(() -> {
-            this.repo.deleteBatchIds(id);
-            return null;
-        }).except(it -> {
-            it.printStackTrace();
-            return null;
-        }).error();
+       this.repo.deleteBatchIds(id);
     }
 }

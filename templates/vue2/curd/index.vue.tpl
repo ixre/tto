@@ -105,7 +105,7 @@ import {Paging{{$Class}},queryPaging{{$Class}},delete{{$Class}} } from '@/api';
 import {{$Class}}Modal from './modal.vue';
 import {Message,MessageBox,router,parseResult,formatColTime} from "@/utils";
 
-const table = ref(null);
+const table = ref();
 const list = reactive<{ loading: boolean, total: number, page: number, rows: number, data: Array<Paging{{$Class}}> }>({loading:false,total:0, page: 1, rows: 20,data:[]});
 const dialog = reactive({title:"Form",params:0,modal: null});
 const data = reactive({rowIndex:-1,requesting:false,selectedIds:[],selectedRows:[],tableHeight:0});

@@ -55,7 +55,7 @@ const props = withDefaults(defineProps<{modelValue?:{{type "ts" .table.PkType}}}
 /** #! 定义Emit向父组件传递数据 */
 const emit = defineEmits(['callback']);
 
-const formRef = ref(null);
+const formRef = ref();
 const form = reactive<{requesting?:boolean,ref?:any,pk?:{{type "ts" .table.PkType}},data:{{$Class}}, labelWidth: string}>({
   pk:props.modelValue,
   data:new {{$Class}}(),

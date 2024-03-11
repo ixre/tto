@@ -103,7 +103,7 @@ import {{$Class}}Modal from './{{$Class}}Modal.vue';
 import {Message,MessageBox,formatColTime} from "../../utils";
 import {showModal,ListDataRef,queryDataList, deleteData,onSelectionChange,onResetSelection} from "../../components";
 
-const tableRef = ref(null);
+const tableRef = ref();
 
 const queryData = reactive<ListDataRef<Paging{{$Class}}>
     & { tableHeight: number }>({

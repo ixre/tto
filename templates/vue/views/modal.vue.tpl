@@ -56,7 +56,7 @@ import {Message,MessageBox,parseResult} from "../../utils";
 /** #! 定义属性,接收父组件的参数 */
 const props = withDefaults(defineProps<{modelValue?:{{type "ts" .table.PkType}}}>(),{});
 
-const formRef = ref(null);
+const formRef = ref();
 const form = reactive<{requesting?:boolean, pk?:{{type "ts" .table.PkType}},data:{{$Class}}}>({
   pk: props.modelValue,
   data: new {{$Class}}(),

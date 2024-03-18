@@ -22,7 +22,7 @@ import java.util.List;
  * @author {{.global.user}}
  */
 public class {{.table.Title}}RepositoryImpl extends Base{{.table.Title}}Repository implements I{{$tableTitle}}Repository {
-    // 如果在Springboot中，则应使用InjectFactory.getInstance直接获取实例
+    // 如果在SpringBoot中，则应使用InjectFactory.getInstance直接获取实例
     //{{$tableTitle}}Mapper repo = InjectFactory.getInstance({{$tableTitle}}Mapper.class);
 
     /**

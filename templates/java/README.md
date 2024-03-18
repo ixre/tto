@@ -2,7 +2,7 @@
 
 包含以下代码模板:
 
-- Springboot 框架代码模板
+- SpringBoot 框架代码模板
 - 云原生 quarkus 框架代码模板
 
 ## 依赖项

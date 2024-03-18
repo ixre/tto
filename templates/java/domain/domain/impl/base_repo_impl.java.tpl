@@ -6,7 +6,7 @@ import {{pkg "java" .global.pkg}}.domain.iface.{{.table.Prefix}}.I{{.table.Title
 import {{pkg "java" .global.pkg}}.domain.impl.{{.table.Prefix}}.Base{{.table.Title}}Repository;
 import net.fze.util.Systems;
 import net.fze.util.Times;
-
+import com.google.inject.Inject;
 import java.util.List;
 
 {{$comment := .table.Comment}}

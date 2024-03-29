@@ -18,7 +18,7 @@ import java.util.Map;
 @Entity
 {{/*　@DynamicInsert 排除值为null的字段　*/}} \
 @Table(name = "{{.table.Name}}", schema = "{{.table.Schema}}")
-public class {{$entity}} {
+public class {{$entity}} implements Cloneable {
     {{range $i,$c := .columns}}{{$type := orm_type "java" $c.Type}}
     {{$lowerProp := lower_title $c.Prop}} \
     private {{$type}} {{$lowerProp}};
@@ -37,16 +37,14 @@ public class {{$entity}} {
     }
     {{end}}
 
-
-     /** 创建深拷贝  */
-    /*
-    public {{$entity}} copy(){
-        {{$entity}} dst = new {{$entity}}();
-        {{range $i,$c := .columns}}
-        dst.set{{$c.Prop}}(this.get{{$c.Prop}}());{{end}}
-        return dst;
+    @Override
+    public {{$entity}} clone() {
+        try {
+            return ({{$entity}}) super.clone();
+        } catch (Exception ex) {
+            throw new RuntimeException("clone failed:" + ex.getMessage());
+        }
     }
-    */
 
     /** 转换为MAP  */
     /*

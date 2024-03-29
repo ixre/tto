@@ -17,7 +17,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 @Entity
 @Table(name = "{{.table.Name}}", schema = "{{.table.Schema}}")
 @TableName("{{.table.Name}}")
-public class {{$entity}} {
+public class {{$entity}} implements Cloneable {
     {{/* 将字段单独生成，以便做裁剪 */}}\
     {{range $i,$c := .columns}}{{$type := orm_type "java" $c.Type}}
     {{$lowerProp := lower_title $c.Prop}} 
@@ -46,15 +46,14 @@ public class {{$entity}} {
     }
     {{end}}
 
-
-    /*
-    public {{$entity}} deep(){
-        {{$entity}} dst = new {{$entity}}();
-        {{range $i,$c := .columns}}
-        dst.set{{$c.Prop}}(this.get{{$c.Prop}}());{{end}}
-        return dst;
+    @Override
+    public {{$entity}} clone() {
+        try {
+            return ({{$entity}}) super.clone();
+        } catch (Exception ex) {
+            throw new RuntimeException("clone failed:" + ex.getMessage());
+        }
     }
-    */
 
     /*
     public Map<String,Object> toMap(){

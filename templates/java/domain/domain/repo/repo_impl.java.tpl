@@ -82,7 +82,7 @@ public class {{.table.Title}}RepositoryImpl extends Base{{.table.Title}}Reposito
     public List<{{$tableTitle}}{{.global.entity_suffix}}> find{{$suffix}}ListBy({{$tableTitle}}{{.global.entity_suffix}} e) {
         // TODO: not implemented
         throw new RuntimeException("not implemented");
-        //return this.repo.findAll(e);
+        //return this.repo.findBy(e);
     }
 
 

@@ -1,6 +1,7 @@
 #!target:spring/src/main/java/{{.global.pkg}}/entity/{{.table.Title}}{{.global.entity_suffix}}.java
 package {{pkg "java" .global.pkg}}.entity;
 
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -9,7 +10,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.math.BigDecimal;
-import lombok.Data;
 
 {{$entity := join .table.Title .global.entity_suffix}}
 /**
@@ -19,9 +19,8 @@ import lombok.Data;
 @Entity
 @Table(name = "{{.table.Name}}", schema = "{{.table.Schema}}")
 @TableName("{{.table.Name}}")
-@Data
 public class {{$entity}} implements Cloneable {
-    {{/* 将字段单独生成，以便做裁剪 */}}\
+    {{/* 将字段单独生成，以便做裁剪,未使用Lombok是因为系统set属性能使用构造者模式 */}}\
     {{range $i,$c := .columns}}{{$type := orm_type "java" $c.Type}}
     {{$lowerProp := lower_title $c.Prop}} 
     /**
@@ -36,6 +35,19 @@ public class {{$entity}} implements Cloneable {
     private {{$type}} {{$lowerProp}}; \
     {{end}}
     
+    {{range $i,$c := .columns}}{{$ormType := orm_type "java" $c.Type}}
+    {{$lowerProp := lower_title $c.Prop}} \
+    public {{$entity}} set{{$c.Prop}}({{$ormType}} {{$lowerProp}}){
+        this.{{$lowerProp}} = {{$lowerProp}};
+        return this;
+    }
+
+    /** {{$c.Comment}} */
+    public {{$ormType}} get{{$c.Prop}}() {
+        return this.{{$lowerProp}};
+    }
+    {{end}}
+
     @Override
     public {{$entity}} clone() {
         try {
@@ -44,7 +56,7 @@ public class {{$entity}} implements Cloneable {
             throw new RuntimeException("clone failed:" + ex.getMessage());
         }
     }
-
+    
     {{/* 通过字段直接给默认值会影响Example.of, 所以通过方法来设置默认值 */}}
     public static {{$entity}} createDefault(){
         {{$entity}} dst = new {{$entity}}();\

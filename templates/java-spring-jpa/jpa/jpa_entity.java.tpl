@@ -13,8 +13,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.Data;
-
 {{$entity := join .table.Title .global.entity_suffix}}
 /**
  * {{.table.Comment}} 
@@ -22,21 +20,33 @@ import lombok.Data;
 @Entity
 {{/*　@DynamicInsert 排除值为null的字段　*/}} \
 @Table(name = "{{.table.Name}}", schema = "{{.table.Schema}}")
-@Data
 public class {{$entity}} implements Cloneable {
-    {{/* 将字段单独生成，以便做裁剪 */}}\
+    {{/* 将字段单独生成，以便做裁剪,未使用Lombok是因为系统set属性能使用构造者模式 */}}\
     {{range $i,$c := .columns}}{{$type := orm_type "java" $c.Type}}
-    {{$lowerProp := lower_title $c.Prop}} 
+    {{$lowerProp := lower_title $c.Prop}}
     /**
      * {{$c.Comment}}
-     */\{{if $c.IsPk}}
+     */
+    private {{$type}} {{$lowerProp}};\
+    {{end}}
+    
+    {{range $i,$c := .columns}}{{$ormType := orm_type "java" $c.Type}}
+    {{$lowerProp := lower_title $c.Prop}} \
+    public {{$entity}} set{{$c.Prop}}({{$ormType}} {{$lowerProp}}){
+        this.{{$lowerProp}} = {{$lowerProp}};
+        return this;
+    }
+
+    /** {{$c.Comment}} */{{if $c.IsPk}}
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY){{else}}
     @Basic{{end}}
     @Column(name = "{{$c.Name}}"{{if not $c.NotNull}}, nullable = true{{end}} {{if ne $c.Length 0}},length = {{$c.Length}}{{end}})
-    private {{$type}} {{$lowerProp}}; \
+    public {{$ormType}} get{{$c.Prop}}() {
+        return this.{{$lowerProp}};
+    }
     {{end}}
-    
+
     @Override
     public {{$entity}} clone() {
         try {

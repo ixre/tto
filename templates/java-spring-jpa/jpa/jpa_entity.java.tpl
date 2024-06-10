@@ -21,7 +21,7 @@ import java.util.Map;
 {{/*　@DynamicInsert 排除值为null的字段　*/}} \
 @Table(name = "{{.table.Name}}", schema = "{{.table.Schema}}")
 public class {{$entity}} implements Cloneable {
-    {{/* 将字段单独生成，以便做裁剪 */}}\
+    {{/* 将字段单独生成，以便做裁剪,未使用Lombok是因为系统set属性能使用构造者模式 */}}\
     {{range $i,$c := .columns}}{{$type := orm_type "java" $c.Type}}
     {{$lowerProp := lower_title $c.Prop}}
     /**
@@ -55,33 +55,6 @@ public class {{$entity}} implements Cloneable {
             throw new RuntimeException("clone failed:" + ex.getMessage());
         }
     }
-
-    /*
-    public Map<String,Object> toMap(){
-        Map<String,Object> mp = new HashMap<>();\
-        {{range $i,$c := .columns}}
-        mp.put("{{lower_title $c.Prop}}",this.{{lower_title $c.Prop}});{{end}}
-        return mp;
-    }
-    */
-
-    /*
-    public static {{$entity}} fromMap(Map<String,Object> data){
-        {{$entity}} dst = new {{$entity}}();\
-        {{range $i,$c := .columns}}
-        {{ $goType := type "java" $c.Type}}\
-        {{if eq $goType "int"}}dst.set{{$c.Prop}}(TypeConv.toInt(data.get("{{$c.Prop}}")));\
-        {{else if eq $goType "long"}}dst.set{{$c.Prop}}(TypeConv.toLong(data.get("{{$c.Prop}}")));\
-        {{else if eq $goType "boolean"}}dst.set{{$c.Prop}}(TypeConv.toBool(data.get("{{$c.Prop}}")));\
-        {{else if eq $goType "float"}}dst.set{{$c.Prop}}(TypeConv.toFloat(data.get("{{$c.Prop}}")));\
-        {{else if eq $goType "double"}}dst.set{{$c.Prop}}(TypeConv.toDouble(data.get("{{$c.Prop}}")));\
-        {{else if eq $goType "BigDecimal"}}dst.set{{$c.Prop}}(TypeConv.toBigDecimal(data.get("{{$c.Prop}}")));\
-        {{else if eq $goType "Date"}}dst.set{{$c.Prop}}(TypeConv.toDateTime(data.get("{{$c.Prop}}")));\
-        {{else if eq $goType "Byte[]"}}dst.set{{$c.Prop}}(TypeConv.toBytes(data.get("{{$c.Prop}}")));\
-        {{else}}dst.set{{$c.Prop}}(TypeConv.toString(data.get("{{$c.Prop}}")));{{end}}{{end}}
-        return dst;
-    }
-    */
 
     {{/* 通过字段直接给默认值会影响Example.of, 所以通过方法来设置默认值 */}}
     public static {{$entity}} createDefault(){

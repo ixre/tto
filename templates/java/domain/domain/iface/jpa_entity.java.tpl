@@ -56,16 +56,16 @@ public class {{$entity}} implements Cloneable {
         }
     }
 
-    /*
+    {{/*
     public Map<String,Object> toMap(){
         Map<String,Object> mp = new HashMap<>();\
         {{range $i,$c := .columns}}
         mp.put("{{lower_title $c.Prop}}",this.{{lower_title $c.Prop}});{{end}}
         return mp;
     }
-    */
+    */}}
 
-    /*
+   {{ /*
     public static {{$entity}} fromMap(Map<String,Object> data){
         {{$entity}} dst = new {{$entity}}();\
         {{range $i,$c := .columns}}
@@ -81,7 +81,7 @@ public class {{$entity}} implements Cloneable {
         {{else}}dst.set{{$c.Prop}}(TypeConv.toString(data.get("{{$c.Prop}}")));{{end}}{{end}}
         return dst;
     }
-    */
+    */}}
 
     {{/* 通过字段直接给默认值会影响Example.of, 所以通过方法来设置默认值 */}}
     public static {{$entity}} createDefault(){

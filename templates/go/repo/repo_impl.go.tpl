@@ -1,30 +1,30 @@
 package impl
 
 #!type:0#!lang:go
-#!target:{{.global.pkg}}/dao/impl/{{.table.Name}}_dao_impl.go
+#!target:{{.global.pkg}}/repo/impl/{{.table.Name}}_repo_impl.go
 {{$title := .table.Title}}
 {{$shortTitle := .table.ShortTitle}}
 {{$p := substr .table.Name 0 1 }}
-{{$structName := join (lower_title $title) "DaoImpl"}}
+{{$structName := join (lower_title $title) "RepoImpl"}}
 import(
 	"database/sql"
 	"fmt"
-    "{{pkg "go" .global.pkg}}/dao/model"
-    "{{pkg "go" .global.pkg}}/dao"
+    "{{pkg "go" .global.pkg}}/repo/model"
+    "{{pkg "go" .global.pkg}}/repo"
     "github.com/ixre/gof/db"
     "github.com/ixre/gof/db/orm"
     "log"
 )
 
-var _ dao.I{{$title}}Dao = new({{$structName}})
+var _ repo.I{{$title}}Repo = new({{$structName}})
 type {{$structName}} struct{
     _orm orm.Orm
 }
 
 var {{$structName}}Mapped = false
 
-// New{{$title}}Dao Create new {{$title}}Dao
-func New{{$title}}Dao(o orm.Orm) dao.I{{$title}}Dao{
+// New{{$title}}Repo Create new {{$title}}Repo
+func New{{$title}}Repo(o orm.Orm) repo.I{{$title}}Repo{
     if !{{$structName}}Mapped{
         _ = o.Mapping(model.{{$shortTitle}}{},"{{.table.Name}}")
         {{$structName}}Mapped = true
@@ -34,9 +34,9 @@ func New{{$title}}Dao(o orm.Orm) dao.I{{$title}}Dao{
     }
 }
 // Get{{$shortTitle}} Get {{.table.Comment}}
-func ({{$p}} *{{$structName}}) Get{{$shortTitle}}(primary interface{})*model.{{$shortTitle}}{
+func ({{$p}} *{{$structName}}) Get{{$shortTitle}}({{.table.Pk}} {{type "go" .table.PkType}})*model.{{$shortTitle}}{
     e := model.{{$shortTitle}}{}
-    err := {{$p}}._orm.Get(primary,&e)
+    err := {{$p}}._orm.Get({{.table.Pk}},&e)
     if err == nil{
         return &e
     }
@@ -84,8 +84,8 @@ func ({{$p}} *{{$structName}}) Save{{$shortTitle}}(v *model.{{$shortTitle}})(int
 }
 
 // Delete{{$shortTitle}} Delete {{.table.Comment}}
-func ({{$p}} *{{$structName}}) Delete{{$shortTitle}}(primary interface{}) error {
-    err := {{$p}}._orm.DeleteByPk(model.{{$shortTitle}}{}, primary)
+func ({{$p}} *{{$structName}}) Delete{{$shortTitle}}({{.table.Pk}} {{type "go" .table.PkType}}) error {
+    err := {{$p}}._orm.DeleteByPk(model.{{$shortTitle}}{}, {{.table.Pk}})
     if err != nil && err != sql.ErrNoRows{
       log.Printf("[ Orm][ Error]: %s; Entity:{{$shortTitle}}\n",err.Error())
     }

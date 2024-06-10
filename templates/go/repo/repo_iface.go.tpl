@@ -1,16 +1,16 @@
-package dao
+package repo
 #!type:0#!lang:go
-#!target:{{.global.pkg}}/dao/{{.table.Name}}_dao.go
+#!target:{{.global.pkg}}/repo/{{.table.Name}}_repo.go
 {{$title := .table.Title}}
 {{$shortTitle := .table.ShortTitle}}
 
 import(
-    "{{pkg "go" .global.pkg}}/dao/model"
+    "{{pkg "go" .global.pkg}}/repo/model"
 )
 
-type I{{$title}}Dao interface{
+type I{{$title}}Repo interface{
     // Get{{$shortTitle}} Get {{.table.Comment}}
-    Get{{$shortTitle}}(primary interface{})*model.{{$shortTitle}}
+    Get{{$shortTitle}}({{.table.Pk}} {{type "go" .table.PkType}})*model.{{$shortTitle}}
     // Get{{$shortTitle}}By GetBy {{.table.Comment}}
     Get{{$shortTitle}}By(where string,v ...interface{})*model.{{$shortTitle}}
     // Count{{$shortTitle}} Count {{.table.Comment}} by condition
@@ -20,7 +20,7 @@ type I{{$title}}Dao interface{
     // Save{{$shortTitle}} Save {{.table.Comment}}
     Save{{$shortTitle}}(v *model.{{$shortTitle}})(int,error)
     // Delete{{$shortTitle}} Delete {{.table.Comment}}
-    Delete{{$shortTitle}}(primary interface{}) error
+    Delete{{$shortTitle}}({{.table.Pk}} {{type "go" .table.PkType}}) error
     // BatchDelete{{$shortTitle}} Batch Delete {{.table.Comment}}
     BatchDelete{{$shortTitle}}(where string,v ...interface{})(int64,error)
     // PagingQuery{{$shortTitle}} Query paging data

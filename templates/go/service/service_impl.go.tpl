@@ -16,9 +16,9 @@ import (
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
 	"github.com/ixre/gof/types/typeconv"
-	"{{.global.pkg}}/dao"
-	"{{.global.pkg}}/dao/impl"
-	"{{.global.pkg}}/dao/model"
+	"{{.global.pkg}}/repo"
+	"{{.global.pkg}}/repo/impl"
+	"{{.global.pkg}}/repo/model"
 	"{{.global.pkg}}/proto"
 	"time"
 )
@@ -26,7 +26,7 @@ import (
 var _ proto.{{$title}}ServiceServer = new({{$structName}})
 
 type {{$structName}} struct {
-	dao dao.I{{.table.Title}}Dao
+	repo repo.I{{.table.Title}}Repo
 	s   storage.Interface
 	serviceUtil
 
@@ -36,7 +36,7 @@ type {{$structName}} struct {
 func New{{$shortTitle}}Service(s storage.Interface, o orm.Orm) *{{$structName}} {
 	return &{{$structName}}{
 		s:   s,
-		dao: impl.New{{.table.Title}}Dao(o),
+		repo: impl.New{{.table.Title}}Repo(o),
 	}
 }
 
@@ -48,7 +48,7 @@ func ({{$p}} *{{$structName}}) Save{{$shortTitle}}(_ context.Context, r *proto.S
     {{else}}
     if r.{{.table.PkProp}} != "" {
     {{end}}
-        if dst = {{$p}}.dao.Get{{$shortTitle}}(r.{{.table.PkProp}}); dst == nil{
+        if dst = {{$p}}.repo.Get{{$shortTitle}}(r.{{.table.PkProp}}); dst == nil{
             return &proto.Save{{$shortTitle}}Response{
                 ErrCode: 2,
                 ErrMsg:  "no such record",
@@ -69,7 +69,7 @@ func ({{$p}} *{{$structName}}) Save{{$shortTitle}}(_ context.Context, r *proto.S
 
     {{$c := try_get .columns "update_time"}}
     {{if $c}}dst.UpdateTime = time.Now().Unix(){{end}}
-	id, err := {{$p}}.dao.Save{{$shortTitle}}(dst)
+	id, err := {{$p}}.repo.Save{{$shortTitle}}(dst)
     ret := &proto.Save{{$shortTitle}}Response{
         {{.table.PkProp}}: {{type "go" .table.PkType}}(id),
     }
@@ -92,7 +92,7 @@ func ({{$p}} *{{$structName}}) parse{{$shortTitle}}(v *model.{{$shortTitle}}) *p
 
 // Get{{$shortTitle}} 获取{{$comment}}
 func ({{$p}} *{{$structName}}) Get{{$shortTitle}}(_ context.Context, id *proto.{{$pkType}}) (*proto.S{{$shortTitle}}, error) {
-	v := {{$p}}.dao.Get{{$shortTitle}}(id.Value)
+	v := {{$p}}.repo.Get{{$shortTitle}}(id.Value)
 	if v == nil {
 		return nil, nil
 	}
@@ -101,7 +101,7 @@ func ({{$p}} *{{$structName}}) Get{{$shortTitle}}(_ context.Context, id *proto.{
 
 // Query{{$shortTitle}}List 获取{{$comment}}列表
 func ({{$p}} *{{$structName}}) Query{{$shortTitle}}List(_ context.Context, r *proto.Query{{$shortTitle}}Request) (*proto.Query{{$shortTitle}}Response, error) {
-	arr := {{$p}}.dao.Select{{$shortTitle}}("")
+	arr := {{$p}}.repo.Select{{$shortTitle}}("")
 	ret := &proto.Query{{$shortTitle}}Response{
 		Value:make([]*proto.S{{$shortTitle}},len(arr)),
 	}
@@ -113,13 +113,13 @@ func ({{$p}} *{{$structName}}) Query{{$shortTitle}}List(_ context.Context, r *pr
 
 // Delete{{$shortTitle}} 删除{{$comment}}
 func ({{$p}} *{{$structName}}) Delete{{$shortTitle}}(_ context.Context, id *proto.{{$pkType}}) (*proto.Result, error) {
-	err := {{$p}}.dao.Delete{{$shortTitle}}(id.Value)
+	err := {{$p}}.repo.Delete{{$shortTitle}}(id.Value)
 	return {{$p}}.error(err), nil
 }
 
 // Paging{{$shortTitle}} 获取{{$comment}}分页数据
 func ({{$p}} *{{$structName}}) Paging{{$shortTitle}}(_ context.Context, r *proto.{{$shortTitle}}PagingRequest) (*proto.{{$shortTitle}}PagingResponse, error) {
-	total, rows := {{$p}}.dao.PagingQuery{{$shortTitle}}(int(r.Params.Begin),
+	total, rows := {{$p}}.repo.PagingQuery{{$shortTitle}}(int(r.Params.Begin),
 		int(r.Params.End),
 		r.Params.Where,
 		r.Params.SortBy)

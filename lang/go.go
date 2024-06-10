@@ -42,10 +42,8 @@ func GoTypes(typeId int) string {
 		return "bool"
 	case db.TypeInt16:
 		return "int16"
-	case db.TypeInt32:
+	case db.TypeInt32,db.TypeInt64:
 		return "int"
-	case db.TypeInt64:
-		return "int64"
 	case db.TypeFloat32:
 		return "float32"
 	case db.TypeFloat64, db.TypeDecimal:

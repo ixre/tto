@@ -1,5 +1,5 @@
 package model
-#!target:{{.global.pkg}}/dao/model/{{.table.Name}}_model.go
+#!target:{{.global.pkg}}/repo/model/{{.table.Name}}_model.go
 {{$shortTitle := .table.ShortTitle}}
 
 // {{$shortTitle}} {{.table.Comment}}

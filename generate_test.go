@@ -13,7 +13,7 @@ import (
 var (
 	driver     = "mysql"
 	dbName     = ""
-	dbPrefix   = "order_rebate"
+	dbPrefix   = "mch_staff"
 	connString = "root:@tcp(127.0.0.1:3306)/baozhang?charset=utf8"
 	genDir     = "./generated-code/"
 	tplDir     = "./templates/java/spring"
@@ -22,7 +22,7 @@ var (
 // 生成数据库所有的代码文件
 func TestGenAll(t *testing.T) {
 	driver = "postgresql"
-	connString = "postgres://postgres:123456@192.168.1.159:15432/go2o?sslmode=disable"
+	connString = "postgres://postgres:123456@go2o.dev:5432/go2o?sslmode=disable"
 
 	// driver = "sqlserver"
 	// connString = "sqlserver://sfDBUser:Jbmeon@008@192.168.16.19:1433?database=DCF19_ERP_TEST_B&encrypt=disable"

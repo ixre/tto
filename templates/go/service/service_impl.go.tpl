@@ -15,7 +15,7 @@ import (
 	"context"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/storage"
-	"github.com/ixre/gof/types/typeconv"
+	"github.com/ixre/gof/typeconv"
 	"{{.global.pkg}}/repo"
 	"{{.global.pkg}}/repo/impl"
 	"{{.global.pkg}}/repo/model"

@@ -10,10 +10,10 @@ require (
 )
 
 require (
-	github.com/gomodule/redigo v1.8.9 // indirect
-	github.com/lib/pq v1.10.7 // indirect
-	github.com/stretchr/testify v1.8.4 // indirect
-	golang.org/x/sys v0.19.0 // indirect
+	github.com/gomodule/redigo v1.9.2 // indirect
+	github.com/lib/pq v1.10.9 // indirect
+	golang.org/x/sys v0.21.0 // indirect
+	golang.org/x/text v0.16.0 // indirect
 )
 
 replace github.com/ixre/gof => ../gof

@@ -8,7 +8,7 @@ import (
 	ht "text/template"
 
 	"github.com/ixre/gof/db/db"
-	"github.com/ixre/gof/types/typeconv"
+	"github.com/ixre/gof/typeconv"
 	lang2 "github.com/ixre/tto/lang"
 )
 

@@ -10,7 +10,7 @@ package restful
 
 import (
   "context"
-  "github.com/ixre/gof/types/typeconv"
+  "github.com/ixre/gof/typeconv"
   "github.com/labstack/echo/v4"
   "{{pkg "go" .global.pkg}}/service"
   "{{pkg "go" .global.pkg}}/service/proto"

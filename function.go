@@ -45,6 +45,8 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	fm["orm_type"] = t.ormLangType
 	// 判断是否为数字类型
 	fm["num_type"] = t.isMatchNumberField
+	// 转换为路径, 如:{{path .table.Name}}
+	fm["path"] = t.parsePath
 	// 包: {{pkg "go" "com/tto/pkg"}}
 	fm["pkg"] = t.langPkg
 	// 包名: {{pkg "go" "github/com/ixre"}} => github.com/ixre
@@ -106,6 +108,11 @@ func (t *internalFunc) title(s string) string {
 // 将名称转为路径,规则： 替换首个"_"为"/"
 func (t *internalFunc) nameToPath(s string) string {
 	return strings.Replace(s, "_", "/", 1)
+}
+
+// 转换为路径, 如:{{path .table.Name}}
+func (t *internalFunc) parsePath(s string) string {
+	return strings.Replace(s, "_", "/", -1)
 }
 
 func (t *internalFunc) langType(lang string, typeId int) string {

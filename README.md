@@ -1,33 +1,33 @@
 # 代码生成器
 
-**TTO是一款使用Go编写的代码生成器,兼容多种数据库,支持多种语言,支持自定义模板生成代码.**
+**TTO 是一款使用 Go 编写的代码生成器,兼容多种数据库,支持多种语言,支持自定义模板生成代码.**
 
 特点:
 
-- 支持windows,macos,linux操作系统.
-- 支持mysql/mariadb、postgresql和sqlserver数据库.
+- 支持 windows,macos,linux 操作系统.
+- 支持 mysql/mariadb、postgresql 和 sqlserver 数据库.
 - 支持代码模板和模板函数,内置十多种开箱即用代码模板.
 - 支持模型逆向生成数据库和代码.
-- 支持Go,JAVA,Python,Js,C#,Kotlin,Html等多种语言.
-- 支持生成前端代码,内置vue2/vue3模板
-- 内置Protobuf和Thrift等RPC框架模板
+- 支持 Go,JAVA,Python,Js,C#,Kotlin,Html 等多种语言.
+- 支持生成前端代码,内置 vue2/vue3 模板
+- 内置 Protobuf 和 Thrift 等 RPC 框架模板
 - 自带版本升级和自动更新功能
 
 ## 安装
 
 ### 命令行工具
 
-在Linux/Mac下安装，使用以下命令安装
+在 Linux/Mac 下安装，使用以下命令安装
 
 ```bash
 curl -L https://raw.githubusercontent.com/ixre/tto/master/install | sh
 ```
 
-Windows用户进入下载页面([链接](https://github.com/ixre/tto/releases/)),下载最新版本(文件:tto-generator-client.tar.gz)后解压,将目录中的`tto.exe`文件复制到`C:\windows`下完成安装.　请注意windows10以下版本需要复制到`C:\windows\System32`目录.
+Windows 用户进入下载页面([链接](https://github.com/ixre/tto/releases/)),下载最新版本(文件:tto-generator-client.tar.gz)后解压,将目录中的`tto.exe`文件复制到`C:\windows`下完成安装.　请注意 windows10 以下版本需要复制到`C:\windows\System32`目录.
 
 ### 图形界面
 
-`tto`提供基于B/S的图形界面，可进行模板管理和代码生成等功能，使用`docker`运行图形界面，参考以下命令：
+`tto`提供基于 B/S 的图形界面，可进行模板管理和代码生成等功能，使用`docker`运行图形界面，参考以下命令：
 
 ```bash
 docker run -d --name gdp -p 8000:8000 \
@@ -45,8 +45,8 @@ http://localhost:8000
 ## 升级
 
 `tto`内置了版本更新功能,命令如下:
-```tto update```
-_注：在windows下升级功能如无法正常使用,可以手动重新安装_
+`tto update`
+_注：在 windows 下升级功能如无法正常使用,可以手动重新安装_
 
 ## 快速开始
 
@@ -66,18 +66,18 @@ _注：在windows下升级功能如无法正常使用,可以手动重新安装_
 
 执行以下命令生成代码,代码会生成到`output`目录
 
-```tto -clean```
+`tto -clean`
 
 但实际应用中,推荐使用脚本文件来完成生成,　您可以参考安装包中的示例脚本文件:`./example.sh`;
 
-在windows中可以使用`git-bash`来执行该脚本
+在 windows 中可以使用`git-bash`来执行该脚本
 
 ## 模板
 
 `tto`模板使用`Go Template`,　具体语法参考:
 
-- [Go模板语法-中](http://www.g-var.com/posts/translation/hugo/hugo-21-go-template-primer/)
-- [Go模板语法-English](https://golang.org/pkg/text/template/)
+- [Go 模板语法-中](http://www.g-var.com/posts/translation/hugo/hugo-21-go-template-primer/)
+- [Go 模板语法-English](https://golang.org/pkg/text/template/)
 
 ### 预定义语法
 
@@ -85,10 +85,10 @@ _注：在windows下升级功能如无法正常使用,可以手动重新安装_
 
 目前,支持的预定义语法如下:
 
-- \#!kind: 定义模板生成类型,0:普通,1:生成所有表 2:按表名前缀生成,默认为0
+- \#!kind: 定义模板生成类型,0:普通,1:生成所有表 2:按表名前缀生成,默认为 0
 - \#!target: 用来定义代码文件存放的目标路径
-- \#!append: 是否追加到文件,可选值为:true和false , 默认为false
-- \#!format: 是否启用格式化代码，可选值为:true和false，默认开启
+- \#!append: 是否追加到文件,可选值为:true 和 false , 默认为 false
+- \#!format: 是否启用格式化代码，可选值为:true 和 false，默认开启
 - \#!lang: 指定当前生成代码的语言 如:
 
 ```text
@@ -117,7 +117,7 @@ _注：在windows下升级功能如无法正常使用,可以手动重新安装_
 {{env "PROJECT_MEMBERS"}}
 ```
 
-大/小写函数: lower和upper
+大/小写函数: lower 和 upper
 
 ```text
 {{lower .table.Name}}
@@ -142,13 +142,13 @@ _注：在windows下升级功能如无法正常使用,可以手动重新安装_
 {{type "go" .columns[0].Type}}
 ```
 
-返回SQL/ORM类型: sql_type
+返回 SQL/ORM 类型: sql_type
 
 ```text
 {{sql_type "py" .columns[0].Type .columns[0].Length}}
 ```
 
-返回ORM字段类型,通常在Java中使用
+返回 ORM 字段类型,通常在 Java 中使用
 
 ```text
 {{orm_type "java" 3 }}  // 输出: Integer
@@ -164,6 +164,12 @@ _注：在windows下升级功能如无法正常使用,可以手动重新安装_
 
 ```text
 {{pkg "go" .global.pkg}} # github.com/ixre
+```
+
+路径函数: path, 用于生成 url 路径
+
+```text
+{{path .global.pkg}} # sys/option/list
 ```
 
 包名函数:
@@ -184,7 +190,7 @@ _注：在windows下升级功能如无法正常使用,可以手动重新安装_
 {{equal (3%2) 1}}
 ```
 
-是否与任意值相等, 如表的主键是否为int类型
+是否与任意值相等, 如表的主键是否为 int 类型
 
 ```text
 {{equal_any .table.PkType 3 4 5}}
@@ -196,7 +202,7 @@ _注：在windows下升级功能如无法正常使用,可以手动重新安装_
 {{replace "table_name" "_" "-"}}
 ```
 
-替换N次, 如将`table_name`替换为:`table-name`
+替换 N 次, 如将`table_name`替换为:`table-name`
 
 ```text
 {{replace_n "table_name" "_" "-" 1}}
@@ -209,13 +215,13 @@ _注：在windows下升级功能如无法正常使用,可以手动重新安装_
 {{substr "sys_user_list" 4 }} 结果:sys_list
 ```
 
-截取第N个字符位置后的字符串,如以下语句将输出:user_list
+截取第 N 个字符位置后的字符串,如以下语句将输出:user_list
 
 ```text
 {{substr_n "sys_user_list" "_" 1}}
 ```
 
-截取索引为N的元素
+截取索引为 N 的元素
 
 ```text
 {{$first_table := get_n .tables 0}}
@@ -262,14 +268,14 @@ _注：在windows下升级功能如无法正常使用,可以手动重新安装_
 {{ $columns := exclude .columns "id","create_time" }}
 ```
 
-尝试获取一个列,返回列及是否存在的Boolean, 如:
+尝试获取一个列,返回列及是否存在的 Boolean, 如:
 
 ```text
 {{ $c := try_get .columns "update_time" }}
 {{if $c}}prop={{$c.Prop}}{{end}}
 ```
 
-将名称转为路径,规则： 替换首个"_"为"/"
+将名称转为路径,规则： 替换首个"\_"为"/"
 
 ```text
 {{$path := name_path .table.Name}}
@@ -304,7 +310,7 @@ _注：在windows下升级功能如无法正常使用,可以手动重新安装_
 package {{.global.pkg}}
 ```
 
-如果是Java或其他语言, 包名以"."分割, 可使用pkg函数,如:
+如果是 Java 或其他语言, 包名以"."分割, 可使用 pkg 函数,如:
 
 ```text
 // java package
@@ -347,8 +353,8 @@ base_path="/api"
 - Pk: 主键,默认为:id
 - PkProp: 主键属性, 首字母大写
 - PkType: 主键类型编号
-- Title: 表名单词首字大写,通常用来表示类型, 如:user_info对应的Title为UserInfo
-- ShortTitle: 同title, 但不包含前缀
+- Title: 表名单词首字大写,通常用来表示类型, 如:user_info 对应的 Title 为 UserInfo
+- ShortTitle: 同 title, 但不包含前缀
 - Comment: 表注释
 - Engine: 数据库引擎
 - Schema: 架构
@@ -362,12 +368,12 @@ base_path="/api"
 - Name: 列名
 - Prop: 列名首字大写, 通常用作属性
 - IsPk: 是否主键(bool)
-- IsAuto:  是否自动生成(bool)
+- IsAuto: 是否自动生成(bool)
 - NotNull: 是否不能为空(bool)
 - DbType: 数据库数据类型
 - Comment: 注释
 - Length: 长度
-- Type: 类型编号,使用type函数转换为对应语言的类型
+- Type: 类型编号,使用 type 函数转换为对应语言的类型
 - Ordinal: 列的序号
 
 示例:
@@ -380,7 +386,7 @@ base_path="/api"
 
 ## 模板示例
 
-以下代码用于生成Java的Pojo对象, 更多示例点击[这里](templates)
+以下代码用于生成 Java 的 Pojo 对象, 更多示例点击[这里](templates)
 
 ```text
 #!target:{{.global.pkg}}/pojo/{{.table.Title}}{{.global.entity_suffix}}.java
@@ -423,6 +429,6 @@ public class {{.table.Title}}{{.global.entity_suffix}} {
 
 参见代码：[generate_test.go](generate_test.go)
 
-**如果您觉得这个项目不错, 请给个star吧.**
+**如果您觉得这个项目不错, 请给个 star 吧.**
 
 <img src="images/cq-alipay.png" width="320" style="display:inline-block"/><img src="images/cq-wxpay.png" width="354" style="display:inline-block"/>

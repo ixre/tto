@@ -1,4 +1,4 @@
-#!kind:2#!target:vue/components/ModalDialog.ts
+#!kind:2#!target:vue/ext/compose/modal.ts
 
 
 

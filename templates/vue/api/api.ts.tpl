@@ -1,16 +1,26 @@
+#!kind:1
 #!lang:ts＃!name:API和定义文件
-#!target:vue/api/{{.table.Title}}Api.ts
-import {request} from '../utils'
-{{$entityName := .table.Title}}
-{{$columns := .columns}}
-{{$path := join .global.base_path (name_path .table.Name) "/"}}\
-{{$pkName := lower_title .table.Pk}}
-{{$pkType := type "ts" .table.PkType}}
+#!target:vue/api/api_gen.ts
+import {request,Result} from '@/ext/utils'
 
-// {{.table.Comment}}对象
+// 接口清单:
+{{range $i,$table := .tables}}\
+// {{plus $i 1}}: [{{$table.Comment}}]({{$table.Name}})
+{{end}}
+
+{{$base_path := .global.base_path}}
+{{range $i,$table := .tables}}\
+
+{{$entityName := $table.Title}}
+{{$columns := $table.Columns}}
+{{$path := join $base_path (path $table.Name) "/"}}\
+{{$pkName := lower_title $table.Pk}}
+{{$pkType := type "ts" $table.PkType}}
+
+// {{$table.Comment}}对象
 export class {{$entityName}} {
-    {{range $i,$c := .columns}}// {{$c.Comment}}
-    {{$c.Prop}}: {{type "ts" $c.Type}} = {{if eq $c.Render.Element "radio"}} \
+    {{range $i,$c := $columns}}// {{$c.Comment}}
+    {{lower_title $c.Prop}}: {{type "ts" $c.Type}} = {{if eq $c.Render.Element "radio"}} \
         {{default "ts" $c.Type}} + 1 \
     {{else}} \
       {{default "ts" $c.Type}} \
@@ -18,54 +28,85 @@ export class {{$entityName}} {
     {{end}}
 }
 
-// {{.table.Comment}}数据映射类
-export interface Paging{{$entityName}} {
-  {{range $i,$c := .columns}} \
-  // {{$c.Comment}}
-  {{$c.Name}}:{{type "ts" $c.Type}};
-  {{end}}
-}
 
-// 获取{{.table.Comment}}
-export const get{{$entityName}} = (id: {{type "ts" .table.PkType}}, params: any = {}):Promise<{data:{{$entityName}}}> => request({
-  url: `{{$path}}/${id}`,
+/**
+ * 获取{{$table.Comment}}
+ *
+ * @param {{$pkName}} 编号
+ * @param params 可选参数
+ * @returns {{$table.Comment}}
+ */
+export const get{{$entityName}} = ({{$pkName}}: {{type "ts" $table.PkType}}, params: any = {}):Promise<{data:{{$entityName}}}> => request({
+  url: `{{$path}}/${{"{"}}{{$pkName}}{{"}"}}`,
   method: 'GET',
   params
 })
 
-// 查询{{.table.Comment}}列表
+/**
+ * 查询{{$table.Comment}}列表
+ *
+ * @param params 请求参数，默认为空对象
+ * @returns {{$table.Comment}}数组
+ */
 export const query{{$entityName}}List = (params: any = {}):Promise<{data:Array<{{$entityName}}>}> => request({
   url: `{{$path}}`,
   method: 'GET',
   params
 })
 
-// 创建{{.table.Comment}}
-export const create{{$entityName}} = (data: {{$entityName}}) => request({
+
+/**
+ * 创建{{$table.Comment}}
+ *
+ * @param data 数据
+ * @returns 请求结果
+ */
+export const create{{$entityName}} = (data: {{$entityName}}): Promise<{ data: Result }> => request({
   url: `{{$path}}`,
   method: 'POST',
   data
 })
 
-// 保存{{.table.Comment}}
-export const update{{$entityName}} = (id: {{$pkType}}, data: {{$entityName}}) => request({
-  url: `{{$path}}/${id}`,
+
+/**
+ * 更新{{$table.Comment}}
+ *
+ * @param {{$pkName}} 编号
+ * @param data 数据
+ * @returns 结果
+ */
+export const update{{$entityName}} = ({{$pkName}}: {{$pkType}}, data: {{$entityName}}): Promise<{ data: Result }> => request({
+  url: `{{$path}}/${{"{"}}{{$pkName}}{{"}"}}`,
   method: 'PUT',
   data
 })
 
-// 删除{{.table.Comment}}
-export const delete{{$entityName}} = ({{$pkName}}: Array<{{$pkType}}>) => request({
+/**
+ * 删除{{$table.Comment}}
+ *
+ * @param {{$pkName}} 编号数组
+ * @returns 结果
+ */
+export const delete{{$entityName}} = ({{$pkName}}: Array<{{$pkType}}>): Promise<{ data: Result }> => request({
   url: `{{$path}}/${{"{"}}{{$pkName}}[0]}`,
   method: 'DELETE',
   data: {{$pkName}}.length > 1? { list : {{$pkName}}{{"}"}} : undefined
 })
 
 
-// 查询{{.table.Comment}}分页数据
-export const queryPaging{{$entityName}} = (page:number, size:number, params: any):Promise<{
-  data:{total:number,rows:Array<Paging{{$entityName}}>}}> => request({
+/**
+ * 查询分页{{$table.Comment}}
+ *
+ * @param page 页码
+ * @param size 每页显示数量
+ * @param params 其他查询参数
+ * @returns 分页数据
+ */
+export const paging{{$entityName}} = (page:number, size:number, params: any):Promise<{
+  data:{total:number,rows:Array<any>}}> => request({
   url: `{{$path}}/paging`,
   method: 'GET',
   params: { page, size,...params }
 })
+
+{{end}}

@@ -1,4 +1,4 @@
-#!kind:2#!target:vue/utils/adapter.ts
+#!kind:2#!target:vue/ext/utils/adapter.ts
 
 /** 您可以编辑此文件,并进行适配,需要在utils包中导出 */
 

@@ -1,6 +1,6 @@
 #!lang:ts＃!name:全功能界面
-#!lang:ts#!target:vue/views/{{.table.Title}}/{{.table.Title}}Index.vue
-{{$Class := .table.Title}}
+#!lang:ts#!target:vue/views/{{.table.Title}}/index.vue
+{{$entityName := .table.Title}}
 {{$pkType := type "ts" .table.PkType}}
 {{$pk := .table.Pk}}
 <template>
@@ -24,18 +24,18 @@
               </el-select>
             </el-form-item>
             <el-form-item class="filter-item">
-              <span v-perm="{key: '', roles: ['admin'], visible: true }" @click="handleFilter">
+              <span v-perm="{key: '', roles: ['admin'], visible: true }" @click="queryPagingData">
                 <el-button type="primary">搜索</el-button>
               </span>
             </el-form-item>
             <el-form-item class="filter-item">
-              <span v-perm="{key: '[权限key]+1', roles: ['admin'], visible: true }" @click="handleCreate">
+              <span v-perm="{key: '[权限key]+1', roles: ['admin'], visible: true }" @click="openModal">
                 <el-button>新增</el-button>
               </span>
             </el-form-item>
             <el-form-item class="filter-item">
-              <span v-show="queryData.selectedRows?.length" @click="resetSelections">
-                <el-button type="plain">清除选择项({{ "{{queryData.selectedRows?.length}}" }})</el-button>
+              <span v-show="queryData.selectedRows?.length" @click="onResetSelection">
+                <el-button plain>清除选择项({{ "{{queryData.selectedRows?.length}}" }})</el-button>
               </span>
               <span v-perm="{key: '', roles: ['admin'], visible: true }" @click="handleDelete">
                 <el-button v-show="queryData.selectedRows?.length" type="danger" :loading="queryData.requesting">删除</el-button>
@@ -49,39 +49,39 @@
     <el-table ref="tableRef" v-loading="queryData.loading" :data="queryData.dataList" class="mod-grid-table"
               border :height="queryData.tableHeight" fit :highlight-current-row="false"
               row-key="{{$pk}}" empty-text="暂无数据"
-              @select="handleSelectionChange" @select-all="handleSelectionChange">
+              @select="onSelectionChange" @select-all="onSelectionChange">
         <el-table-column align="center" type="selection" width="40" fixed="left"/>
-        <el-table-column type="index" width="50" label="序号"></el-table-column>
+        <el-table-column type="index" width="50" label="序号"/>
         {{range $i,$c := .columns}} \
-        {{if ends_with $c.Name "_time"}} \
-        <el-table-column width="140" align="left" label="{{$c.Comment}}" prop="{{$c.Name}}" :formatter="formatColTime"/>
-        {{else if ends_with $c.Name "state"}} \
+        {{if ends_with $c.Name "Time"}} \
+        <el-table-column width="140" align="left" label="{{$c.Comment}}" prop="{{lower_title $c.Prop}}" :formatter="formatColTime"/>
+        {{else if ends_with $c.Name "State"}} \
         <el-table-column width="140" align="left" label="{{$c.Comment}}">
             <template #default="{row}">
-              <span v-for="(it,i) in stateOptions" v-if="it.value === row.state">{{"{{ it.key }}"}}</span>
+              <span v-for="(it,i) in stateOptions" v-if="it.value === row.{{lower_title $c.Prop}}">{{"{{ it.key }}"}}</span>
             </template>
         </el-table-column>
-        {{else if starts_with $c.Name "is_"}} \
+        {{else if starts_with $c.Name "is"}} \
         <el-table-column width="140" align="left" label="{{$c.Comment}}">
              <template #default="{row}">
-                <span v-if="row.{{$c.Name}}===1" class="g-txt-green">是</span>
+                <span v-if="row.{{lower_title $c.Prop}}===1" class="g-txt-green">是</span>
                 <span v-else class="g-txt-red">否</span>
              </template>
         </el-table-column>
         {{else if $c.IsPk }} \
-        <el-table-column width="60" align="left" label="{{$c.Comment}}" prop="{{$c.Name}}"/>
+        <el-table-column width="60" align="left" label="{{$c.Comment}}" prop="{{lower_title $c.Prop}}"/>
         {{else}} \
-        <el-table-column align="left" label="{{$c.Comment}}" prop="{{$c.Name}}"/>
+        <el-table-column align="left" label="{{$c.Comment}}" prop="{{lower_title $c.Prop}}"/>
         {{end}} \
         {{end}} \
 
         <el-table-column align="center" width="160" label="操作" fixed="right">
             <template #default="scope">
-              <span v-perm="{key: '[权限key]+4', roles: ['admin'], visible: true }" @click="handleEdit(scope.row)">
-                <el-button type="primary" size="mini" icon="el-icon-edit-outline">编辑</el-button>
+              <span v-perm="{key: '[权限key]+4', roles: ['admin'], visible: true }" @click="openModal(scope.row)">
+                <el-button type="primary" size="small" plain>编辑</el-button>
               </span>
               <span v-perm="{key: '[权限key]+2', roles: ['admin'], visible: true }" @click="handleDelete(scope.$index,scope.row)">
-                <el-button type="danger" size="mini" icon="el-icon-delete" :loading="queryData.requesting && queryData.rowIndex === scope.$index">删除</el-button>
+                <el-button type="danger" size="small" plain :loading="queryData.requesting && queryData.rowIndex === scope.$index">删除</el-button>
               </span>
             </template>
         </el-table-column>
@@ -98,40 +98,44 @@
 </template>
 <script lang="ts" setup>
 import {onMounted, reactive, ref, nextTick} from "vue";
-import {Paging{{$Class}},queryPaging{{$Class}},delete{{$Class}} } from '../../api';
-import {{$Class}}Modal from './{{$Class}}Modal.vue';
-import {Message,MessageBox,formatColTime} from "../../utils";
-import {showModal,ListDataRef,queryDataList, deleteData,onSelectionChange,onResetSelection} from "../../components";
-
-const tableRef = ref();
-
-const queryData = reactive<ListDataRef<Paging{{$Class}}>
-    & { tableHeight: number }>({
-        page: 1, size: 20,selectedRows: [],tableRef: () => tableRef, 
-        primary: (row) => row.{{$pk}},
-        tableHeight: 0
-    });
-
-/** 定义排序条件 */
+import {{"{"}}{{$entityName}},paging{{$entityName}},delete{{$entityName}} {{"}"}} from '@/api';
+import {{$entityName}}Modal from './modal.vue';
+import {Message,MessageBox,formatColTime} from "@/ext/utils";
+import { showModal, ListRef, useDataTable } from "@/ext/compose"
+// 定义排序条件
 const sortOptions = [
   {key: "默认排序", value: "{{.table.Pk}} DESC"},
   {key: "按创建时间先后顺序", value: "{{.table.Pk}} ASC"},
 ];
 
-/** 定义状态条件(自定义条件) */
+// 定义状态条件(自定义条件)
 const stateOptions = [
   {key: "全部", value: -1},
   {key: "正常", value: 1},
   {key: "停用", value: 0}
 ];
 
-/** 定义查询参数 */
+// 定义查询参数
 const queryParams = reactive({
   keyword: "",
   where: "0=0",
   state: stateOptions[0].value,
   order_by: sortOptions[0].value
 });
+
+// {{.table.Comment}}数据映射类
+interface R extends {{$entityName}}{}
+
+const tableRef = ref();
+const queryData = reactive<ListRef<R> & { tableHeight: number }>({
+  page: 1,
+  size: 20,
+  selectedRows: [],
+  tableRef: () => tableRef,
+  primary: (row) => row.id,
+  tableHeight: 0
+})
+const { onQueryData, onDelete, onSelectionChange, onResetSelection } = useDataTable(queryData)
 
 onMounted(()=>{
     queryPagingData();
@@ -142,51 +146,31 @@ onMounted(()=>{
 })
 
 // 读取分页数据
-const queryPagingData = async (page?:number)=> {
-  if (queryData.loading) return;
-  queryData.page = page || 1;
-  await queryDataList(queryData,queryPaging{{$Class}},queryParams);
-};
-
-const handleFilter = ()=>{
-  queryData.page = 1;
-  queryPagingData();
-};
-
-const handleSelectionChange = (rows: Array<Paging{{$Class}}>,row?:Paging{{$Class}})=>onSelectionChange(queryData, rows, row)
-const resetSelections = () => onResetSelection(queryData)
-
-// 新增数据
-const handleCreate = ()=> openForm("新增{{.table.Comment}}")
-
-// 编辑数据
-const handleEdit = (row:Paging{{$Class}})=>openForm("编辑{{.table.Comment}}",row)
+function queryPagingData(page?:number){
+    onQueryData(paging{{$entityName}}, queryParams, page || 1)
+}
 
 // 打开表单
-const openForm = async (title:string,row?:Paging{{$Class}})=>{
-   const data = await showModal({{$Class}}Modal,{
+const showModal = async (row?:R)=>{
+   const data = await showModal({{$entityName}}Modal,{
     modelValue:row?.{{.table.PkProp}}
-  },{title});
+  },{title: row ? "编辑{{.table.Comment}}" : "新增{{.table.Comment}}"});
   if(data)queryPagingData();
 }
 
 
-const handleDelete = (idx?:number,row?:Paging{{$Class}}) => {
+const handleDelete = (idx?:number,row?:R) => {
     MessageBox.confirm('执行此操作数据无法恢复,是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
     }).then(async () => {
-        queryData.rowIndex = idx;
-        if (queryData.requesting) return;
-        const pkArr = row ? [row.{{$pk}}] : (queryData.selectedRows || []).map(r => r.{{$pk}});
-        const { errCode, errMsg } = await deleteData(queryData,delete{{$Class}}, pkArr);
-        if (errCode !== 0) {
-          throw new Error(errMsg);
-        }
-        Message.success({message:'删除成功',duration:2000,onClose:queryPagingData});
-    }).catch((ex) => {
-        ex !=="cancel" && MessageBox.alert(ex.message,"错误")
-    });
+        await onDelete({
+          index,
+          row,
+          fn: delete{{$entityName}},
+          onClose: queryPagingData
+        })
+    })
 }
 </script>

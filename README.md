@@ -268,7 +268,7 @@ _注：在 windows 下升级功能如无法正常使用,可以手动重新安装
 {{ $columns := exclude .columns "id","create_time" }}
 ```
 
-尝试获取一个列,返回列及是否存在的 Boolean, 如:
+尝试获取一个列,返回列, 如:
 
 ```text
 {{ $c := try_get .columns "update_time" }}

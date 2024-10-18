@@ -478,7 +478,8 @@ func (s *sessionImpl) findTemplates(opt *Options) (map[string]*Template, error) 
 		return nil
 	})
 	if err == nil && len(tplMap) == 0 {
-		err = errors.New("no any code template")
+		err = fmt.Errorf("no any code template in: %s , exclude pattern:%s",
+			opt.TplDir, opt.ExcludePatterns)
 	}
 	return tplMap, err
 }

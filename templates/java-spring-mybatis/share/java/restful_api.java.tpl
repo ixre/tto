@@ -77,8 +77,8 @@ public class {{.table.Title}}Resource {
     @DeleteMapping("/{id}")
     @Resource(key = "{{$resPrefix}}:delete",name="删除{{.table.Comment}}")
     public Result delete{{$shortTitle}}(@PathVariable("id") {{$pkType}} id){
-        Error err = this.service.delete{{$shortTitle}}ById(id);
-        return Result.of(err);
+        this.service.delete{{$shortTitle}}ById(id);
+        return Result.of(null);
     }
 
     /** {{.table.Comment}}分页数据 */

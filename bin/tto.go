@@ -188,7 +188,7 @@ func generate() {
 		ds := orm.DialectSession(getDb(driver, re, verbose), dialect)
 		list, err1 := ds.TablesByPrefix(dbName, schema, table)
 		if err1 != nil {
-			println("[ app][ info]: ", err.Error())
+			println("[ app][ info]: find table failed ", err.Error())
 			return
 		}
 		userMeta := re.GetBoolean("code.meta_settings")

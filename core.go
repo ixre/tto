@@ -7,7 +7,7 @@ import (
 )
 
 // BuildVersion 版本号
-const BuildVersion = "0.5.8"
+const BuildVersion = "0.5.9"
 
 // ReleaseCodeHome 代码页
 const ReleaseCodeHome = "https://github.com/ixre/tto"

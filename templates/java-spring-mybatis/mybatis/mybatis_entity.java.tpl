@@ -10,6 +10,9 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.math.BigDecimal;
+import java.util.Date;
+import lombok.Data;
+
 
 {{$entity := join .table.Title .global.entity_suffix}}
 /**
@@ -19,6 +22,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "{{.table.Name}}", schema = "{{.table.Schema}}")
 @TableName("{{.table.Name}}")
+@Data
 public class {{$entity}} implements Cloneable {
     {{/* 将字段单独生成，以便做裁剪,未使用Lombok是因为系统set属性能使用构造者模式 */}}\
     {{range $i,$c := .columns}}{{$type := orm_type "java" $c.Type}}
@@ -34,26 +38,14 @@ public class {{$entity}} implements Cloneable {
     {{end}}
     private {{$type}} {{$lowerProp}}; \
     {{end}}
-    
-    {{range $i,$c := .columns}}{{$ormType := orm_type "java" $c.Type}}
-    {{$lowerProp := lower_title $c.Prop}} \
-    public {{$entity}} set{{$c.Prop}}({{$ormType}} {{$lowerProp}}){
-        this.{{$lowerProp}} = {{$lowerProp}};
-        return this;
-    }
 
-    /** {{$c.Comment}} */
-    public {{$ormType}} get{{$c.Prop}}() {
-        return this.{{$lowerProp}};
-    }
-    {{end}}
 
     @Override
     public {{$entity}} clone() {
         try {
             return ({{$entity}}) super.clone();
         } catch (Exception ex) {
-            throw new RuntimeException("clone failed:" + ex.getMessage());
+            throw new RuntimeException("Entity {{$entity}} clone failed:" + ex.getMessage());
         }
     }
     

@@ -101,7 +101,7 @@ func javaValues(typeId int) string {
 	case db.TypeInt16, db.TypeInt32:
 		return "0"
 	case db.TypeDecimal:
-		return "new BigDecimal(0)"
+		return "BigDecimal.ZERO"
 	case db.TypeString:
 		return "\"\""
 	case db.TypeDateTime:

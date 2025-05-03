@@ -24,7 +24,8 @@ func (t *internalFunc) funcMap() ht.FuncMap {
 	fm["add"] = t.plus
 	fm["plus"] = t.plus
 	fm["multi"] = t.multi
-	fm["mathRemain"] = t.mathRemain
+	// 求余
+	fm["mod"] = t.mod
 	// 单词首字大写
 	fm["title"] = t.title
 	// 将名称转为路径,规则： 替换首个"_"为"/"
@@ -393,6 +394,6 @@ func (t *internalFunc) isEmpty(s string) bool {
 }
 
 // 求余
-func (t *internalFunc) mathRemain(i int, j int) int {
+func (t *internalFunc) mod(i int, j int) int {
 	return i % j
 }

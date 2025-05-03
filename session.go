@@ -31,6 +31,8 @@ const (
 	BASE_URL = "base_url"
 	// 基础路径
 	BASE_PATH = "base_path"
+	// 组织名
+	ORGANIZATION = "organization"
 	// 包名
 	PKG = "pkg"
 	// 实体后缀,默认：Entity
@@ -140,6 +142,7 @@ func (s *sessionImpl) init() Session {
 	s.Var(BASE_URL, "")
 	s.Var(BASE_PATH, "")
 	s.Var(ENTITY_SUFFIX, "Entity")
+	s.Var(ORGANIZATION, "FZE.NET")
 	// load global registry
 	rd := GetRegistry()
 	for _, k := range rd.Keys {
@@ -157,7 +160,7 @@ func (s *sessionImpl) init() Session {
 	}
 	s.Var("db", s.driver)
 	s.Var("year", time.Now().Format("2006"))
-	s.Var("organization", "56X.NET")
+	s.Var(ORGANIZATION, "FZE.NET")
 	return s
 }
 

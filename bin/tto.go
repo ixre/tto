@@ -126,7 +126,7 @@ func generate() {
 			pkgName = "com.tto.pkg"
 		}
 	}
-	orgName := "56X.NET"
+	orgName := "FZE.NET"
 	if re.Contains("global.organization") {
 		orgName = re.GetString("global.organization")
 	}
@@ -172,7 +172,7 @@ func generate() {
 
 	dg := tto.DBCodeGenerator(dbDriver, opt)
 	dg.Package(pkgName)
-	dg.Var("organization", orgName)
+	dg.Var(tto.ORGANIZATION, orgName)
 	if re.GetBoolean("code.id_upper") {
 		dg.UseUpperId()
 	}

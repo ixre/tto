@@ -96,7 +96,9 @@ func javaValues(typeId int) string {
 		return "false"
 	case db.TypeInt64:
 		return "0L"
-	case db.TypeFloat32, db.TypeFloat64:
+	case db.TypeFloat64:
+		return "0D"
+	case db.TypeFloat32:
 		return "0F"
 	case db.TypeInt16, db.TypeInt32:
 		return "0"

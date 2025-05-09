@@ -49,3 +49,8 @@ func TestResolveTemplatePackInfo(t *testing.T) {
 	ret := tto.ResolveTemplatePackage("../templates/vue")
 	log.Println(ret)
 }
+
+func TestGetUpperFieldTitle(t *testing.T) {
+	title := tto.LowerTitle("TUSER_MALL")
+	t.Log("result -title", title)
+}

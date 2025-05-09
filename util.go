@@ -6,6 +6,8 @@ import (
 	"unicode"
 
 	"github.com/ixre/gof/util"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // 转换为实体名称号
@@ -50,11 +52,19 @@ func shortTitle(str string) string {
 	return strings.Join(n, "")
 }
 
+func LowerTitle(s string) string {
+	return lowerTitle(s)
+}
 // 将首字母小写
 func lowerTitle(s string) string {
 	if len(s) == 0 {
-		return s
+		return ""
 	}
+	arr := strings.Split(s, "_")
+	for i, v := range arr {
+		arr[i] = cases.Title(language.English).String(v)
+	}
+	s = strings.Join(arr, "")
 	if rune0 := rune(s[0]); unicode.IsUpper(rune0) {
 		return string(unicode.ToLower(rune0)) + s[1:]
 	}

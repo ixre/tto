@@ -34,7 +34,7 @@ func title(str string, shortUpper bool) string {
 	}
 	arr := strings.Split(str, "_")
 	for i, v := range arr {
-		arr[i] = strings.Title(v)
+		arr[i] = cases.Title(language.English).String(v)
 	}
 	return strings.Join(arr, "")
 }
@@ -43,11 +43,11 @@ func title(str string, shortUpper bool) string {
 func shortTitle(str string) string {
 	arr := strings.Split(str, "_")
 	if len(arr) == 1 {
-		return strings.Title(str)
+		return cases.Title(language.English).String(str)
 	}
 	n := make([]string, len(arr)-1)
 	for i, v := range arr[1:] {
-		n[i] = strings.Title(v)
+		n[i] = cases.Title(language.English).String(v)
 	}
 	return strings.Join(n, "")
 }
@@ -55,16 +55,19 @@ func shortTitle(str string) string {
 func LowerTitle(s string) string {
 	return lowerTitle(s)
 }
+
 // 将首字母小写
 func lowerTitle(s string) string {
 	if len(s) == 0 {
 		return ""
 	}
-	arr := strings.Split(s, "_")
-	for i, v := range arr {
-		arr[i] = cases.Title(language.English).String(v)
+	if strings.Contains(s, "_") {
+		arr := strings.Split(s, "_")
+		for i, v := range arr {
+			arr[i] = cases.Title(language.English).String(v)
+		}
+		s = strings.Join(arr, "")
 	}
-	s = strings.Join(arr, "")
 	if rune0 := rune(s[0]); unicode.IsUpper(rune0) {
 		return string(unicode.ToLower(rune0)) + s[1:]
 	}

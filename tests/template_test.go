@@ -51,6 +51,10 @@ func TestResolveTemplatePackInfo(t *testing.T) {
 }
 
 func TestGetUpperFieldTitle(t *testing.T) {
-	title := tto.LowerTitle("TUSER_MALL")
+	title := tto.LowerTitle("NewTime")
+	t.Log("result -title", title)
+	title = tto.LowerTitle("nEw_Time")
+	t.Log("result -title", title)
+	title = tto.LowerTitle("T_NEW_TIME")
 	t.Log("result -title", title)
 }

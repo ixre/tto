@@ -40,7 +40,7 @@ func TestMultiQuota(t *testing.T) {
 	haha
 `
 	dg := tto.DBCodeGenerator("", nil)
-	result := dg.GenerateCode(&tto.Table{Name: "admin_user"}, tto.NewTemplate(str, "", true),nil)
+	result := dg.GenerateCode(&tto.Table{Name: "admin_user"}, tto.NewTemplate(str, "", true), nil)
 	t.Log("--", result)
 }
 

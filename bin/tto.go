@@ -15,6 +15,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/ixre/gof/db"
+	db2 "github.com/ixre/gof/db/db"
 	"github.com/ixre/gof/db/dialect"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/shell"
@@ -185,12 +186,24 @@ func generate() {
 	if len(modelPath) == 0 {
 		dbName := re.GetString("database.name")
 		schema := re.GetString("database.schema")
-		ds := orm.DialectSession(getDb(driver, re, verbose), dialect)
-				list, err1 := ds.TablesByPrefix(dbName, schema, table)
-		if err1 != nil {
-			println("[ app][ info]: find table failed ", err1.Error())
-		}
 		userMeta := re.GetBoolean("code.meta_settings")
+		ds := orm.DialectSession(getDb(driver, re, verbose), dialect)
+		var list []*db2.Table
+		var err1 error
+		if strings.HasSuffix(table, "*") {
+			list, err1 = ds.TablesByPrefix(dbName, schema, table[:len(table)-1])
+
+		} else {
+			tb, err := ds.Table(table)
+			if err != nil {
+				err1 = err
+			} else {
+				list = []*db2.Table{tb}
+			}
+		}
+		if err1 != nil {
+			log.Println("[ app][ info]: find table failed ", err1.Error())
+		}
 		tables, err = dg.Parses(list, userMeta)
 	} else {
 		tables, err = tto.ReadModels(modelPath)

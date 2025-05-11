@@ -79,7 +79,7 @@ func generate() {
 	flag.StringVar(&modelPath, "model", "", "path to model directory")
 	flag.StringVar(&pkgName, "pkg", "", "the package like 'net.fze.web',it will override file config")
 	flag.StringVar(&confPath, "conf", "./tto.conf", "config path")
-	flag.StringVar(&table, "table", "", "table name or table prefix")
+	flag.StringVar(&table, "table", "", "table name or table pattern like 't_*'")
 	flag.StringVar(&excludedTables, "excludes", "", "exclude tables by prefix")
 	flag.StringVar(&arch, "arch", "", "program language")
 	flag.BoolVar(&cleanLast, "clean", false, "clean last generate files")

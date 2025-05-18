@@ -184,15 +184,19 @@ func generate() {
 	// 获取表格并转换
 	var tables []*tto.Table
 	if len(modelPath) == 0 {
+		// 读取配置生成
 		dbName := re.GetString("database.name")
 		schema := re.GetString("database.schema")
+		prefix := re.GetString("database.table_prefix")
 		userMeta := re.GetBoolean("code.meta_settings")
 		ds := orm.DialectSession(getDb(driver, re, verbose), dialect)
 		var list []*db2.Table
 		var err1 error
+		if table == "" {
+			table = "*"
+		}
 		if strings.HasSuffix(table, "*") {
 			list, err1 = ds.TablesByPrefix(dbName, schema, table[:len(table)-1])
-
 		} else {
 			tb, err := ds.Table(table)
 			if err != nil {
@@ -204,7 +208,7 @@ func generate() {
 		if err1 != nil {
 			log.Println("[ app][ info]: find table failed ", err1.Error())
 		}
-		tables, err = dg.Parses(list, userMeta)
+		tables, err = dg.Parses(list, prefix, userMeta)
 	} else {
 		tables, err = tto.ReadModels(modelPath)
 	}

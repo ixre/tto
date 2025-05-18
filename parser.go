@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/ixre/gof/db/db"
@@ -13,13 +14,19 @@ import (
 )
 
 // 获取表结构,userMeta 是否使用用户的元数据
-func parseTable(ordinal int, tb *db.Table, shortUpper bool, userMeta bool) *Table {
+// tablePrefix 表前缀
+func parseTable(ordinal int, tb *db.Table, tablePrefix string, shortUpper bool, userMeta bool) *Table {
+	tableName := tb.Name
+	if len(tablePrefix) > 0 {
+		// 去掉指定的前缀
+		tableName = regexp.MustCompile(`(?i)^`+tablePrefix).ReplaceAllString(tb.Name, "")
+	}
 	n := &Table{
 		Ordinal:    ordinal,
-		Name:       tb.Name,
-		Prefix:     prefix(tb.Name),
-		Title:      title(tb.Name, shortUpper),
-		ShortTitle: shortTitle(tb.Name),
+		Name:       tableName,
+		Prefix:     prefix(tableName),
+		Title:      title(tableName, shortUpper),
+		ShortTitle: shortTitle(tableName),
 		Comment:    tb.Comment,
 		Engine:     tb.Engine,
 		Schema:     tb.Schema,

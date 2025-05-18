@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/ixre/tto"
+	"github.com/ixre/tto/lang"
 )
 
 func TestTemplate(t *testing.T) {
@@ -57,4 +58,9 @@ func TestGetUpperFieldTitle(t *testing.T) {
 	t.Log("result -title", title)
 	title = tto.LowerTitle("T_NEW_TIME")
 	t.Log("result -title", title)
+}
+
+func TestGetGoPkg(t *testing.T) {
+	pkg := lang.Get("go").PkgName("github.com/ixre/gof/db/orm")
+	t.Log("result -pkg", pkg)
 }

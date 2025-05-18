@@ -231,7 +231,7 @@ _注：在 windows 下升级功能如无法正常使用,可以手动重新安装
 
 ```text
 {{join "," "1","2","3"}}
-{{$api := join "/" .global.base_path (name_path .table.Name)}}
+{{$api := join "/" .global.base_path (name_path .table.Raw.Name)}}
 ```
 
 包含函数

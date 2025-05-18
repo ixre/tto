@@ -68,7 +68,7 @@ type (
 		// 遍历模板文件夹, 并生成代码, 如果为源代码目标,文件存在,则自动生成添加 .gen后缀
 		WalkGenerateCodes(tables []*Table, g GenerateHandler) error
 		// 转换表格,如果meta为true,则读取元数据,如果没有则自动生成元数据
-		Parses(tables []*db.Table, meta bool) (arr []*Table, err error)
+		Parses(tables []*db.Table,tablePrefix string, meta bool) (arr []*Table, err error)
 		// 清理生成目录
 		Clean() error
 	}
@@ -165,10 +165,10 @@ func (s *sessionImpl) init() Session {
 }
 
 // 转换表格,如果meta为true,则读取元数据,如果没有则自动生成元数据
-func (s *sessionImpl) Parses(tables []*db.Table, meta bool) (arr []*Table, err error) {
+func (s *sessionImpl) Parses(tables []*db.Table,tablePrefix string, meta bool) (arr []*Table, err error) {
 	n := make([]*Table, len(tables))
 	for i, tb := range tables {
-		n[i] = parseTable(i, tb, s.useUpperId, meta)
+		n[i] = parseTable(i, tb,tablePrefix, s.useUpperId, meta)
 	}
 	return n, err
 }

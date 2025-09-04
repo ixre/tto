@@ -12,18 +12,21 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
+import net.fze.util.Times;
+import net.fze.util.Types;
+import java.io.Serializable;
 
 
 {{$entity := join .table.Title .global.entity_suffix}}
 /**
- * {{.table.Comment}}(MyBatis)
+ * {{.table.Comment}}
  */
 {{/*　@DynamicInsert 排除值为null的字段,@Entity,@Table,@Id为兼容Hibernate　*/}} \
 @Entity
-@Table(name = "{{.table.Name}}", schema = "{{.table.Schema}}")
-@TableName("{{.table.Name}}")
+@Table(name = "{{.table.Raw.Name}}", schema = "{{.table.Schema}}")
+@TableName("{{.table.Raw.Name}}")
 @Data
-public class {{$entity}} implements Cloneable {
+public class {{$entity}} implements Cloneable,Serializable {
     {{/* 将字段单独生成，以便做裁剪,未使用Lombok是因为系统set属性能使用构造者模式 */}}\
     {{range $i,$c := .columns}}{{$type := orm_type "java" $c.Type}}
     {{$lowerProp := lower_title $c.Prop}} 
@@ -51,9 +54,8 @@ public class {{$entity}} implements Cloneable {
     
     {{/* 通过字段直接给默认值会影响Example.of, 所以通过方法来设置默认值 */}}
     public static {{$entity}} createDefault(){
-        {{$entity}} dst = new {{$entity}}();\
-        {{range $i,$c := .columns}}
-        dst.set{{$c.Prop}}({{default "java" $c.Type}});{{end}}
+        {{$entity}} dst = new {{$entity}}();
+        Types.setDefaultValues(dst);
         return dst;
     }
 }

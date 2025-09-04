@@ -8,12 +8,13 @@ import net.fze.annotation.Resource;
 import net.fze.common.Result;
 import net.fze.util.Systems;
 import net.fze.common.data.PagingResult;
-import net.fze.ext.report.Params;
 import net.fze.util.Assert;
 import net.fze.ext.mybatis.MyBatisQueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.io.Serializable;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +27,7 @@ import java.util.Map;
 {{$resPrefix := replace (name_path .table.Name) "/" ":"}}\
 {{$basePath := join .global.base_path (path .table.Name) "/"}}\
 
-/* {{.table.Comment}}资源 */
+/** {{.table.Comment}}资源 */
 @RestController
 @RequestMapping("{{$basePath}}s")
 public class {{.table.Title}}Controller {
@@ -42,11 +43,10 @@ public class {{.table.Title}}Controller {
     /** 创建{{.table.Comment}} */
     @PostMapping
     @Resource(key = "{{$resPrefix}}:create",name="创建{{.table.Comment}}")
-    public Result create{{$shortTitle}}(@RequestBody {{$entityType}} entity){
+    public Result<?> create{{$shortTitle}}(@RequestBody {{$entityType}} entity){
         Error err = Systems.catchError(()->{
             this.validate{{$shortTitle}}(entity);
             this.service.save(entity);
-            return null;
         });
         return Result.of(err);
     }
@@ -54,12 +54,11 @@ public class {{.table.Title}}Controller {
     /** 更新{{.table.Comment}} */
     @PutMapping("/{id}")
     @Resource(key = "{{$resPrefix}}:update",name="更新{{.table.Comment}}")
-    public Result update{{$shortTitle}}(@PathVariable("id") {{$pkType}} id,@RequestBody {{$entityType}} entity) {
+    public Result<?> update{{$shortTitle}}(@PathVariable("id") {{$pkType}} id,@RequestBody {{$entityType}} entity) {
         Error err = Systems.catchError(()->{
             entity.set{{.table.PkProp}}(id);
             this.validate{{$shortTitle}}(entity);
             this.service.save(entity);
-            return null;
         });
         return Result.of(err);
     }
@@ -76,31 +75,40 @@ public class {{.table.Title}}Controller {
     /** 删除{{.table.Comment}} */
     @DeleteMapping("/{id}")
     @Resource(key = "{{$resPrefix}}:delete",name="删除{{.table.Comment}}")
-    public Result delete{{$shortTitle}}(@PathVariable("id") {{$pkType}} id){
+    public Result<?> delete{{$shortTitle}}(@PathVariable("id") {{$pkType}} id){
         this.service.deleteById(id);
-        return Result.of(null);
+        return Result.success();
     }
 
     /** {{.table.Comment}}分页数据 */
     @GetMapping
     @Resource(key = "{{$resPrefix}}:paging",name="查询{{.table.Comment}}分页数据")
-    public PagingResult<{{$entityType}}> paging{{$shortTitle}}(@RequestParam Map<String,Object> params,
-               @RequestParam("page") int page,
-               @RequestParam("size") int size){
-        Params p = new Params(params);
-        //https://www.zhihu.com/question/586324313/answer/2912413783
-        //String timeRangeSql = ReportUtils.timestampSQLByJSONTime(p.get("create_time"), "create_time");
-        //p.set("create_time", timeRangeSql);
-        MyBatisQueryWrapper<{{$entityType}}> query = new MyBatisQueryWrapper<>();
-        //String keyword = TypeConv.toString(params.get("keyword"));
-        //query.eq("name",keyword)
+    public PagingResult<?> paging{{$shortTitle}}(@RequestParam Map<String,Object> params,
+                   @RequestParam(value = "page",required = false,defaultValue = "1") int page,
+                   @RequestParam(value = "size",required = false,defaultValue = "10") int size,
+                   HttpServletRequest request, HttpServletResponse response){
+        // 在这里添加自定义查询条件
+        MyBatisQueryWrapper<{{$entityType}}> query = new MyBatisQueryWrapper<{{$entityType}}>()
+                .eqIfPresent("status", params.get("status"))
+                .orderByDesc("{{.table.Pk}}");
+        {{/*
+            List<Long> createTime = ReportUtils.parseTimeRange(params.get("createTime"));
+            if(!createTime.isEmpty()){
+                query.between("create_time",createTime.get(0),createTime.get(1));
+            }
+        */}}
+        if("true".equals(params.get("export"))) {
+            // 导出数据
+            ExportFactory.getServletExporter(request,response).export((paging)->this.service.selectPaging(query,paging));
+            return null;
+        }
         return this.service.selectPaging(query, PagingParams.of(page,size));
     }
 
     /** 批量删除{{.table.Comment}} */
     @DeleteMapping("")
     @Resource(key = "{{$resPrefix}}:delete",name="删除{{.table.Comment}}")
-    public Result batchDelete(@RequestBody List<Serializable> id){
+    public Result<?> batchDelete(@RequestBody List<Serializable> id){
         if(id.isEmpty())return Result.error(2,"没有要删除的行");
         this.service.batchDelete(id);
         return Result.success();

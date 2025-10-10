@@ -9,11 +9,12 @@
 package tests
 
 import (
-	"github.com/ixre/tto/utils"
 	"regexp"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/ixre/tto/internal/utils"
 )
 
 type testStruct struct {

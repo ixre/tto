@@ -20,7 +20,7 @@ import (
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/shell"
 	"github.com/ixre/gof/util"
-	"github.com/ixre/tto"
+	"github.com/ixre/tto/pkg/tto"
 )
 
 // go run bin/tto.go --model ./templates --watch

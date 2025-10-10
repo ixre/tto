@@ -4,8 +4,8 @@ import (
 	"log"
 	"testing"
 
-	"github.com/ixre/tto"
-	"github.com/ixre/tto/lang"
+	"github.com/ixre/tto/pkg/tto"
+	"github.com/ixre/tto/internal/lang"
 )
 
 func TestTemplate(t *testing.T) {

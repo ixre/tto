@@ -6,12 +6,12 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/ixre/gof/shell"
-	"github.com/ixre/tto"
+	"github.com/ixre/tto/pkg/tto"
 )
 
 var (
-	genDir = "./output/"
-	tplDir = "../templates/vue"
+	genDir1 = "./output/"
+	tplDir1 = "../templates/vue"
 )
 
 // 加载路径中的模型并生成代码
@@ -25,9 +25,9 @@ func TestGenerateByReadedTables(t *testing.T) {
 	}
 	// 生成自定义代码
 	opt := &tto.Options{
-		TplDir:          tplDir,
+		TplDir:          tplDir1,
 		AttachCopyright: true,
-		OutputDir:       genDir,
+		OutputDir:       genDir1,
 		ExcludePatterns: []string{"grid_list.html"},
 	}
 	dg := tto.DBCodeGenerator("", opt)

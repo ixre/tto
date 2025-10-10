@@ -1,7 +1,7 @@
 package tto
 
 import (
-	golang2 "github.com/ixre/tto/lang/golang"
+		golang2 "github.com/ixre/tto/internal/lang/golang"
 )
 
 var (

@@ -5,7 +5,7 @@
 # + generator
 #  - templates
 #  - tto.conf
-#  - example.sh
+#  - generate.sh
 # ```
 
 TABLE_PATTERN="*"

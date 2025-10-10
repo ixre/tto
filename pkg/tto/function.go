@@ -9,7 +9,7 @@ import (
 
 	"github.com/ixre/gof/db/db"
 	"github.com/ixre/gof/typeconv"
-	lang2 "github.com/ixre/tto/lang"
+	lang2 "github.com/ixre/tto/internal/lang"
 )
 
 type internalFunc struct {

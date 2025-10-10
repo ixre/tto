@@ -1,4 +1,4 @@
-package tto
+package tests
 
 import (
 	"os"
@@ -8,6 +8,7 @@ import (
 	"github.com/ixre/gof/db"
 	"github.com/ixre/gof/db/orm"
 	"github.com/ixre/gof/shell"
+	"github.com/ixre/tto/pkg/tto"
 )
 
 var (
@@ -29,26 +30,27 @@ func TestGenAll(t *testing.T) {
 
 	// driver = "mysql"
 	// connString = "aoxueqi:123456@tcp(47.106.212.18:1512)/aoxueqi?charset=utf8"
-
+	dbPrefix = "t_syspara"
+	connString = "root:123456@tcp(127.0.0.1:8306)/mall?charset=utf8"
 	// 初始化生成器
 	conn, _ := db.NewConnector(driver, connString, nil, false)
 	ds, _ := orm.NewDialectSession(driver, conn.Raw())
 
 	// 生成自定义代码
-	opt := &Options{
+	opt := &tto.Options{
 		TplDir:          tplDir,
 		AttachCopyright: true,
 		OutputDir:       genDir,
 		ExcludePatterns: []string{"grid_list.html"},
 	}
-	dg := DBCodeGenerator(ds.Driver(), opt)
+	dg := tto.DBCodeGenerator(ds.Driver(), opt)
 	list, err := ds.TablesByPrefix(dbName, "", dbPrefix)
 	if err != nil {
 		println("[ tto][ error]: not found tables", err.Error())
 		return
 	}
 	// 获取表格并转换
-	tables, err := dg.Parses(list, true)
+	tables, err := dg.Parses(list, "", true)
 	if err != nil {
 		t.Error(err)
 		return
@@ -78,7 +80,7 @@ func TestGenAll(t *testing.T) {
 
 func TestReadTables(t *testing.T) {
 	txt, _ := os.ReadFile("./templates/table.tb")
-	tables, _ := ReverseParseTable(string(txt))
+	tables, _ := tto.ReverseParseTable(string(txt))
 	t.Log(len(tables))
 }
 
@@ -86,19 +88,19 @@ func TestReadTables(t *testing.T) {
 func TestReverseGenerate(t *testing.T) {
 	//txt, _ := ioutil.ReadFile("./templates/table.tb")
 	//tables, _ := ReadTables(string(txt), "user")
-	tables, _ := ReadModels("./templates")
+	tables, _ := tto.ReadModels("./templates")
 	if len(tables) == 0 {
 		t.Log("no such tables")
 		t.FailNow()
 	}
 	// 生成自定义代码
-	opt := &Options{
+	opt := &tto.Options{
 		TplDir:          tplDir,
 		AttachCopyright: true,
 		OutputDir:       genDir,
 		ExcludePatterns: []string{"grid_list.html"},
 	}
-	dg := DBCodeGenerator("", opt)
+	dg := tto.DBCodeGenerator("", opt)
 
 	// 设置包名
 	dg.Package("github.com/ixre/go2o/core")

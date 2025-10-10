@@ -8,7 +8,7 @@ elif [ "$(uname)" = "Linux" ]; then
   goods="linux"
 fi
 go mod tidy
-CGO_ENABLED=0 GOOS=${goods} ARCH=amd64 go build -v -o tto bin/*.go
+CGO_ENABLED=0 GOOS=${goods} ARCH=amd64 go build -v -o tto cmd/*.go
 sudo rm -rf /usr/local/bin/tto
 sudo mv tto /usr/local/bin
 

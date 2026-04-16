@@ -15,6 +15,12 @@
 
 ## 安装
 
+### 在安装了`go`的环境下安装
+
+```bash
+go install github.com/ixre/tto/cmd/tto@latest
+```
+
 ### 命令行工具
 
 在 Linux/Mac 下安装，使用以下命令安装

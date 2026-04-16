@@ -17,7 +17,7 @@ var (
 	dbPrefix   = ""
 	connString = "root:123456@tcp(127.0.0.1:3306)/transport?charset=utf8"
 	genDir     = "./generated-code/"
-	tplDir     = "./templates/java-spring-mybatis"
+	tplDir     = "../templates/java-spring-mybatis"
 )
 
 // 生成数据库所有的代码文件
@@ -30,8 +30,8 @@ func TestGenAll(t *testing.T) {
 
 	// driver = "mysql"
 	// connString = "aoxueqi:123456@tcp(47.106.212.18:1512)/aoxueqi?charset=utf8"
-	dbPrefix = "t_syspara"
-	connString = "root:123456@tcp(127.0.0.1:8306)/mall?charset=utf8"
+	dbPrefix = "t_transport_package"
+	connString = "root:123456@tcp(127.0.0.1:3306)/transport?charset=utf8"
 	// 初始化生成器
 	conn, _ := db.NewConnector(driver, connString, nil, false)
 	ds, _ := orm.NewDialectSession(driver, conn.Raw())
@@ -62,7 +62,11 @@ func TestGenAll(t *testing.T) {
 	os.RemoveAll(genDir)
 	// 生成GoRepo代码
 	//dg.GenerateGoRepoCodes(tables, genDir)
-	dg.WalkGenerateCodes(tables, nil)
+	err = dg.WalkGenerateCodes(tables, nil)
+	if err != nil{
+		t.Error(err)
+		t.FailNow()
+	}
 	//格式化代码
 	shell.Run("go fmt "+genDir, false)
 	t.Log("生成成功, 输出目录", genDir)
